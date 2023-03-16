@@ -1,0 +1,8 @@
+---
+BasedOnStyle: Microsoft
+AllowShortBlocksOnASingleLine: 'false'
+ColumnLimit: '100'
+IndentWidth: '2'
+
+...
+

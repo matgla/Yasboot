@@ -21,7 +21,7 @@
 add_executable(second_stage_bootloader)
 
 target_sources(second_stage_bootloader
-  PUBLIC
+  PRIVATE 
     source/second_stage.S
 )
 
@@ -54,14 +54,47 @@ add_custom_command(
   COMMAND 
     ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/append_checksum.py 
     --input ${CMAKE_CURRENT_BINARY_DIR}/second_stage_bootloader.bin --output ${CMAKE_CURRENT_BINARY_DIR}/second_stage_bootloader_with_crc.bin
+
   DEPENDS 
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/append_checksum.py
+  VERBATIM
 )
 
+add_custom_target (second_stage_bootloader_size ALL arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/second_stage_bootloader.elf DEPENDS second_stage_bootloader)
 
 
 # TODO support for different flash drives 
 
 # add_executable(mbr)
 
+add_executable(mbr_second_part)
+
+target_sources(mbr_second_part 
+  PRIVATE 
+    source/test.S    
+)
+
+target_link_options(mbr_second_part
+  PRIVATE 
+    --specs=nosys.specs -nostartfiles
+    LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr_second_part.ld
+)
+
+set_target_properties(mbr_second_part 
+  PROPERTIES 
+  LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr_second_part.ld
+)
+
+add_custom_command(
+  TARGET mbr_second_part 
+  POST_BUILD 
+  COMMAND 
+    ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:mbr_second_part> ${CMAKE_CURRENT_BINARY_DIR}/mbr_second_part.bin
+  COMMAND
+    cat ${CMAKE_CURRENT_BINARY_DIR}/second_stage_bootloader_with_crc.bin ${CMAKE_CURRENT_BINARY_DIR}/mbr_second_part.bin > mbr.bin
+
+  DEPENDS 
+    second_stage_bootloader
+  VERBATIM
+)
 

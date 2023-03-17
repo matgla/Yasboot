@@ -59,10 +59,17 @@ ssi_register .req r7
 #define FLASH_CMD_READ_STATUS_REGISTER_2 0x35
 #define FLASH_CMD_WRITE_STATUS_REGISTER_2 0x31
 #define FLASH_CMD_WRITE_ENABLE 0x06
+#define FLASH_CMD_READ_QUAD 0xeb 
+#define FLASH_MODE_CONTINOUS_READ 0xa0
+
 
 #define FLASH_STATUS_REGISTER_2_QE_OFFSET 1 
 #define FLASH_STATUS_REGISTER_2_ENABLE_QUAD (1 << FLASH_STATUS_REGISTER_2_QE_OFFSET)
 #define FLASH_STATUS_REGISTER_1_BUSY 1
+
+#define FLASH_ADDRESS_LENGTH 8
+// can be reduced to 2 ? There are some informations in datasheet
+#define FLASH_WAIT_CYCLES 4 
 
 .section .text
 .global second_stage_main
@@ -70,6 +77,7 @@ ssi_register .req r7
 .thumb_func
 second_stage_main:
 pad_config:
+  bkpt #0
   ldr pads_register, =PADS_QSPI_BASE
   ldr r1, =SCLK_PAD_CONFIGURATION_DRIVE_8MA_SLEWFAST 
   str r1, [pads_register, #PADS_QSPI_GPIO_QSPI_SCLK_OFFSET]
@@ -119,7 +127,65 @@ check_if_qe_is_already_enabled:
   bne configure_quad_mode
 
 enter_flash_into_continous_read_mode:
+  movs r0, #0 
+  str r0, [ssi_register, #SSI_SSIENR_OFFSET]
+  ldr r1, =(SSI_CTRLR0_SPI_FRF_VALUE_QUAD << SSI_CTRLR0_SPI_FRF_LSB) | \
+    (31 << SSI_CTRLR0_DFS_32_LSB) | \
+    (SSI_CTRLR0_TMOD_VALUE_EEPROM_READ << SSI_CTRLR0_TMOD_LSB)
 
+  str r1, [ssi_register, #SSI_CTRLR0_OFFSET]
+
+  movs r1, #0 
+  str r1, [ssi_register, #SSI_CTRLR1_OFFSET]
+
+/* Setup SPI with SPI command, and quad SPI address */
+  ldr r1, =(FLASH_ADDRESS_LENGTH << SSI_SPI_CTRLR0_ADDR_L_LSB) | \
+    (FLASH_WAIT_CYCLES << SSI_SPI_CTRLR0_WAIT_CYCLES_LSB) | \
+    (SSI_SPI_CTRLR0_INST_L_VALUE_8B << SSI_SPI_CTRLR0_INST_L_LSB) | \
+    (SSI_SPI_CTRLR0_TRANS_TYPE_VALUE_1C2A << SSI_SPI_CTRLR0_TRANS_TYPE_LSB)
+  ldr r2, =(XIP_SSI_BASE + SSI_SPI_CTRLR0_OFFSET)
+  str r1, [r2]
+
+  movs r0, #1 
+  str r0, [ssi_register, #SSI_SSIENR_OFFSET]
+
+read_dummy_byte_to_trigger_continous_read_mode:
+  movs r0, #FLASH_CMD_READ_QUAD 
+  str r0, [ssi_register, #SSI_DR0_OFFSET]
+  
+  /* 24 bit address (0x000000), mode (0xa), mode ignored (0x0) */
+  movs r0, #FLASH_MODE_CONTINOUS_READ
+  str r0, [ssi_register, #SSI_DR0_OFFSET]
+  
+  bl wait_for_transmission_finished
+
+/* Let's remove command prefix, it is harmful in continous reading mode */
+reconfigure_ssi_controller_to_remove_command:
+  movs r0, #0 
+  str r0, [ssi_register, #SSI_SSIENR_OFFSET]
+
+  ldr r0, =(FLASH_MODE_CONTINOUS_READ << SSI_SPI_CTRLR0_XIP_CMD_LSB) | \
+    (FLASH_ADDRESS_LENGTH << SSI_SPI_CTRLR0_ADDR_L_LSB) | \
+    (FLASH_WAIT_CYCLES << SSI_SPI_CTRLR0_WAIT_CYCLES_LSB) | \
+    (SSI_SPI_CTRLR0_INST_L_VALUE_NONE << SSI_SPI_CTRLR0_INST_L_LSB) | \
+    (SSI_SPI_CTRLR0_TRANS_TYPE_VALUE_2C2A << SSI_SPI_CTRLR0_TRANS_TYPE_LSB)
+
+  ldr r1, =(XIP_SSI_BASE + SSI_SPI_CTRLR0_OFFSET)
+  str r0, [r1]
+
+  movs r1, #1
+  str r1, [ssi_register, #SSI_SSIENR_OFFSET]
+
+/* And now flash should be working in memory mapped mode */ 
+
+  // Let's jump to second part of MBR (from 0x100 to 0x200)
+  ldr r0, =(XIP_BASE + 0x101)
+  bx r0 
+
+  /* Software shouldn't exit, but if does go to sleep mode */ 
+loop: 
+  wfi 
+  b loop 
 
 configure_quad_mode:
   movs r0, #FLASH_CMD_WRITE_ENABLE 

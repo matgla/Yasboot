@@ -17,6 +17,8 @@
 // Public License along with this program. If not, see
 // <https://www.gnu.org/licenses/>.
 
+#include "hardware/regs/m0plus.h"
+#include "hardware/regs/addressmap.h"
 
 .syntax unified 
 .cpu cortex-m0plus
@@ -27,7 +29,17 @@
 .type bootstrap,%function 
 .thumb_func
 bootstrap:
-  bkpt #1 
+  bkpt #1
+  /* load vector table */ 
+  ldr r0, =(XIP_BASE + 0x200)
+  ldr r1, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
+  /* and execute */
+  str r0, [r1]
+  ldmia r0, {r0, r1}
+  msr msp, r0 
+  bx r1 
+
+  /* if child code is wrong, let's stay here */
 loop:
   wfi 
   b loop

@@ -1,0 +1,58 @@
+\documentclass{article}
+
+\usepackage{colortbl}
+\usepackage{listings}
+\usepackage{todonotes}
+\usepackage{tikz}
+
+% Let's check if bing AI memory layout generator works 
+\newcommand{\memorymap}[3]{
+  #1 & #2 & #3 \\
+  \hline
+}
+
+\title{Yasboot memory layout}
+\author{Mateusz Stadnik}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+This document describes Yasboot memory layout. 
+Be careful with using it, each MCU or board may have slightly different exact mapping. 
+For details about specific MCU, please check dedicated document. 
+
+\section{Memory Map}
+Yasboot uses MBR layout scheme where it is possible. 
+Yasboot second stage is placed just after MBR block. 
+Size of second stage is highly configurable via: 
+\begin{lstlisting}[language=bash]
+$ make menuconfig
+\end{lstlisting}
+\todo{Add pictures about Yaboot configure options}
+
+\noindent Generic memory layout: 
+
+\begin{tabular}{|c|c|c|}
+  \hline
+  \rowcolor{gray!50} 
+  \memorymap{Section Name}{Section Address}{Section Size} 
+  \rowcolor{yellow!20}
+  \memorymap{MBR}{0x00000000}{0x200}
+  \rowcolor{yellow!20}
+  \memorymap{Yaspem 2-stage}{0x00000200}{0x800...0x8000}
+
+  \rowcolor{green!10}
+  \memorymap{Optional BIOS}{0x00000200 + 2stage size}{0x4000}
+  \rowcolor{blue!5} 
+  \memorymap{1-st partition}{user defined}{user defined}
+  \rowcolor{blue!5} 
+  \memorymap{...}{...}{...}
+  \rowcolor{blue!5} 
+  \memorymap{n-th partition*}{user defined}{user defined}
+\end{tabular}
+
+* where \textbf{n} maximum is 4 according to MBR scheme.
+
+\end{document}

@@ -15,38 +15,23 @@
 #
 # You should have received a copy of the GNU General
 # Public License along with this program. If not, see
-# <https://www.gnu.org/licenses/>.
 #
+# <https://www.gnu.org/licenses/>.
 
+add_library(arm_v6m_common OBJECT)
 
-add_executable(yasboot)
-target_sources(yasboot 
-  PRIVATE 
-    main.cpp
+target_sources(arm_v6m_common
+  PUBLIC 
+    source/vector_table.S
 )
 
-target_link_libraries(yasboot
-  PRIVATE 
-    board
+target_link_options(arm_v6m_common 
+  PUBLIC 
+    -L${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts
 )
 
-# Change this to some function provided by cpu
-add_custom_command(
-  TARGET yasboot 
-  POST_BUILD 
-  COMMAND 
-    ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:yasboot> ${CMAKE_CURRENT_BINARY_DIR}/yasboot.bin
-  VERBATIM
+set_target_properties(arm_v6m_common 
+  PROPERTIES 
+  LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/v6m_linker_script.ld
 )
-
-add_custom_target(flash_image ALL
-  COMMAND 
-    cat ${MBR_IMAGE} ${CMAKE_CURRENT_BINARY_DIR}/yasboot.bin > flash_image.bin
-  DEPENDS 
-    mbr 
-    yasboot 
-  VERBATIM 
-)
-
-add_custom_target (printsize ALL arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/yasboot.elf DEPENDS yasboot)
 

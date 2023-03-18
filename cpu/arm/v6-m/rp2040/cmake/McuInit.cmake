@@ -22,13 +22,13 @@ set (CPU_PACKAGES_TO_FETCH ${CMAKE_CURRENT_LIST_DIR}/packages.json CACHE INTERNA
 set (MCU_INIT_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 macro (preinitialize_cpu)
-  message (STATUS "Preinitialization of RP2040: ${CMAKE_MODULE_PATH}")
   find_package (picosdk REQUIRED)
   include (pico_sdk_init)
 endmacro ()
 
 macro (initialize_cpu)
   pico_sdk_init()
+  add_subdirectory(${MCU_INIT_DIR}/../../common) 
   add_subdirectory(${MCU_INIT_DIR}/..)
 endmacro ()
 

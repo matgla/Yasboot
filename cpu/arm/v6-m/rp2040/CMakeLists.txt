@@ -60,6 +60,7 @@ add_custom_command(
   VERBATIM
 )
 
+
 add_custom_target (second_stage_bootloader_size ALL arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/second_stage_bootloader.elf DEPENDS second_stage_bootloader)
 
 
@@ -67,34 +68,61 @@ add_custom_target (second_stage_bootloader_size ALL arm-none-eabi-size ${CMAKE_C
 
 # add_executable(mbr)
 
-add_executable(mbr_second_part)
+add_executable(mbr)
 
-target_sources(mbr_second_part 
+target_sources(mbr 
   PRIVATE 
     source/test.S    
 )
 
-target_link_options(mbr_second_part
+target_link_libraries(mbr
+  PRIVATE 
+    hardware_regs
+)
+
+target_link_options(mbr
   PRIVATE 
     --specs=nosys.specs -nostartfiles
-    LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr_second_part.ld
+    LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr.ld
 )
 
-set_target_properties(mbr_second_part 
+set_target_properties(mbr 
   PROPERTIES 
-  LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr_second_part.ld
+  LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr.ld
 )
+
+
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/resize.py)
 
 add_custom_command(
-  TARGET mbr_second_part 
+  TARGET mbr 
   POST_BUILD 
   COMMAND 
-    ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:mbr_second_part> ${CMAKE_CURRENT_BINARY_DIR}/mbr_second_part.bin
+    ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:mbr> ${CMAKE_CURRENT_BINARY_DIR}/mbr_second_part.bin
   COMMAND
     cat ${CMAKE_CURRENT_BINARY_DIR}/second_stage_bootloader_with_crc.bin ${CMAKE_CURRENT_BINARY_DIR}/mbr_second_part.bin > mbr.bin
-
+  COMMAND 
+    ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/resize.py 
+    --input ${CMAKE_CURRENT_BINARY_DIR}/mbr.bin --output ${CMAKE_CURRENT_BINARY_DIR}/mbr.bin --size 512
+ 
   DEPENDS 
-    second_stage_bootloader
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/resize.py
   VERBATIM
 )
+
+set (MBR_IMAGE ${CMAKE_CURRENT_BINARY_DIR}/mbr.bin CACHE INTERNAL "")
+
+add_library(rp2040 INTERFACE)
+
+target_link_libraries(rp2040 
+  INTERFACE 
+    arm_v6m_common
+)
+
+target_link_options(rp2040
+  INTERFACE 
+    --specs=nano.specs -nostartfiles
+    LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/yasboot.ld
+)
+
 

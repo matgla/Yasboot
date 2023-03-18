@@ -46,8 +46,7 @@ generate_config(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 if (${configuration_is_ready})
   message (STATUS "Configuration is processed, starting initialization")
   add_subdirectory(cpu)
-
-  message (STATUS "${CMAKE_MODULE_PATH}")
+  
   include(McuInit)
   
   set (packagesToFetch ${CMAKE_CURRENT_SOURCE_DIR}/packages.json)
@@ -64,6 +63,8 @@ if (${configuration_is_ready})
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
   initialize_cpu()
+
+  add_subdirectory(board)
 
   add_subdirectory(source)
 endif ()

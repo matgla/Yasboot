@@ -1,3 +1,8 @@
 build
-.compile_commands.json
-
+compile_commands.json
+*.aux
+*.fdb_latexmk
+*.fls 
+*.log 
+*.synctex.gz
+.cache

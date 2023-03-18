@@ -18,18 +18,63 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
+/* CRT will be moved somewhere */
+#include <cstdint>
+#include <unistd.h>
+extern "C"
+{
+  void _exit(int status)
+  {
+  }
 
-#include <pico/stdlib.h>
+  int _close(int fd)
+  {
+    return 0;
+  }
+
+  off_t _lseek(int fd, off_t offset, int whence)
+  {
+    return 0;
+  }
+
+  ssize_t _read(int fd, void *buf, size_t count)
+  {
+    return 0;
+  }
+
+  ssize_t _write(int fd, const void *buf, size_t count)
+  {
+    return 0;
+  }
+
+  void *_sbrk(intptr_t increment)
+  {
+    return nullptr;
+  }
+
+  extern std::size_t *__bss_start__;
+  extern std::size_t *__bss_end__;
+
+  void system_init()
+  {
+    /* initialize bss */
+    std::size_t *bss_current = __bss_start__;
+    while (bss_current != __bss_end__)
+    {
+      *bss_current = 0;
+      ++bss_current;
+    }
+
+    while (true)
+    {
+    }
+  }
+}
 
 int main()
 {
-    int counter = 0;
-    stdio_init_all();
-    while (true)
-    {
-        printf("Hello World from yasboot: %d\n", ++counter);
-        sleep_ms(1000);
-    }
-    return 0;
+  while (true)
+  {
+  }
+  return 0;
 }

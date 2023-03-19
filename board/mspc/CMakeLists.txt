@@ -25,3 +25,22 @@ target_link_libraries(board
     rp2040
 )
 
+add_library(board_setup INTERFACE)
+
+set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_sources(board_setup 
+  INTERFACE 
+    ${include_dir}/board_setup/xosc.hpp
+)
+
+target_link_libraries(board_setup 
+  INTERFACE 
+    common
+)
+
+target_include_directories(board_setup
+  INTERFACE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+

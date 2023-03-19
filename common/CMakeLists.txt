@@ -18,20 +18,19 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-set (CPU_PACKAGES_TO_FETCH ${CMAKE_CURRENT_LIST_DIR}/packages.json CACHE INTERNAL "" FORCE)
-set (MCU_INIT_DIR ${CMAKE_CURRENT_LIST_DIR})
+add_library(common)
 
-macro (preinitialize_cpu)
-  find_package (picosdk REQUIRED)
-  include (pico_sdk_init)
-endmacro ()
+set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/common)
 
-macro (initialize_cpu)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-  set(CMAKE_CXX_STANDARD 23)
-  pico_sdk_init()
-  add_subdirectory(${MCU_INIT_DIR}/../../common) 
-  add_subdirectory(${MCU_INIT_DIR}/..)
-endmacro ()
+target_sources(common 
+  PUBLIC 
+    ${include_dir}/units.hpp
+  PRIVATE 
+    source/units.cpp
+)
 
+target_include_directories(common 
+  PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 

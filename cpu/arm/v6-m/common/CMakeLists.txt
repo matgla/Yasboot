@@ -20,8 +20,13 @@
 
 add_library(arm_v6m_common OBJECT)
 
+set (include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/arm/v6-m/common)
+
 target_sources(arm_v6m_common
   PUBLIC 
+    ${include_dir}/gcc_arm_init.hpp 
+  PUBLIC 
+    source/gcc_arm_init.cpp
     source/vector_table.S
 )
 
@@ -35,3 +40,9 @@ set_target_properties(arm_v6m_common
   LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/v6m_linker_script.ld
 )
 
+target_include_directories(arm_v6m_common 
+  PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  PRIVATE 
+    ${include_dir}
+)

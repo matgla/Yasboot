@@ -138,7 +138,9 @@ _entry_point:
 _reset_handler:
   // TODO: implement
   ldr r1, =system_init 
-  blx r1 
+  blx r1
+  ldr r1, =main 
+  blx main
   bkpt #0
 
 

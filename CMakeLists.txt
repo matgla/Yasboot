@@ -65,6 +65,7 @@ if (${configuration_is_ready})
   initialize_cpu()
 
   add_subdirectory(board)
-
+  add_subdirectory(common)
+  add_subdirectory(hal)
   add_subdirectory(source)
 endif ()

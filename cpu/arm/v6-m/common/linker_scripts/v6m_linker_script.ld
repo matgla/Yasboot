@@ -94,14 +94,17 @@ SECTIONS
     KEEP(*(.fini_array*))
     PROVIDE_HIDDEN(__fini_array_end = .);
   } > FLASH
-  
+ 
+  __data_start_flash__ = LOADADDR(.data);
   .data : 
   {
     . = ALIGN(4);
+    __data_start__ = .;
     *(vtable)
     *(.ram_function*)
     *(.data) 
     *(.data*)
+    __data_end__ = .;
     . = ALIGN(4);
 
   } > SRAM AT> FLASH 

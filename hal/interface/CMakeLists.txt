@@ -18,20 +18,22 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-set (CPU_PACKAGES_TO_FETCH ${CMAKE_CURRENT_LIST_DIR}/packages.json CACHE INTERNAL "" FORCE)
-set (MCU_INIT_DIR ${CMAKE_CURRENT_LIST_DIR})
+add_library(yasboot_hal_interface INTERFACE)
 
-macro (preinitialize_cpu)
-  find_package (picosdk REQUIRED)
-  include (pico_sdk_init)
-endmacro ()
+set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
 
-macro (initialize_cpu)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-  set(CMAKE_CXX_STANDARD 23)
-  pico_sdk_init()
-  add_subdirectory(${MCU_INIT_DIR}/../../common) 
-  add_subdirectory(${MCU_INIT_DIR}/..)
-endmacro ()
+target_sources(yasboot_hal_interface 
+  INTERFACE 
+    ${include_dir}/uart.hpp
+)
 
+target_compile_options(yasboot_hal_interface 
+  INTERFACE 
+    $<$<COMPILE_LANGUAGE:CXX>:-std=c++23>
+)
+
+target_include_directories(yasboot_hal_interface 
+  INTERFACE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include 
+)
 

@@ -23,8 +23,52 @@
 #include <unistd.h>
 extern "C"
 {
+  void panic(const char *fmt, ...)
+  {
+    while (true)
+    {
+    }
+  }
+
+  void __unhandled_user_irq()
+  {
+    while (true)
+    {
+    }
+  }
+
+  void hard_assertion_failure()
+  {
+    while (true)
+    {
+    }
+  }
+
+  int _kill(pid_t pid, int sig)
+  {
+    return 0;
+  }
+
+  pid_t _getpid(void)
+  {
+    return 0;
+  }
+
+  int _fstat(int filedes, struct stat *buf)
+  {
+    return 0;
+  }
+
+  int _isatty(int fd)
+  {
+    return 0;
+  }
+
   void _exit(int status)
   {
+    while (true)
+    {
+    }
   }
 
   int _close(int fd)
@@ -51,30 +95,23 @@ extern "C"
   {
     return nullptr;
   }
-
-  extern std::size_t *__bss_start__;
-  extern std::size_t *__bss_end__;
-
-  void system_init()
-  {
-    /* initialize bss */
-    std::size_t *bss_current = __bss_start__;
-    while (bss_current != __bss_end__)
-    {
-      *bss_current = 0;
-      ++bss_current;
-    }
-
-    while (true)
-    {
-    }
-  }
 }
+
+// #include <hardware/uart.h>
+#include <hal/uart.hpp>
 
 int main()
 {
+  //  uart_init(uart0, 115200);
+  //  gpio_set_function(0, GPIO_FUNC_UART);
+  //  gpio_set_function(1, GPIO_FUNC_UART);
+  //
+  yasboot::hal::Uart<0> uart(115200);
   while (true)
   {
+    uart.write("Hello from Yasboot\n\r");
+    //    uart_puts(uart0, "Hello from Yasboot, new bootloader is in use");
+    //    sleep_ms(1000);
   }
   return 0;
 }

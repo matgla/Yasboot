@@ -18,5 +18,5 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message (STATUS "Adding Raspberry Pi Pico board")
+message(STATUS "Adding Raspberry Pi Pico board")
 

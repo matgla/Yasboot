@@ -21,29 +21,46 @@
 function (generate_config source_directory output_directory)
   file (MAKE_DIRECTORY ${output_directory}/config)
 
+  find_file(kconfig_generator generate.py ${source_directory}/kconfig)
+
+  if (USE_CONFIG)
+    set (filepath ${source_directory}/configs/${USE_CONFIG}/.config)
+    if (NOT EXISTS ${filepath})
+      message(FATAL_ERROR "Selected configuration ${USE_CONFIG} not exists in ${source_directory}/configs")
+    endif()
+    file (COPY ${filepath} DESTINATION ${output_directory}/config)
+    message(STATUS "Configuration ${filepath} added")
+
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E env
+        srctree=${source_directory}
+        ${kconfig_python_executable} ${kconfig_generator} --input ${output_directory}/config/.config --output ${output_directory}/config --kconfig ${source_directory}/Kconfig
+      WORKING_DIRECTORY ${output_directory}
+    )
+  endif ()
+
   add_custom_target(menuconfig
     COMMAND
       ${CMAKE_COMMAND} -E env srctree=${source_directory}/
       ${kconfig_python_executable} -m menuconfig 
       ${source_directory}/Kconfig 
 
-    WORKING_DIRECTORY ${output_directory}
+    WORKING_DIRECTORY ${output_directory}/config
   )
 
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${output_directory}/.config)
 
-  find_file(kconfig_generator generate.py ${source_directory}/kconfig)
 
   add_custom_command(TARGET menuconfig
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E env
       srctree=${source_directory}
-      ${kconfig_python_executable} ${kconfig_generator} --input ${output_directory}/.config --output ${output_directory}/config --kconfig ${source_directory}/Kconfig
+      ${kconfig_python_executable} ${kconfig_generator} --input ${output_directory}/config/.config --output ${output_directory}/config --kconfig ${source_directory}/Kconfig
     COMMAND cmake ${source_directory}
     WORKING_DIRECTORY ${output_directory}
   )
 
-  if (EXISTS ${output_directory}/.config)
+  if (EXISTS ${output_directory}/config/.config)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${GENERATE_CONFIG})
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${output_directory}/config/config.cmake)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${output_directory}/config/config.json)

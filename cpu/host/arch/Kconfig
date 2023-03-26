@@ -18,12 +18,16 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-config ARM_V6_M 
-bool "ARMv6-M"
-help
-  Enable ARMv6-M CPUs
-imply ARM_FAMILY
+config CPU_ARCHITECTURE_HOST 
+  bool "host"
 
 config CPU_ARCHITECTURE
-  def_string "v6-m"
-  depends on ARM_V6_M
+  def_string "host" if CPU_ARCHITECTURE_HOST 
+  depends on CPU_ARCHITECTURE_HOST 
+
+if CPU_ARCHITECTURE_HOST 
+  choice CHOICE_CPU_FAMILY 
+    default CPU_FAMILY_HOST 
+  endchoice
+endif
+

@@ -1,5 +1,5 @@
 #
-# CMakeLists.txt
+# Kconfig
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -18,26 +18,10 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding hal interface library")
+config CPU_FAMILY_HOST 
+  bool "Stubbed hardware support"
 
-add_library(yasboot_hal_interface INTERFACE)
-
-add_library(yasboot::hal::interface ALIAS yasboot_hal_interface)
-
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
-
-target_sources(yasboot_hal_interface 
-  INTERFACE 
-    ${include_dir}/uart.hpp
-)
-
-target_compile_options(yasboot_hal_interface 
-  INTERFACE 
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++2b>
-)
-
-target_include_directories(yasboot_hal_interface 
-  INTERFACE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-)
+config CPU_FAMILY
+  def_string "host" if CPU_FAMILY_HOST 
+  depends on CPU_FAMILY_HOST 
 

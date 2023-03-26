@@ -1,0 +1,32 @@
+name: Yasboot - System Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  execute_system_tests:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/matgla/yasboot:1.0
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Prepare project
+        shell: bash
+        run: |
+          mkdir build
+      - name: Generate CMake project 
+        shell: bash
+        working-directory: build 
+        run: |
+          cmake .. -DUSE_CONFIG=host -GNinja
+      - name: Execute tests 
+        shell: bash 
+        working-directory: build
+        run:
+          ninja st

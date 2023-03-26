@@ -18,5 +18,17 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding Raspberry Pi Pico board")
+add_library(host_hal)
+
+target_sources(host_hal
+  PRIVATE
+    uart.cpp
+
+)
+
+target_link_libraries(host_hal
+  PUBLIC 
+    yasboot_hal_interface
+)
+
 

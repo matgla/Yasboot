@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+
 #
-# Kconfig
+# sut.py
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -19,5 +20,21 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-config X86_FAMILY
-  bool "X86 processors support"
+from behave import *
+import pexpect
+
+import os
+
+@given('we have yasboot executable')
+def step_impl(context):
+    context.executable = os.environ.get("SUT")
+
+@when('we execute')
+def step_impl(context):
+    if context.executable == None:
+        raise RuntimeError()
+    context.sut = pexpect.spawn(context.executable, timeout=1)
+
+@then('stdout contains')
+def step_impl(context):
+    context.sut.expect(context.text)

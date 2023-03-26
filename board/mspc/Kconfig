@@ -18,9 +18,16 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-config ARM_FAMILY
-  bool "ARM processors support"
+config BOARD_MSPC
+  bool "MSPC"
 
-config CPU_FAMILY 
-  def_string "arm"
+config BOARD 
+  def_string "mspc" if BOARD_MSPC
+  depends on BOARD_MSPC 
+
+if BOARD_MSPC 
+  choice CHOICE_CPU 
+    default CPU_RP2040 
+  endchoice
+endif
 

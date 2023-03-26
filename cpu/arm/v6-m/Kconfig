@@ -1,5 +1,5 @@
 #
-# CMakeLists.txt
+# Kconfig
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -18,26 +18,15 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding hal interface library")
+config CPU_ARCHITECTURE_ARMV6_M 
+  bool "ARMv6-M"
 
-add_library(yasboot_hal_interface INTERFACE)
+config CPU_ARCHITECTURE
+  def_string "v6-m"
+  depends on CPU_ARCHITECTURE_ARMV6_M 
 
-add_library(yasboot::hal::interface ALIAS yasboot_hal_interface)
-
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
-
-target_sources(yasboot_hal_interface 
-  INTERFACE 
-    ${include_dir}/uart.hpp
-)
-
-target_compile_options(yasboot_hal_interface 
-  INTERFACE 
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++2b>
-)
-
-target_include_directories(yasboot_hal_interface 
-  INTERFACE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-)
-
+if CPU_ARCHITECURE_ARMV6_M 
+  choice CHOICE_CPU_FAMILY
+    default CPU_FAMILY_ARM
+  endchoice 
+endif 

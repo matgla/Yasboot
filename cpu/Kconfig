@@ -21,23 +21,23 @@
 
 menu "CPU Configuration"
 
-choice
+choice CHOICE_CPU_FAMILY 
   prompt "CPU family"
 
-  source "$(srctree)/cpu/**/*.kconfig"
+  source "$(srctree)/cpu/**/Kconfig"
 endchoice 
 
-choice 
+choice CHOICE_CPU_ARCHITECTURE
   prompt "CPU architecture"
 
-  source "$(srctree)/cpu/**/**/*.kconfig"
+  source "$(srctree)/cpu/**/**/Kconfig"
 endchoice
 
-choice 
+choice CHOICE_CPU 
   prompt "CPU"
 
-  source "$(srctree)/cpu/**/**/**/*.kconfig"
-endchoice 
+  source "$(srctree)/cpu/**/**/**/Kconfig"
+endchoice
 
 endmenu
 

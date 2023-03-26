@@ -18,26 +18,11 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding hal interface library")
+message(STATUS "Adding host library")
 
-add_library(yasboot_hal_interface INTERFACE)
+add_library(host INTERFACE)
 
-add_library(yasboot::hal::interface ALIAS yasboot_hal_interface)
+add_subdirectory(hal)
 
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
-
-target_sources(yasboot_hal_interface 
-  INTERFACE 
-    ${include_dir}/uart.hpp
-)
-
-target_compile_options(yasboot_hal_interface 
-  INTERFACE 
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++2b>
-)
-
-target_include_directories(yasboot_hal_interface 
-  INTERFACE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-)
+target_link_libraries(host INTERFACE host_hal)
 

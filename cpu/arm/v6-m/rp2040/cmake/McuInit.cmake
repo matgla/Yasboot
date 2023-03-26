@@ -27,8 +27,6 @@ macro (preinitialize_cpu)
 endmacro ()
 
 macro (initialize_cpu)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-  set(CMAKE_CXX_STANDARD 23)
   pico_sdk_init()
   add_subdirectory(${MCU_INIT_DIR}/../../common) 
   add_subdirectory(${MCU_INIT_DIR}/..)

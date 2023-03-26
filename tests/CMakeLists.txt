@@ -1,5 +1,5 @@
 #
-# Kconfig
+# CMakeLists.txt
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -18,11 +18,4 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-config RP2040
-  bool "RP2040"
-  imply ARM_V6_M
-
-config CPU
-  def_string "rp2040"
-  depends on RP2040
-
+add_subdirectory(st)

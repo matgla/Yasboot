@@ -39,7 +39,7 @@
 #
 
 choice 
-  prompt "Board selection: "
+  prompt "Board selection"
   default CUSTOM_BOARD 
 
   config CUSTOM_BOARD 
@@ -47,9 +47,6 @@ choice
   help
     Create board from available components 
 
-  source "$(srctree)/board/**/*.kconfig"
+  source "$(srctree)/board/**/Kconfig"
 endchoice 
-
-config BOARD 
-  string 
 

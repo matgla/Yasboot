@@ -1,5 +1,5 @@
 #
-# Kconfig
+# CMakeLists.txt
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -18,11 +18,14 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-config MSPC
-  bool "MSPC"
-  imply RP2040 
+include(VirtualEnv)
+create_virtualenv(st ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt ${CMAKE_CURRENT_BINARY_DIR}/venvs)
 
-config BOARD 
-  def_string "mspc"
-  depends on MSPC 
+add_custom_target(st
+  COMMAND 
+    ${CMAKE_COMMAND} -E env SUT=$<TARGET_FILE:yasboot>
+    ${st_python_executable} -m behave
+  WORKING_DIRECTORY
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 

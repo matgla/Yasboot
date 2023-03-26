@@ -30,12 +30,10 @@ FetchContent_Declare (
 
 FetchContent_MakeAvailable (yaspem)
 
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${yaspem_SOURCE_DIR}/cmake CACHE INTERNAL "")
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${yaspem_SOURCE_DIR}/cmake CACHE INTERNAL "")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include (yaspem)
-
-#project (Yasboot NONE)
 
 include (cmake/VirtualEnv.cmake)
 create_virtualenv(kconfig ${CMAKE_CURRENT_SOURCE_DIR}/kconfig/requirements.txt ${CMAKE_CURRENT_BINARY_DIR}/venvs)
@@ -68,4 +66,9 @@ if (${configuration_is_ready})
   add_subdirectory(common)
   add_subdirectory(hal)
   add_subdirectory(source)
+
+  if (${BOARD} STREQUAL "host")
+    add_subdirectory(tests)
+  endif ()
 endif ()
+

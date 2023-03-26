@@ -18,11 +18,15 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-config RASPI_PICO
-  bool "Raspberry Pi Pico"
-  select RP2040
-  
-config BOARD 
-  def_string "raspberry_pico"
-  depends on RASPI_PICO
+config CPU_RP2040
+  bool "RP2040"
 
+config CPU 
+  def_string "rp2040" if CPU_RP2040
+  depends on CPU_RP2040
+
+if CPU_RP2040
+  choice CHOICE_CPU_ARCHITECTURE
+    default CPU_ARCHITECTURE_ARMV6_M 
+  endchoice
+endif

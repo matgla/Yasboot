@@ -1,5 +1,5 @@
 #
-# CMakeLists.txt
+# McuInit.cmake
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -18,26 +18,13 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding hal interface library")
+set (MCU_INIT_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-add_library(yasboot_hal_interface INTERFACE)
+function(preinitialize_cpu)
 
-add_library(yasboot::hal::interface ALIAS yasboot_hal_interface)
+endfunction()
 
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
-
-target_sources(yasboot_hal_interface 
-  INTERFACE 
-    ${include_dir}/uart.hpp
-)
-
-target_compile_options(yasboot_hal_interface 
-  INTERFACE 
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++2b>
-)
-
-target_include_directories(yasboot_hal_interface 
-  INTERFACE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-)
+function(initialize_cpu)
+  add_subdirectory(${MCU_INIT_DIR}/../source)
+endfunction()
 

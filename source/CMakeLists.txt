@@ -26,27 +26,28 @@ target_sources(yasboot
 )
 
 target_link_libraries(yasboot
-  PRIVATE 
+  PRIVATE
+    yasboot_hal_interface
     board
 )
 
 # Change this to some function provided by cpu
-add_custom_command(
-  TARGET yasboot 
-  POST_BUILD 
-  COMMAND 
-    ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:yasboot> ${CMAKE_CURRENT_BINARY_DIR}/yasboot.bin
-  VERBATIM
-)
-
-add_custom_target(flash_image ALL
-  COMMAND 
-    cat ${MBR_IMAGE} ${CMAKE_CURRENT_BINARY_DIR}/yasboot.bin > flash_image.bin
-  DEPENDS 
-    mbr 
-    yasboot 
-  VERBATIM 
-)
-
-add_custom_target (printsize ALL arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/yasboot.elf DEPENDS yasboot)
+# add_custom_command(
+#   TARGET yasboot 
+#   POST_BUILD 
+#   COMMAND 
+#     ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:yasboot> ${CMAKE_CURRENT_BINARY_DIR}/yasboot.bin
+#   VERBATIM
+# )
+# 
+# add_custom_target(flash_image ALL
+#   COMMAND 
+#     cat ${MBR_IMAGE} ${CMAKE_CURRENT_BINARY_DIR}/yasboot.bin > flash_image.bin
+#   DEPENDS 
+#     mbr 
+#     yasboot 
+#   VERBATIM 
+# )
+# 
+# add_custom_target (printsize ALL arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/yasboot.elf DEPENDS yasboot)
 

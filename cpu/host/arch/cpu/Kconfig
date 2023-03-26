@@ -1,5 +1,5 @@
 #
-# CMakeLists.txt
+# Kconfig
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -18,26 +18,15 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding hal interface library")
+config CPU_HOST 
+  bool "host cpu"
 
-add_library(yasboot_hal_interface INTERFACE)
+config CPU 
+  def_string "host" if CPU_HOST 
+  depends on CPU_HOST 
 
-add_library(yasboot::hal::interface ALIAS yasboot_hal_interface)
-
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
-
-target_sources(yasboot_hal_interface 
-  INTERFACE 
-    ${include_dir}/uart.hpp
-)
-
-target_compile_options(yasboot_hal_interface 
-  INTERFACE 
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++2b>
-)
-
-target_include_directories(yasboot_hal_interface 
-  INTERFACE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-)
-
+if CPU_HOST 
+  choice CHOICE_CPU_ARCHITECTURE
+    default CPU_ARCHITECTURE_HOST
+  endchoice
+endif 

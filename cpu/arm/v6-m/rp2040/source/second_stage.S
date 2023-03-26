@@ -77,7 +77,6 @@ ssi_register .req r7
 .thumb_func
 second_stage_main:
 pad_config:
-  bkpt #0
   ldr pads_register, =PADS_QSPI_BASE
   ldr r1, =SCLK_PAD_CONFIGURATION_DRIVE_8MA_SLEWFAST 
   str r1, [pads_register, #PADS_QSPI_GPIO_QSPI_SCLK_OFFSET]

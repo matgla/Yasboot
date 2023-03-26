@@ -29,7 +29,6 @@
 .type bootstrap,%function 
 .thumb_func
 bootstrap:
-  bkpt #1
   /* load vector table */ 
   ldr r0, =(XIP_BASE + 0x200)
   ldr r1, =(PPB_BASE + M0PLUS_VTOR_OFFSET)

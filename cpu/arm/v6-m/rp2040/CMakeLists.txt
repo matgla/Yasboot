@@ -113,6 +113,8 @@ set_target_properties(mbr
 
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/resize.py)
 
+add_dependencies(mbr second_stage_bootloader)
+
 add_custom_command(
   TARGET mbr 
   POST_BUILD 
@@ -126,6 +128,7 @@ add_custom_command(
  
   DEPENDS 
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/resize.py
+    second_stage_bootloader
   VERBATIM
 )
 

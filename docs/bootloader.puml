@@ -1,0 +1,15 @@
+@startuml
+
+participant bootrom as "RP2040 Boot ROM"
+participant flash as "SPI FLASH"
+
+participant some_bytes as "Some Bytes"
+participant rp2040 as "RP2040 "
+
+bootrom -> flash: gimmi your first 256 bytes
+flash --> bootrom: no problem bro, please here it is
+bootrom -> some_bytes: hey bytes from flash, go and do your job
+some_bytes -> flash: now you are employee of RP2040
+some_bytes -> rp2040: look, SPI Flash is now represented on the BUS
+
+@enduml

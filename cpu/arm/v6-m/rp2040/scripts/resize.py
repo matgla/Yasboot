@@ -38,8 +38,6 @@ with open(args.input, "rb") as file:
         sys.exit("File is too large")
 
     size_to_append = int(args.size) - len(input)
-    print (size_to_append)
-    print (bytes(size_to_append))
     input_padded = input + bytes(size_to_append)
 
     with open(args.output, "wb") as output:

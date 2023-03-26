@@ -13,7 +13,7 @@ jobs:
       image: ghcr.io/matgla/yasboot:1.0
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - name: Prepare project

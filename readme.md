@@ -33,6 +33,7 @@ make
 # Supported devices 
 ## Boards
 * MSPC [mspc](https://github.com/matgla/mspc)
+* HOST simulated hardware on any device that can be possible to compile and execute
 
 ## MCUs
 * RP2040 

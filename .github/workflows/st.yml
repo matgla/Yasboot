@@ -12,7 +12,7 @@ jobs:
     env:
       SONAR_SERVER_URL: "https://sonarcloud.io"
     container:
-      image: ghcr.io/matgla/yasboot:1.3
+      image: ghcr.io/matgla/yasboot:1.4
       credentials: 
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -34,10 +34,6 @@ jobs:
         working-directory: build 
         run: 
           ninja st
-      - name: Install latest gcovr
-        shell: bash 
-        run: 
-          pip3 install gcovr 
       - name: GCOVR version 
         shell: bash 
         run: 

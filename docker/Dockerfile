@@ -36,7 +36,8 @@ RUN cd /opt && wget https://developer.arm.com/-/media/Files/downloads/gnu/$ARM_N
 RUN cd /opt rm -rf arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi.tar.xz
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get install -y unzip gcovr openjdk-19-jdk
+RUN apt-get install -y unzip openjdk-19-jdk
+RUN pip3 install gcovr
 
 RUN cd /opt \
   && wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip \

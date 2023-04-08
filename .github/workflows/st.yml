@@ -22,6 +22,7 @@ jobs:
           mkdir build 
       - name: Generate CMake project 
         shell: bash 
+        working-directory: build
         run: |
           cmake .. -DUSE_CONFIG=host -GNinja
       - name: Execute tests 

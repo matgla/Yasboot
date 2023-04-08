@@ -3,6 +3,9 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=coverage)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
 
+[![SystemTests](https://github.com/matgla/Yasboot/actions/workflows/st.yml/badge.svg?branch=master)](https://github.com/matgla/Yasboot/actions/workflows/st.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 <p align="center"> <img src="docs/logo_yasboot_small.png" width=50%></p>
 
 # Readme

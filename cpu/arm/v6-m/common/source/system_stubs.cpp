@@ -22,7 +22,7 @@
 
 extern "C"
 {
-  void panic(const char *fmt, ...)
+  void panic(const char *, ...)
   {
     while (true)
     {
@@ -43,7 +43,7 @@ extern "C"
     }
   }
 
-  int _kill(pid_t pid, int sig)
+  int _kill(pid_t, int)
   {
     return 0;
   }
@@ -53,44 +53,44 @@ extern "C"
     return 0;
   }
 
-  int _fstat(int filedes, struct stat *buf)
+  int _fstat(int, struct stat *)
   {
     return 0;
   }
 
-  int _isatty(int fd)
+  int _isatty(int)
   {
     return 0;
   }
 
-  void _exit(int status)
+  void _exit(int)
   {
     while (true)
     {
     }
   }
 
-  int _close(int fd)
+  int _close(int)
   {
     return 0;
   }
 
-  off_t _lseek(int fd, off_t offset, int whence)
+  off_t _lseek(int, off_t, int)
   {
     return 0;
   }
 
-  ssize_t _read(int fd, void *buf, size_t count)
+  ssize_t _read(int, void *, size_t)
   {
     return 0;
   }
 
-  ssize_t _write(int fd, const void *buf, size_t count)
+  ssize_t _write(int, const void *, size_t)
   {
     return 0;
   }
 
-  void *_sbrk(intptr_t increment)
+  void *_sbrk(intptr_t)
   {
     return nullptr;
   }

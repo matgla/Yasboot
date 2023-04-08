@@ -18,9 +18,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-/* CRT will be moved somewhere */
-#include <cstdint>
-
 #include <hal/uart.hpp>
 
 int main()

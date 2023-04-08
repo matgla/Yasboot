@@ -151,7 +151,6 @@ target_compile_options(rp2040
   PUBLIC 
     -ffunction-sections -fdata-sections
     $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics -fno-exceptions>
-    yasboot_public_flags
   PRIVATE 
   $<$<COMPILE_LANGUAGE:CXX>:-Werror -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wmissing-braces>
 )

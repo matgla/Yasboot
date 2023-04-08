@@ -60,6 +60,7 @@ if (${configuration_is_ready})
 
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
+  set (CXX_STANDARD 20)
   initialize_cpu()
 
   add_library(yasboot_public_flags INTERFACE)
@@ -79,18 +80,10 @@ if (${configuration_is_ready})
         coverage_flags
     )
 
-    target_compile_options(yasboot_public_flags INTERFACE 
-      $<$<COMPILE_LANGUAGE:CXX>:-std=c++20>
-    )
-
     target_link_libraries(yasboot_private_flags
       INTERFACE 
         enable_sanitizers 
         coverage_flags
-    )
-
-    target_compile_options(yasboot_private_flags INTERFACE
-      $<$<COMPILE_LANGUAGE:CXX>:-std=c++20>
     )
   endif ()
 

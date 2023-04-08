@@ -31,7 +31,7 @@ target_sources(yasboot_hal_interface
     ${include_dir}/uart.hpp
 )
 
-target_compile_options(yasboot_hal_interface 
+target_link_libraries(yasboot_hal_interface 
   INTERFACE 
     yasboot_public_flags
 )

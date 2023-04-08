@@ -26,9 +26,12 @@ target_sources(host_hal
     uart.cpp
 )
 
+find_package(eul REQUIRED)
+
 target_link_libraries(host_hal
   PUBLIC 
     yasboot_hal_interface
+    eul_utils
 )
 
 

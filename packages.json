@@ -9,6 +9,17 @@
       "options": {
         "is_cmake_library": true
       }
+    },
+    {
+      "link": "https://github.com/matgla/EmbeddedUtilityLibraries.git",
+      "type": "git",
+      "version": "master",
+      "target": "eul",
+      "options": {
+        "cmake_variables": {
+          "DISABLE_TESTS": "ON"
+        }
+      }
     }
   ]
 }

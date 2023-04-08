@@ -24,6 +24,8 @@
 #include <csignal>
 #include <iostream>
 
+#include <eul/utils/unused.hpp>
+
 namespace hal
 {
 
@@ -46,6 +48,8 @@ bool register_signal()
 bool should_exit()
 {
   static bool registered_signal = register_signal();
+  UNUSED(registered_signal);
+
   return signalStatus == SIGINT;
 }
 

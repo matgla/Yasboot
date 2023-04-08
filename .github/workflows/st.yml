@@ -38,6 +38,10 @@ jobs:
         shell: bash 
         run: 
           find . -iname "*gc*"
+      - name: GCOVR version 
+        shell: bash 
+        run: 
+          gcovr --version
       - name: Generate coverage report
         shell: bash 
         run: |

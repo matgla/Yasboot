@@ -62,6 +62,29 @@ if (${configuration_is_ready})
   project(Yasboot ASM C CXX)
   initialize_cpu()
 
+  add_library(yasboot_public_flags INTERFACE)
+  add_library(yasboot_private_flags INTERFACE)
+
+  if (${BOARD} STREQUAL "host")
+    find_package(CMakeUtils)
+    include(sanitizers)
+    add_sanitizers()
+
+    include(coverage)
+    add_coverage()
+    target_link_libraries(yasboot_public_flags 
+      INTERFACE 
+        enable_sanitizers
+        coverage_flags
+    )
+
+    target_link_libraries(yasboot_private_flags
+      INTERFACE 
+        enable_sanitizers 
+        coverage_flags
+    )
+  endif ()
+
   add_subdirectory(board)
   add_subdirectory(common)
   add_subdirectory(hal)

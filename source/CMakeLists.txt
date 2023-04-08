@@ -28,6 +28,7 @@ target_sources(yasboot
 target_link_libraries(yasboot
   PRIVATE
     yasboot_hal_interface
+    yasboot_private_flags
     board
 )
 

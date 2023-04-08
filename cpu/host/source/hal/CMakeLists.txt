@@ -29,6 +29,7 @@ target_sources(host_hal
 target_link_libraries(host_hal
   PUBLIC 
     yasboot_hal_interface
+    yasboot_public_flags
 )
 
 

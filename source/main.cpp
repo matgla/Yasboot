@@ -107,11 +107,19 @@ int main()
   //  gpio_set_function(1, GPIO_FUNC_UART);
   //
   yasboot::hal::Uart<0> uart(115200);
+
+  int i = 0;
+
   while (true)
   {
     uart.write("Hello from Yasboot\n\r");
     //    uart_puts(uart0, "Hello from Yasboot, new bootloader is in use");
     //    sleep_ms(1000);
+
+    if (i++ > 100)
+    {
+      return 0;
+    }
   }
   return 0;
 }

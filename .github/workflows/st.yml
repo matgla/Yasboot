@@ -9,8 +9,10 @@ on:
 jobs:
   execute_system_tests:
     runs-on: ubuntu-latest
+    env:
+      SONAR_SERVER_URL: "https://sonarcloud.io"
     container:
-      image: ghcr.io/matgla/yasboot:1.2
+      image: ghcr.io/matgla/yasboot:1.3
       credentials: 
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -24,10 +26,22 @@ jobs:
         shell: bash 
         working-directory: build
         run: |
-          cmake .. -DUSE_CONFIG=host -GNinja
+          cmake .. -DUSE_CONFIG=host -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=ON -GNinja
       - name: Execute tests 
         shell: bash
         working-directory: build 
         run: 
           ninja st
+      - name: Generate coverage report
+        shell: bash 
+        run: |
+          gcovr --sonarcube coverage_for_sonar.xml
+      - name: Execute SonarScanner
+        shell: bash 
+        env:
+          GITHUB_TOKEN: ${{ secrects.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run:
+          sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.compile-commands="build/compile_commands.json" --define sonar.coverageReportPaths="coverage_for_sonar.xml" --define sonar.cpd.exclusions=**/tests/**,**/docs/** --define sonar.exclusions=**/test/**,**/docs/**
+
 

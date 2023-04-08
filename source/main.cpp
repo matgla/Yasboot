@@ -26,8 +26,6 @@ int main()
 {
   yasboot::hal::Uart<0> uart(115200);
 
-  int i = 0;
-
   while (!hal::should_exit())
   {
     uart.write("Hello from Yasboot\n\r");

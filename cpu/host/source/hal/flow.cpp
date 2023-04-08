@@ -31,17 +31,24 @@ namespace hal
 
 namespace
 {
-volatile std::sig_atomic_t signalStatus;
+volatile static bool should_close = false;
 }
 
 void signal_handler(int signal)
 {
-  signalStatus = signal;
+  switch (signal)
+  {
+  case SIGINT:
+  case SIGHUP:
+  case SIGKILL:
+    should_close = true;
+  }
 }
 
 bool register_signal()
 {
   std::signal(SIGINT, signal_handler);
+  std::signal(SIGHUP, signal_handler);
   return true;
 }
 
@@ -50,7 +57,7 @@ bool should_exit()
   static bool registered_signal = register_signal();
   UNUSED(registered_signal);
 
-  return signalStatus == SIGINT;
+  return should_close;
 }
 
 } // namespace hal

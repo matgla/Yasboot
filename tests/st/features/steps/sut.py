@@ -24,10 +24,13 @@ from behave import *
 import pexpect
 import signal 
 import os
+import time 
 
 def terminate_sut(context):
     context.sut.kill(signal.SIGINT)
+    context.sut.wait()
     context.sut.expect("Yasboot exit")
+    assert context.sut.exitstatus == 0
 
 @given('we have yasboot executable')
 def step_impl(context):
@@ -38,6 +41,10 @@ def step_impl(context):
     if context.executable == None:
         raise RuntimeError()
     context.sut = pexpect.spawn(context.executable, timeout=1)
+    log_directory = os.environ.get("LOG_DIR")
+    if log_directory == None:
+        raise RuntimeError("LOG_DIR not provided")
+    context.sut.logfile = open(log_directory + "/yasboot.log", "wb") 
     context.add_cleanup(terminate_sut, context)
 
 @then('stdout contains')

@@ -23,7 +23,7 @@ create_virtualenv(st ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt ${CMAKE_CURREN
 
 add_custom_target(st
   COMMAND 
-    ${CMAKE_COMMAND} -E env SUT=$<TARGET_FILE:yasboot>
+  ${CMAKE_COMMAND} -E env SUT=$<TARGET_FILE:yasboot> LOG_DIR=${PROJECT_BINARY_DIR}
     ${st_python_executable} -m behave
   WORKING_DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}

@@ -33,7 +33,7 @@ target_sources(yasboot_hal_interface
 
 target_compile_options(yasboot_hal_interface 
   INTERFACE 
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++2b>
+    yasboot_public_flags
 )
 
 target_include_directories(yasboot_hal_interface 

@@ -1,6 +1,7 @@
 FROM ubuntu:latest
 
 ARG CMAKE_VERSION=3.26.1
+ARG ARM_NONE_EABI_TOOLCHAIN=12.2.mpacbti-rel1
 
 RUN apt-get update && apt-get install -y wget software-properties-common
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -20,6 +21,15 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmak
 
 RUN apt-get install -y clang-15 clang-tidy-15
 RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 150 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-15 --slave /usr/bin/clang-tidy clang-tidy-15 /usr/bin/clang-tidy-15 --slave /usr/bin/run-clang-tidy run-clang-tidy-15 /usr/bin/run-clang-tidy-15 
+RUN cd /opt && wget https://developer.arm.com/-/media/Files/downloads/gnu/$ARM_NONE_EABI_TOOLCHAIN/binrel/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi.tar.xz \
+  && tar -xvf arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi.tar.xz \
+  && update-alternatives --install /usr/bin/arm-none-eabi-gcc arm-none-eabi-gcc /opt/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi/bin/arm-none-eabi-gcc 120 \
+  && update-alternatives --install /usr/bin/arm-none-eabi-g++ arm-none-eabi-g++ /opt/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi/bin/arm-none-eabi-g++ 120 \
+  && update-alternatives --install /usr/bin/arm-none-eabi-gdb arm-none-eabi-gdb /opt/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb 120 \
+  && update-alternatives --install /usr/bin/arm-none-eabi-size arm-none-eabi-size /opt/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi/bin/arm-none-eabi-size 120 \
+  && update-alternatives --install /usr/bin/arm-none-eabi-objcopy arm-none-eabi-objcopy /opt/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi/bin/arm-none-eabi-objcopy 120 \
+  && update-alternatives --install /usr/bin/arm-none-eabi-objdump arm-none-eabi-objdump /opt/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi/bin/arm-none-eabi-objdump 120 \
+  && update-alternatives --install /usr/bin/arm-none-eabi-ranlib arm-none-eabi-ranlib /opt/arm-gnu-toolchain-$ARM_NONE_EABI_TOOLCHAIN-x86_64-arm-none-eabi/bin/arm-none-eabi-ranlib 120
 
 RUN apt-get clean
 

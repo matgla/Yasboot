@@ -1,4 +1,4 @@
-name: Yasboot - System Tests
+name: Yasboot - Target 
 
 on:
   push:
@@ -14,6 +14,9 @@ jobs:
       credentials: 
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        config: [mspc]
     steps:
       - uses: actions/checkout@v2 
       - name: Prepare Yasboot project 
@@ -24,10 +27,10 @@ jobs:
         shell: bash 
         working-directory: build
         run: |
-          cmake .. -DUSE_CONFIG=host -GNinja
-      - name: Execute tests 
+          cmake .. -DUSE_CONFIG=${{ matrix.config }} -GNinja
+      - name: Compile 
         shell: bash
         working-directory: build 
         run: 
-          ninja st
+          ninja 
 

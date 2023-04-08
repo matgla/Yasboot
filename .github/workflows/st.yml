@@ -39,7 +39,7 @@ jobs:
       - name: Generate coverage report
         shell: bash 
         run: |
-          gcovr --sonarqube coverage_for_sonar.xml
+          gcovr --verbose --sonarqube coverage_for_sonar.xml
       - name: Execute SonarScanner
         shell: bash 
         env:

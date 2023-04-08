@@ -42,6 +42,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run:
-          sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.compile-commands="build/compile_commands.json" --define sonar.coverageReportPaths="coverage_for_sonar.xml" --define sonar.cpd.exclusions=**/tests/**,**/docs/** --define sonar.exclusions=**/test/**,**/docs/**
+          sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.compile-commands="build/compile_commands.json" --define sonar.coverageReportPaths="coverage_for_sonar.xml" --define sonar.cpd.exclusions=**/tests/**,**/docs/**,**.py --define sonar.exclusions=**/test/**,**/docs/**,**.py
 
 

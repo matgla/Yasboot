@@ -2,8 +2,6 @@
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=coverage)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
-
 
 <p align="center"> <img src="docs/logo_yasboot_small.png" width=50%></p>
 

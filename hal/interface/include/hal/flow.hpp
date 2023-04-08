@@ -1,5 +1,5 @@
 /**
- * main.cpp
+ * flow.hpp
  *
  * Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
  *
@@ -18,20 +18,11 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <hal/uart.hpp>
+#pragma once
 
-#include <hal/flow.hpp>
-
-int main()
+namespace hal
 {
-  yasboot::hal::Uart<0> uart(115200);
 
-  int i = 0;
+bool should_exit();
 
-  while (!hal::should_exit())
-  {
-    uart.write("Hello from Yasboot\n\r");
-  }
-  uart.write("Yasboot exit\n\r");
-  return 0;
-}
+} // namespace hal

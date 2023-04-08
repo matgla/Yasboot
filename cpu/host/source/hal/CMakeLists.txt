@@ -22,8 +22,8 @@ add_library(host_hal)
 
 target_sources(host_hal
   PRIVATE
+    flow.cpp
     uart.cpp
-
 )
 
 target_link_libraries(host_hal

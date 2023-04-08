@@ -22,8 +22,12 @@
 
 from behave import *
 import pexpect
-
+import signal 
 import os
+
+def terminate_sut(context):
+    context.sut.kill(signal.SIGINT)
+    context.sut.expect("Yasboot exit")
 
 @given('we have yasboot executable')
 def step_impl(context):
@@ -34,7 +38,9 @@ def step_impl(context):
     if context.executable == None:
         raise RuntimeError()
     context.sut = pexpect.spawn(context.executable, timeout=1)
+    context.add_cleanup(terminate_sut, context)
 
 @then('stdout contains')
 def step_impl(context):
     context.sut.expect(context.text)
+

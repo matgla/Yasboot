@@ -18,17 +18,24 @@
 #
 # <https://www.gnu.org/licenses/>.
 
-add_library(arm_v6m_common OBJECT)
+add_library(arm_v6m_common STATIC)
 
 set (include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/arm/v6-m/common)
 
 target_sources(arm_v6m_common
   PUBLIC 
     ${include_dir}/gcc_arm_init.hpp 
-  PUBLIC 
-    source/gcc_arm_init.cpp
-    source/system_stubs.cpp
+
     source/vector_table.S
+    source/gcc_arm_init.cpp
+  PRIVATE 
+    source/system_stubs.cpp
+    source/hal/flow.cpp
+)
+
+target_link_libraries(arm_v6m_common
+  PRIVATE 
+    yasboot_hal_interface
 )
 
 target_link_options(arm_v6m_common 

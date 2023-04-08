@@ -28,6 +28,7 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
 
 target_sources(yasboot_hal_interface 
   INTERFACE 
+    ${include_dir}/flow.hpp
     ${include_dir}/uart.hpp
 )
 

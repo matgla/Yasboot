@@ -1,5 +1,5 @@
 /**
- * main.cpp
+ * flow.cpp
  *
  * Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
  *
@@ -18,20 +18,35 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <hal/uart.hpp>
-
 #include <hal/flow.hpp>
 
-int main()
+#include <atomic>
+#include <csignal>
+#include <iostream>
+
+namespace hal
 {
-  yasboot::hal::Uart<0> uart(115200);
 
-  int i = 0;
-
-  while (!hal::should_exit())
-  {
-    uart.write("Hello from Yasboot\n\r");
-  }
-  uart.write("Yasboot exit\n\r");
-  return 0;
+namespace
+{
+volatile std::sig_atomic_t signalStatus;
 }
+
+void signal_handler(int signal)
+{
+  signalStatus = signal;
+}
+
+bool register_signal()
+{
+  std::signal(SIGINT, signal_handler);
+  return true;
+}
+
+bool should_exit()
+{
+  static bool registered_signal = register_signal();
+  return signalStatus == SIGINT;
+}
+
+} // namespace hal

@@ -25,7 +25,7 @@
 namespace yasboot::hal
 {
 
-template <int uart_id> Uart<uart_id>::Uart(uint32_t baudrate)
+template <int uart_id> Uart<uart_id>::Uart(uint32_t)
 {
 }
 

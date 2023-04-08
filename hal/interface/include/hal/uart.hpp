@@ -35,7 +35,7 @@ enum class Parity
 template <int uart_id> class Uart
 {
 public:
-  Uart(uint32_t baudrate);
+  explicit Uart(uint32_t baudrate);
 
   void set_baudrate(uint32_t baudrate);
 

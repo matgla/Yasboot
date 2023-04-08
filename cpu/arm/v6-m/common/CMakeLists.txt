@@ -27,6 +27,7 @@ target_sources(arm_v6m_common
     ${include_dir}/gcc_arm_init.hpp 
   PUBLIC 
     source/gcc_arm_init.cpp
+    source/system_stubs.cpp
     source/vector_table.S
 )
 

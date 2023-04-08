@@ -72,16 +72,25 @@ if (${configuration_is_ready})
 
     include(coverage)
     add_coverage()
+
     target_link_libraries(yasboot_public_flags 
       INTERFACE 
         enable_sanitizers
         coverage_flags
     )
 
+    target_compile_options(yasboot_public_flags INTERFACE 
+      $<$<COMPILE_LANGUAGE:CXX>:-std=c++20>
+    )
+
     target_link_libraries(yasboot_private_flags
       INTERFACE 
         enable_sanitizers 
         coverage_flags
+    )
+
+    target_compile_options(yasboot_private_flags INTERFACE
+      $<$<COMPILE_LANGUAGE:CXX>:-std=c++20>
     )
   endif ()
 

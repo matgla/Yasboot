@@ -36,7 +36,7 @@ jobs:
           ninja st
       - name: Generate coverage report
         shell: bash 
-        run: 
+        run: |
           gcovr --verbose --sonarqube coverage_for_sonar.xml
       - name: Execute SonarScanner
         shell: bash 

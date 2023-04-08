@@ -32,6 +32,10 @@ jobs:
         working-directory: build 
         run: 
           ninja st
+      - name: Do we have coverage?
+        shell: bash 
+        run: 
+          find . -iname "*gc*"
       - name: Generate coverage report
         shell: bash 
         run: |
@@ -42,6 +46,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run:
-          sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.compile-commands="build/compile_commands.json" --define sonar.coverageReportPaths="coverage_for_sonar.xml" --define sonar.cpd.exclusions=**/tests/**,**/docs/**,**.py --define sonar.exclusions=**/test/**,**/docs/**,**.py
+           sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.compile-commands="build/compile_commands.json" --define sonar.coverageReportPaths="coverage_for_sonar.xml" --define sonar.cpd.exclusions=**/tests/**,**/docs/**,**.py --define sonar.exclusions=**/test/**,**/docs/**,**.py
 
 

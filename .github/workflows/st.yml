@@ -28,7 +28,7 @@ jobs:
         shell: bash 
         working-directory: build
         run: |
-          cmake .. -DUSE_CONFIG=host -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=ON -GNinja
+          cmake .. -DUSE_CONFIG=host -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -GNinja
       - name: Execute tests 
         shell: bash
         working-directory: build 

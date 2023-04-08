@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  execute_system_tests:
+  build_for_target:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/matgla/yasboot:1.2

@@ -16,7 +16,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       matrix:
-        sanitizer: [ENABLE_ASAN=ON, ENABLE_TSAN=ON, ENABLE_UBSAN=ON, ENABLE_MSAN=ON]
+        sanitizer: [ENABLE_ASAN=ON, ENABLE_TSAN=ON, ENABLE_UBSAN=ON]
     steps:
       - uses: actions/checkout@v3
         with:

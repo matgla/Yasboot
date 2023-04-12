@@ -38,6 +38,10 @@ jobs:
         shell: bash 
         run: |
           gcovr --verbose --sonarqube coverage_for_sonar.xml
+      - name: Execute clang-tidy
+        shell: bash
+        run: |
+          make run_clang_tidy_for_sonar
       - name: Execute SonarScanner
         shell: bash 
         env:

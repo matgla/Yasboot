@@ -25,7 +25,7 @@ include (FetchContent)
 FetchContent_Declare (
   yaspem
   GIT_REPOSITORY https://github.com/matgla/Yaspem.git
-  GIT_TAG master 
+  GIT_TAG v1.2 
 )
 
 FetchContent_MakeAvailable (yaspem)
@@ -35,7 +35,14 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include (yaspem)
 
-include (cmake/VirtualEnv.cmake)
+setup_yaspem (
+    YASPEM_SOURCE ${yaspem_SOURCE_DIR} 
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/packages
+    PACKAGE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/preconfigure_packages.json 
+  )
+
+find_package (CMakeUtils REQUIRED)
+include (virtualenv)
 create_virtualenv(kconfig ${CMAKE_CURRENT_SOURCE_DIR}/kconfig/requirements.txt ${CMAKE_CURRENT_BINARY_DIR}/venvs)
 
 include (kconfig/GenerateConfig.cmake)
@@ -44,7 +51,7 @@ generate_config(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 if (${configuration_is_ready})
   message (STATUS "Configuration is processed, starting initialization")
   add_subdirectory(cpu)
-  
+ 
   include(McuInit)
   
   set (packagesToFetch ${CMAKE_CURRENT_SOURCE_DIR}/packages.json)
@@ -66,8 +73,10 @@ if (${configuration_is_ready})
   add_library(yasboot_public_flags INTERFACE)
   add_library(yasboot_private_flags INTERFACE)
 
+  include(clang_tidy)
+  add_clang_tidy(".*packages/.*")
+
   if (${BOARD} STREQUAL "host")
-    find_package(CMakeUtils)
     include(sanitizers)
     add_sanitizers()
 

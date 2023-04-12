@@ -18,7 +18,7 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-include(VirtualEnv)
+include(virtualenv)
 create_virtualenv(st ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt ${CMAKE_CURRENT_BINARY_DIR}/venvs)
 
 add_custom_target(st

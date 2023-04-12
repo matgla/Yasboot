@@ -36,9 +36,9 @@ jobs:
           ninja st
       - name: Execute clang-tidy
         shell: bash
-        run: |
-          make run_clang_tidy_for_sonar
         working-directory: build
+        run: |
+          ninja run_clang_tidy_for_sonar
  
       - name: Generate coverage report
         shell: bash 

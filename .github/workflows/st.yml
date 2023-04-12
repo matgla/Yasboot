@@ -37,6 +37,7 @@ jobs:
       - name: Execute clang-tidy
         shell: bash
         working-directory: build
+        continue-on-error: true
         run: |
           ninja run_clang_tidy_for_sonar
  

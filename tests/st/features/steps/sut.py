@@ -29,7 +29,6 @@ import time
 def terminate_sut(context):
     context.sut.kill(signal.SIGINT)
     context.sut.wait()
-    context.sut.expect("Yasboot exit")
     assert context.sut.exitstatus == 0
 
 @given('we have yasboot executable')

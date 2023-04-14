@@ -40,6 +40,19 @@ make menuconfig (select configuration of your board)
 make 
 ```
 
+For tests you can also use predefined configs:
+
+```shell
+git clone https://github.com/matgla/Yasboot.git
+cd Yasboot 
+mkdir build 
+cmake .. -DUSE_CONFIG=host
+make st
+```
+
+All predefined configurations are placed inside '<project_root>/configs'. 
+Configuration name is just a directory name, like: host, mspc, etc...
+
 # Supported devices 
 ## Boards
 * MSPC [mspc](https://github.com/matgla/mspc)

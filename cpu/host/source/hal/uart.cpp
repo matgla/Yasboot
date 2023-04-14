@@ -22,10 +22,12 @@
 
 #include <iostream>
 
+#include <eul/utils/unused.hpp>
+
 namespace yasboot::hal
 {
 
-template <int uart_id> Uart<uart_id>::Uart(uint32_t)
+template <int uart_id> Uart<uart_id>::Uart(uint32_t baudrate)
 {
 }
 

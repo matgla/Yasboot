@@ -29,11 +29,8 @@
 namespace hal
 {
 
-namespace
-{
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 volatile static bool should_close = false;
-}
-
 void signal_handler(int signal)
 {
   switch (signal)
@@ -42,19 +39,21 @@ void signal_handler(int signal)
   case SIGHUP:
   case SIGKILL:
     should_close = true;
+  default:
+    break;
   }
 }
 
 bool register_signal()
 {
-  std::signal(SIGINT, signal_handler);
-  std::signal(SIGHUP, signal_handler);
+  std::signal(SIGINT, signal_handler); // NOLINT(cert-err33-c)
+  std::signal(SIGHUP, signal_handler); // NOLINT(cert-err33-c)
   return true;
 }
 
 bool should_exit()
 {
-  static bool registered_signal = register_signal();
+  static const bool registered_signal = register_signal();
   UNUSED(registered_signal);
 
   return should_close;

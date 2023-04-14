@@ -1,0 +1,36 @@
+name: Yasboot - ClangTidy 
+
+on:
+  push:
+    branches: [main]
+  pull_request: 
+    branches: [main]
+
+jobs:
+  execute_system_tests:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/matgla/yasboot:1.4
+      credentials: 
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Prepare Yasboot project 
+        shell: bash 
+        run: |
+          mkdir build 
+      - name: Generate CMake project 
+        shell: bash 
+        working-directory: build
+        run: |
+          cmake .. -DUSE_CONFIG=host -DCMAKE_BUILD_TYPE=Debug -GNinja
+      - name: Execute clang-tidy
+        shell: bash
+        working-directory: build
+        run: |
+          ninja run_clang_tidy
+
+

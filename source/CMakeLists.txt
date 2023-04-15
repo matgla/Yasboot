@@ -18,8 +18,10 @@
 # <https://www.gnu.org/licenses/>.
 #
 
+add_subdirectory(mbr)
 
 add_executable(yasboot)
+
 target_sources(yasboot 
   PRIVATE 
     main.cpp

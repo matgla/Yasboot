@@ -1,5 +1,5 @@
 /**
- * main.cpp
+ * disk.hpp
  *
  * Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
  *
@@ -18,26 +18,15 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <hal/uart.hpp>
+#include <cstdint>
 
-#include <hal/flow.hpp>
-
-#include 
-
-int main()
+namespace yasboot::hal
 {
-  yasboot::hal::Uart<0> uart(115200);
+  
+class Disk
+{
+public:
+  void read_sector(uint32_t sector_number, void *buffer); 
+};
 
-  // load MBR partition header
-  // verify magic signature
-  // search bootable partition 
-  // second stage bootloader is put in 32K block after MBR and represented as non bootable partition,
-  // that partition doesn't contain any filesystem, it's just a row of bytes
-  // second stage may contain dynamic loader to load to RAM in future
-
-  while (!hal::should_exit())
-  {
-  }
-  uart.write("Yasboot exit\n\r");
-  return 0;
-}
+} // namespace yasboot::hal

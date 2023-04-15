@@ -6,3 +6,4 @@ compile_commands.json
 *.log 
 *.synctex.gz
 .cache
+.vscode

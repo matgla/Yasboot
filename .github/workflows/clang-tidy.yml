@@ -26,7 +26,7 @@ jobs:
         shell: bash 
         working-directory: build
         run: |
-          cmake .. -DUSE_CONFIG=host -DCMAKE_BUILD_TYPE=Debug -GNinja
+          cmake .. -DUSE_CONFIG=host -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLANG_TIDY=ON -GNinja
       - name: Execute clang-tidy
         shell: bash
         working-directory: build

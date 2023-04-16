@@ -52,8 +52,8 @@ public:
   const MbrHeader &mbr() const;
 
 private:
-  MbrHeader mbr_;
   const hal::Disk &disk_;
+  MbrHeader mbr_;
 };
 
 } // namespace yasboot

@@ -23,7 +23,7 @@
 namespace yasboot
 {
 
-MbrParser::MbrParser(const hal::Disk &disk) : disk_(disk), mbr_()
+MbrParser::MbrParser(const hal::Disk &disk) : disk_{disk}, mbr_{}
 {
   disk_.read_sector(0, &mbr_);
 }

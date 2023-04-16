@@ -51,6 +51,10 @@ public:
   bool isValidMbr() const;
   const MbrHeader &mbr() const;
 
+  // Searching for bootable partition
+  // returns first if there are more than one
+  const MbrPartitionEntry *getBootablePartition() const;
+
 private:
   const hal::Disk &disk_;
   MbrHeader mbr_;

@@ -60,10 +60,21 @@ int main()
     uart.write(") MBR\r\n");
   }
 
+  const auto *bootablePartition = mbr.getBootablePartition();
+  if (bootablePartition != nullptr)
+  {
+    std::array<char, 9> buf{};
+    eul::utils::itoa<16>(bootablePartition->lba_start * 512,
+                         std::span<char>(buf.data(), buf.size()));
+    uart.write("Found bootable partition at address: 0x");
+    const std::string_view str(buf.data());
+    uart.write(str);
+    uart.write("\r\n");
+  }
+
   while (!hal::should_exit())
   {
   }
 
-  uart.write("Yasboot exit\n\r");
   return 0;
 }

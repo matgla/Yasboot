@@ -24,3 +24,14 @@ Feature: Process MBR inside image
       """
       Drive 0 contains invalid \(0x12ef\) MBR
       """
+
+    Scenario: Get bootable partition 
+      Given we have yasboot executable 
+      When we execute with 
+        """
+        DISK=data/mbr_with_partition_at_0x4000.img
+        """
+      Then stdout contains 
+        """
+        Found bootable partition at address: 0x4000 
+        """

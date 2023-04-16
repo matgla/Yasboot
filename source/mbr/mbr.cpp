@@ -38,4 +38,16 @@ const MbrHeader &MbrParser::mbr() const
   return mbr_;
 }
 
+const MbrPartitionEntry *MbrParser::getBootablePartition() const
+{
+  for (const auto &partition : mbr_.partitions)
+  {
+    if (partition.status & uint8_t(0x80))
+    {
+      return &partition;
+    }
+  }
+  return nullptr;
+}
+
 } // namespace yasboot

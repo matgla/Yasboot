@@ -28,28 +28,6 @@
 
 #include <eul/utils/string.hpp>
 
-template <typename UartType> void dump_memory(const uint8_t *data, std::size_t size, UartType &uart)
-{
-  for (std::size_t offset = 0; offset < size; ++offset)
-  {
-    std::array<char, 3> buf{};
-    if (offset % 16 == 0)
-    {
-      uart.write("\r\n");
-    }
-    eul::utils::itoa<16>(*(data + offset), buf); // NOLINT
-    if (eul::utils::strlen(std::span<char>(buf.data(), buf.size())) == 1)
-    {
-      buf[1] = '0';
-      buf[2] = 0;
-    }
-    uart.write("0x");
-    uart.write(std::string_view(buf.data(), buf.size()));
-    uart.write(", ");
-  }
-  uart.write("\r\n");
-}
-
 int main()
 {
   yasboot::hal::Uart<0> uart(115200);
@@ -77,10 +55,9 @@ int main()
     std::array<char, 5> buf{};
     eul::utils::itoa<16>(header.signature, std::span<char>(buf.data(), buf.size()));
     uart.write("invalid (0x");
-    uart.write(std::string_view(buf.data(), buf.size()));
+    std::string_view str(buf.data());
+    uart.write(str);
     uart.write(") MBR\r\n");
-
-    dump_memory(reinterpret_cast<const uint8_t *>(&header), 512, uart); // NOLINT
   }
 
   while (!hal::should_exit())

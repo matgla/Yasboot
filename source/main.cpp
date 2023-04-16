@@ -55,7 +55,7 @@ int main()
     std::array<char, 5> buf{};
     eul::utils::itoa<16>(header.signature, std::span<char>(buf.data(), buf.size()));
     uart.write("invalid (0x");
-    std::string_view str(buf.data());
+    const std::string_view str(buf.data());
     uart.write(str);
     uart.write(") MBR\r\n");
   }

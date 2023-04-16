@@ -35,10 +35,12 @@ def terminate_sut(context):
 def step_impl(context):
     context.executable = os.environ.get("SUT")
 
-@when('we execute')
+@when('we execute with')
 def step_impl(context):
     if context.executable == None:
         raise RuntimeError()
+    disk_data = context.text.split("=") 
+    os.environ[disk_data[0]] = disk_data[1]
     context.sut = pexpect.spawn(context.executable, timeout=1)
     log_directory = os.environ.get("LOG_DIR")
     if log_directory == None:
@@ -48,5 +50,5 @@ def step_impl(context):
 
 @then('stdout contains')
 def step_impl(context):
-    context.sut.expect(context.text)
+    context.sut.expect(context.text.strip())
 

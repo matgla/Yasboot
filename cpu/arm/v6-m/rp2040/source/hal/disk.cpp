@@ -29,7 +29,7 @@ namespace yasboot::hal
 
 /* This implementation is valid only for drive 0 (main memory) */
 
-void Disk::read_sector(uint32_t sector_number, void *buffer) const
+void Disk::read_sector(uint32_t sector_number, void *buffer) const // NOLINT
 {
   constexpr std::size_t sector_size = 512;
   std::memcpy(buffer, reinterpret_cast<void *>(XIP_BASE + sector_number * sector_size),

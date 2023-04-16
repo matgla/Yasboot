@@ -32,16 +32,16 @@ template <typename UartType> void dump_memory(const uint8_t *data, std::size_t s
 {
   for (std::size_t offset = 0; offset < size; ++offset)
   {
-    std::array<char, 3> buf;
+    std::array<char, 3> buf{};
     if (offset % 16 == 0)
     {
       uart.write("\r\n");
     }
-    eul::utils::itoa<16>(*(data + offset), buf);
+    eul::utils::itoa<16>(*(data + offset), buf); // NOLINT
     if (eul::utils::strlen(std::span<char>(buf.data(), buf.size())) == 1)
     {
-      buf[2] = '0';
-      buf[3] = 0;
+      buf[1] = '0';
+      buf[2] = 0;
     }
     uart.write("0x");
     uart.write(std::string_view(buf.data(), buf.size()));
@@ -61,8 +61,8 @@ int main()
   // partition, that partition doesn't contain any filesystem, it's just a row of bytes second stage
   // may contain dynamic loader to load to RAM in future
 
-  yasboot::hal::Disk disk;
-  yasboot::MbrParser mbr(disk);
+  const yasboot::hal::Disk disk;
+  const yasboot::MbrParser mbr(disk);
 
   uart.write("Parsing MBR of primary drive\n\r");
   uart.write("Drive 0 contains ");
@@ -74,13 +74,13 @@ int main()
   else
   {
     const auto &header = mbr.mbr();
-    char buf[5];
-    eul::utils::itoa<16>(header.signature, buf);
+    std::array<char, 5> buf{};
+    eul::utils::itoa<16>(header.signature, std::span<char>(buf.data(), buf.size()));
     uart.write("invalid (0x");
-    uart.write(buf);
+    uart.write(std::string_view(buf.data(), buf.size()));
     uart.write(") MBR\r\n");
 
-    dump_memory(reinterpret_cast<const uint8_t *>(&header), 512, uart);
+    dump_memory(reinterpret_cast<const uint8_t *>(&header), 512, uart); // NOLINT
   }
 
   while (!hal::should_exit())

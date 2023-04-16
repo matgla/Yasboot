@@ -39,7 +39,7 @@ bool initialize_disk()
 {
   if (const char *env_p = std::getenv("DISK"))
   {
-    std::filesystem::path disk_path(env_p);
+    const std::filesystem::path disk_path(env_p);
     if (std::filesystem::exists(disk_path))
     {
       std::ifstream file(disk_path, std::ios::binary);
@@ -56,7 +56,7 @@ bool initialize_disk()
 
 } // namespace
 
-void Disk::read_sector(uint32_t sector_number, void *buffer) const
+void Disk::read_sector(uint32_t sector_number, void *buffer) const // NOLINT
 {
   static const bool readed = initialize_disk();
   if (!readed)

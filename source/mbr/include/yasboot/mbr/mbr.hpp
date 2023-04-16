@@ -17,6 +17,7 @@
  * Public License along with this program. If not, see
  * <https://www.gnu.org/licenses/>.
  */
+#pragma once
 
 #include <cstdint>
 
@@ -25,7 +26,7 @@
 namespace yasboot
 {
 
-struct MbrPartitionEntry
+struct __attribute__((packed)) MbrPartitionEntry
 {
   uint8_t status;
   uint8_t chs_start[3];
@@ -35,8 +36,9 @@ struct MbrPartitionEntry
   uint32_t number_of_sectors;
 };
 
-struct MbrHeader
+struct __attribute__((packed)) MbrHeader
 {
+  uint8_t bootloader[446];
   MbrPartitionEntry partitions[4];
   uint16_t signature;
 };
@@ -44,10 +46,14 @@ struct MbrHeader
 class MbrParser
 {
 public:
-  MbrParser(const hal::Disk& disk);
+  explicit MbrParser(const hal::Disk &disk);
 
+  bool isValidMbr() const;
+  const MbrHeader &mbr() const;
 
-  hal::Disk& disk;
+private:
+  MbrHeader mbr_;
+  const hal::Disk &disk_;
 };
 
 } // namespace yasboot

@@ -105,7 +105,7 @@ add_custom_command(
     cat ${CMAKE_CURRENT_BINARY_DIR}/second_stage_bootloader_with_crc.bin ${CMAKE_CURRENT_BINARY_DIR}/mbr_second_part.bin > mbr.bin
   COMMAND 
     ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/resize.py 
-    --input ${CMAKE_CURRENT_BINARY_DIR}/mbr.bin --output ${CMAKE_CURRENT_BINARY_DIR}/mbr.bin --size 512
+    --input ${CMAKE_CURRENT_BINARY_DIR}/mbr.bin --output ${PROJECT_BINARY_DIR}/boot.bin --size 446
  
   DEPENDS 
     ${CMAKE_CURRENT_SOURCE_DIR}/scripts/resize.py
@@ -126,6 +126,7 @@ target_sources(rp2040
   PRIVATE
     source/configure_mcu.cpp 
     source/configure_clocks.cpp
+    source/hal/disk.cpp
     source/hal/uart.cpp
 )
 

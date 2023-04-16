@@ -26,10 +26,10 @@ target_sources(arm_v6m_common
   PUBLIC 
     ${include_dir}/gcc_arm_init.hpp 
 
+    source/system_stubs.cpp
     source/vector_table.S
     source/gcc_arm_init.cpp
   PRIVATE 
-    source/system_stubs.cpp
     source/hal/flow.cpp
 )
 

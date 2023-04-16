@@ -1,5 +1,5 @@
 /**
- * disk.hpp
+ * disk.cpp
  *
  * Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
  *
@@ -18,17 +18,22 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "hal/disk.hpp"
 
-#include <cstdint>
+#include <cstring>
+
+#include <hardware/regs/addressmap.h>
 
 namespace yasboot::hal
 {
 
-class Disk
+/* This implementation is valid only for drive 0 (main memory) */
+
+void Disk::read_sector(uint32_t sector_number, void *buffer) const
 {
-public:
-  void read_sector(uint32_t sector_number, void *buffer) const;
-};
+  constexpr std::size_t sector_size = 512;
+  std::memcpy(buffer, reinterpret_cast<void *>(XIP_BASE + sector_number * sector_size),
+              sector_size);
+}
 
 } // namespace yasboot::hal

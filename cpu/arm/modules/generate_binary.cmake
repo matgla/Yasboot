@@ -1,5 +1,5 @@
 #
-# CMakeLists.txt
+# generate_binary.cmake
 #
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
@@ -18,28 +18,14 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding hal interface library")
+function (generate_binary name)
+  add_custom_command(
+    TARGET ${name} 
+    POST_BUILD 
+    COMMAND 
+      ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${name}> ${PROJECT_BINARY_DIR}/${name}.bin
+    VERBATIM
+  )
 
-add_library(yasboot_hal_interface INTERFACE)
-
-add_library(yasboot::hal::interface ALIAS yasboot_hal_interface)
-
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
-
-target_sources(yasboot_hal_interface 
-  INTERFACE 
-    ${include_dir}/disk.hpp
-    ${include_dir}/flow.hpp
-    ${include_dir}/uart.hpp
-)
-
-target_link_libraries(yasboot_hal_interface 
-  INTERFACE 
-    yasboot_public_flags
-)
-
-target_include_directories(yasboot_hal_interface 
-  INTERFACE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-)
-
+  add_custom_target (printsize ALL arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/${name}.elf DEPENDS ${name})
+endfunction()

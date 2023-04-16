@@ -25,4 +25,17 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/yasboot/mbr)
 target_sources(yasboot_mbr
   PUBLIC
     ${include_dir}/mbr.hpp
+
+  PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/mbr.cpp
+)
+
+target_link_libraries(yasboot_mbr
+  PUBLIC 
+    yasboot_hal_interface
+)
+
+target_include_directories(yasboot_mbr 
+  PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

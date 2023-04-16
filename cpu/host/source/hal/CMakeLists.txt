@@ -22,6 +22,7 @@ add_library(host_hal)
 
 target_sources(host_hal
   PRIVATE
+    disk.cpp
     flow.cpp
     uart.cpp
 )

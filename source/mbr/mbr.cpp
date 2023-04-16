@@ -42,7 +42,7 @@ const MbrPartitionEntry *MbrParser::getBootablePartition() const
 {
   for (const auto &partition : mbr_.partitions)
   {
-    if (partition.status & uint8_t(0x80))
+    if ((partition.status & static_cast<uint8_t>(0x80)) != 0)
     {
       return &partition;
     }

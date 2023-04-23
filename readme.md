@@ -53,6 +53,7 @@ make st
 All predefined configurations are placed inside '<project_root>/configs'. 
 Configuration name is just a directory name, like: host, mspc, etc...
 
+
 You can also use sanitizers or clang-tidy, check .github/workflow for details.
 
 # Supported devices 

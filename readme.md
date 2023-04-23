@@ -1,4 +1,4 @@
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
+[[Code Smells](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=coverage)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=matgla_Yasboot&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=matgla_Yasboot)
@@ -52,6 +52,8 @@ make st
 
 All predefined configurations are placed inside '<project_root>/configs'. 
 Configuration name is just a directory name, like: host, mspc, etc...
+
+You can also use sanitizers or clang-tidy, check .github/workflow for details.
 
 # Supported devices 
 ## Boards

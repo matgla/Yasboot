@@ -1,6 +1,9 @@
 ---
 BasedOnStyle: Microsoft
 AllowShortBlocksOnASingleLine: 'false'
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: None
 ColumnLimit: '100'
 IndentWidth: '2'
 

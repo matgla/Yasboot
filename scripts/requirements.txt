@@ -1,1 +1,4 @@
 pymbr
+openocd
+pyparted
+humanfriendly

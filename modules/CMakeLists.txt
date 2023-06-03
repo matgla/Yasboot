@@ -16,21 +16,4 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding hal interface library")
-
-add_library(yasboot_hal_interface INTERFACE)
-
-add_library(yasboot::hal::interface ALIAS yasboot_hal_interface)
-
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
-
-target_sources(
-  yasboot_hal_interface
-  INTERFACE ${include_dir}/disk.hpp ${include_dir}/flow.hpp
-            ${include_dir}/uart.hpp)
-
-target_link_libraries(yasboot_hal_interface INTERFACE yasboot_public_flags
-                                                      eul::functional)
-
-target_include_directories(yasboot_hal_interface
-                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_subdirectory(test_module)

@@ -1,0 +1,15 @@
+{
+  "size": "32K",
+  "partitions": {
+    "2": {
+      "start": "0x7000",
+      "length": "0x1000",
+      "bootable": false
+    },
+    "1": {
+      "start": "0x4000",
+      "length": "0x3000",
+      "bootable": true
+    }
+  }
+}

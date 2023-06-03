@@ -10,6 +10,17 @@
           "DISABLE_TESTS": "ON"
         }
       }
+    },
+    {
+      "link": "https://github.com/matgla/Yasld.git",
+      "type": "git",
+      "version": "main",
+      "target": "yasld",
+      "options": {
+        "cmake_variables": {
+          "YASLD_ARCH": "cortex-m0+"
+        }
+      }
     }
   ]
 }

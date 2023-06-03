@@ -1,6 +1,6 @@
 ---
 Checks:
-'bugprone-*,cert-*,clang-diagnostic-*,clang-analyzer-*,cppcoreguidelines-*,google-*,misc-*,modernize-*,performance-*,readability-*,-modernize-use-trailing-return-type,-readability-uppercase-literal-suffix,-cppcoreguidelines-special-member-functions,-cert-dcl21-cpp,-cppcoreguidelines-avoid-magic-numbers,-misc-non-private-member-variables-in-classes,-readability-qualified-auto,-readability-magic-numbers,-google-readability-function-size,-bugprone-easily-swappable-parameters,-readability-identifier-length'
+'bugprone-*,cert-*,clang-diagnostic-*,clang-analyzer-*,cppcoreguidelines-*,google-*,misc-*,modernize-*,performance-*,readability-*,-modernize-use-trailing-return-type,-readability-uppercase-literal-suffix,-cppcoreguidelines-special-member-functions,-cert-dcl21-cpp,-cppcoreguidelines-avoid-magic-numbers,-misc-non-private-member-variables-in-classes,-readability-qualified-auto,-readability-magic-numbers,-google-readability-function-size,-bugprone-easily-swappable-parameters,-readability-identifier-length,-cppcoreguidelines-pro-type-vararg'
 WarningsAsErrors: '*'
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false

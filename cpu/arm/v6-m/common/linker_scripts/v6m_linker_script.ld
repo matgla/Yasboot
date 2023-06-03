@@ -28,6 +28,8 @@ MEMORY
   SRAM(rwx)  : ORIGIN = YASBOOT_RAM_START_ADDRESS, LENGTH = YASBOOT_RAM_SIZE
 }
 
+__heap_size__ = 0x4000;
+
 SECTIONS
 {
   .vector_table : 
@@ -119,6 +121,15 @@ SECTIONS
     . = ALIGN(4);
   } > SRAM
 
+  .heap : 
+  {
+    . = ALIGN(4);
+    __heap_start__ = .;
+    . = . + __heap_size__;
+    __heap_end__ = .;
+    . = ALIGN(4);
+  } > SRAM
+ 
   _stack_top = ORIGIN(SRAM) + LENGTH(SRAM);
 
   /DISCARD/ :

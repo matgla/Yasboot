@@ -19,14 +19,17 @@
  */
 
 #include <array>
+#include <cstdio>
+
+#include <yasld/header.hpp>
+#include <yasld/loader.hpp>
 
 #include "hal/disk.hpp"
 #include "hal/flow.hpp"
+#include "hal/system_stubs.hpp"
 #include "hal/uart.hpp"
 
 #include "yasboot/mbr/mbr.hpp"
-
-#include <eul/utils/string.hpp>
 
 int main()
 {
@@ -35,42 +38,56 @@ int main()
   // load MBR partition header
   // verify magic signature
   // search bootable partition
-  // second stage bootloader is put in 32K block after MBR and represented as non bootable
-  // partition, that partition doesn't contain any filesystem, it's just a row of bytes second stage
-  // may contain dynamic loader to load to RAM in future
+  // second stage bootloader is put in 32K block after MBR and represented as
+  // non bootable partition, that partition doesn't contain any filesystem, it's
+  // just a row of bytes second stage may contain dynamic loader to load to RAM
+  // in future
+
+  yasboot::hal::setGlobalWrite([&uart](const std::string_view &str) {
+    return uart.write(str);
+  });
 
   const yasboot::hal::Disk disk;
   const yasboot::MbrParser mbr(disk);
 
-  uart.write("Parsing MBR of primary drive\n\r");
-  uart.write("Drive 0 contains ");
+  printf("\n\n");
+  printf("================ YASBOOT =================\n");
+
+  printf("Parsing MBR of primary drive\n");
+  printf("Drive 0 contains: ");
 
   if (mbr.isValidMbr())
   {
-    uart.write("valid MBR\r\n");
+    printf("valid MBR\n");
   }
   else
   {
     const auto &header = mbr.mbr();
-    std::array<char, 5> buf{};
-    eul::utils::itoa<16>(header.signature, std::span<char>(buf.data(), buf.size()));
-    uart.write("invalid (0x");
-    const std::string_view str(buf.data());
-    uart.write(str);
-    uart.write(") MBR\r\n");
+    printf("Invalid (0x%x) MBR\n", header.signature);
   }
 
   const auto *bootablePartition = mbr.getBootablePartition();
   if (bootablePartition != nullptr)
   {
-    std::array<char, 9> buf{};
-    eul::utils::itoa<16>(bootablePartition->lba_start * 512,
-                         std::span<char>(buf.data(), buf.size()));
-    uart.write("Found bootable partition at address: 0x");
-    const std::string_view str(buf.data());
-    uart.write(str);
-    uart.write("\r\n");
+    printf("Found bootable partition at address: 0x%x\n", bootablePartition->lba_start);
   }
+  else
+  {
+    printf("Any bootable paritition found!\n");
+  }
+
+  // loaded binary must not be dependent on any yasboot symbols
+  // but for now we are just testing loader
+  printf("Creation of dynamic loader\n");
+  yasld::Loader loader;
+
+  // for now let's put image just after disk image
+  // image size is hardcoded to 64 KB
+  uint8_t *module_address = reinterpret_cast<uint8_t *>(0x10010000);
+  printf("%d %d %d %d\n", module_address[0], module_address[1], module_address[2],
+         module_address[3]);
+  const yasld::Header *header = reinterpret_cast<const yasld::Header *>(module_address);
+  yasld::print(*header);
 
   while (!hal::should_exit())
   {

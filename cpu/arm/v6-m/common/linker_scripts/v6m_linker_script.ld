@@ -28,7 +28,7 @@ MEMORY
   SRAM(rwx)  : ORIGIN = YASBOOT_RAM_START_ADDRESS, LENGTH = YASBOOT_RAM_SIZE
 }
 
-__heap_size__ = 0x4000;
+__heap_size__ = 0x1000;
 
 SECTIONS
 {

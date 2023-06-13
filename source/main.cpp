@@ -21,7 +21,6 @@
 #include <array>
 #include <cstdio>
 
-#include <yasld/header.hpp>
 #include <yasld/loader.hpp>
 
 #include "hal/disk.hpp"
@@ -31,6 +30,10 @@
 
 #include "yasboot/mbr/mbr.hpp"
 
+extern std::size_t YASBOOT_RAM_LOT;
+extern std::size_t YASBOOT_RAM_LOT_SIZE;
+extern std::byte YASBOOT_RAM_APP;
+extern std::byte YASBOOT_RAM_APP_SIZE;
 int main()
 {
   yasboot::hal::Uart<0> uart(115200);
@@ -79,15 +82,14 @@ int main()
   // loaded binary must not be dependent on any yasboot symbols
   // but for now we are just testing loader
   printf("Creation of dynamic loader\n");
-  yasld::Loader loader;
+  printf("RAM memory for LOT: %p, %d\n", &YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE);
+  yasld::Loader loader(std::span<std::size_t>(&YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE),
+                       std::span<std::byte>(&YASBOOT_RAM_APP, &YASBOOT_RAM_APP_SIZE));
 
   // for now let's put image just after disk image
   // image size is hardcoded to 64 KB
-  uint8_t *module_address = reinterpret_cast<uint8_t *>(0x10010000);
-  printf("%d %d %d %d\n", module_address[0], module_address[1], module_address[2],
-         module_address[3]);
-  const yasld::Header *header = reinterpret_cast<const yasld::Header *>(module_address);
-  yasld::print(*header);
+  const void *module_address = reinterpret_cast<const uint8_t *>(0x10008000);
+  loader.load_module(module_address);
 
   while (!hal::should_exit())
   {

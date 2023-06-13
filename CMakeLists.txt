@@ -95,7 +95,7 @@ if(${configuration_is_ready})
   add_subdirectory(hal)
   add_subdirectory(source)
 
-  #add_subdirectory(modules)
+  # add_subdirectory(modules)
 
   if(${BOARD} STREQUAL "host")
     add_subdirectory(tests)
@@ -105,24 +105,31 @@ endif()
 create_virtualenv(scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/requirements.txt
                   ${CMAKE_CURRENT_BINARY_DIR}/venvs)
 
-add_custom_target(disk
-  COMMAND ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/create_disk.py 
-    --output ${PROJECT_BINARY_DIR}/${BOARD}_disk.img 
-    --layout ${PROJECT_SOURCE_DIR}/board/${BOARD}/disk_layout.json
-  COMMAND ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/write_yasboot.py 
-    --drive ${PROJECT_BINARY_DIR}/${BOARD}_disk.img 
-    --yasboot ${PROJECT_BINARY_DIR}/yasboot.bin 
-    --bootcode ${PROJECT_BINARY_DIR}/boot.bin
-  COMMAND cat ${PROJECT_BINARY_DIR}/${BOARD}_disk.img 
-    ${PROJECT_BINARY_DIR}/south_bridge > ${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
-  DEPENDS 
-    yasboot
-  VERBATIM
-)
+add_custom_target(
+  disk
+  COMMAND
+    ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/create_disk.py
+    --output ${PROJECT_BINARY_DIR}/${BOARD}_disk.img --layout
+    ${PROJECT_SOURCE_DIR}/board/${BOARD}/disk_layout.json
+  COMMAND
+    ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/write_yasboot.py
+    --drive ${PROJECT_BINARY_DIR}/${BOARD}_disk.img --yasboot
+    ${PROJECT_BINARY_DIR}/yasboot.bin --bootcode ${PROJECT_BINARY_DIR}/boot.bin
+  COMMAND
+    cat ${PROJECT_BINARY_DIR}/${BOARD}_disk.img
+    ${PROJECT_BINARY_DIR}/south_bridge >
+    ${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
+  DEPENDS yasboot
+  VERBATIM)
 
-add_custom_target(flash
-  COMMAND ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/flash.py -f ${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
+add_custom_target(
+  flash
+  COMMAND ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/flash.py -f
+          ${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
   DEPENDS disk
-  VERBATIM
-)
+  VERBATIM)
 
+add_custom_target(
+  reset
+  COMMAND ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/reset.py
+  VERBATIM)

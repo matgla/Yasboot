@@ -22,6 +22,16 @@
           "YASLD_DISABLE_TESTS": "OFF"
         }
       }
+    },
+    {
+      "link": "https://github.com/matgla/Renode_RP2040.git",
+      "type": "git",
+      "version": "main",
+      "target": "renode_rp2040",
+      "options": {
+        "cmake_variables": {
+        }
+      }
     }
   ]
 }

@@ -18,7 +18,8 @@
       "target": "yasld",
       "options": {
         "cmake_variables": {
-          "YASLD_ARCH": "cortex-m0+"
+          "YASLD_ARCH": "armv6-m",
+          "YASLD_DISABLE_TESTS": "OFF"
         }
       }
     }

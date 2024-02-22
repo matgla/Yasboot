@@ -115,10 +115,10 @@ add_custom_target(
     ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/write_yasboot.py
     --drive ${PROJECT_BINARY_DIR}/${BOARD}_disk.img --yasboot
     ${PROJECT_BINARY_DIR}/yasboot.bin --bootcode ${PROJECT_BINARY_DIR}/boot.bin
-  COMMAND
-    cat ${PROJECT_BINARY_DIR}/${BOARD}_disk.img
-    ${PROJECT_BINARY_DIR}/south_bridge >
-    ${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
+  #COMMAND
+    #cat ${PROJECT_BINARY_DIR}/${BOARD}_disk.img
+    #${PROJECT_BINARY_DIR}/south_bridge >
+    #${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
   DEPENDS yasboot
   VERBATIM)
 

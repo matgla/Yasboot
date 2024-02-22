@@ -83,13 +83,13 @@ int main()
   // but for now we are just testing loader
   printf("Creation of dynamic loader\n");
   printf("RAM memory for LOT: %p, %d\n", &YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE);
-  yasld::Loader loader(std::span<std::size_t>(&YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE),
-                       std::span<std::byte>(&YASBOOT_RAM_APP, &YASBOOT_RAM_APP_SIZE));
+  // yasld::Loader loader(std::span<std::size_t>(&YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE),
+  //                      std::span<std::byte>(&YASBOOT_RAM_APP, &YASBOOT_RAM_APP_SIZE));
 
   // for now let's put image just after disk image
   // image size is hardcoded to 64 KB
-  const void *module_address = reinterpret_cast<const uint8_t *>(0x10008000);
-  loader.load_module(module_address);
+  // const void *module_address = reinterpret_cast<const uint8_t *>(0x10008000);
+  // loader.load_module(module_address);
 
   while (!hal::should_exit())
   {

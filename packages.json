@@ -30,6 +30,22 @@
       "target": "renode_rp2040",
       "options": {
         "cmake_variables": {
+        },
+        "is_cmake_library": true
+      }
+    },
+    {
+      "link": "https://github.com/littlefs-project/littlefs.git",
+      "type": "git",
+      "version": "master",
+      "target": "littlefs",
+      "options": {
+        "create_library": {
+          "type": "STATIC",
+          "sources_filter": ["lfs.c", "lfs_util.c"],
+          "sources_directory": "",
+          "include_directories": ["."],
+          "compile_definitions": "-DLFS_READONLY=1"
         }
       }
     }

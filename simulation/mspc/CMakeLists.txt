@@ -1,7 +1,7 @@
 #
 # CMakeLists.txt
 #
-# Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+# Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -16,19 +16,17 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-add_subdirectory(mbr)
+message (STATUS "Adding MSPC Simulator Board")
 
-add_executable(yasboot)
+find_package(renode_rp2040 REQUIRED)
 
-target_sources(yasboot PRIVATE main.cpp)
+set (RENODE_BOARD_DIR ${renode_rp2040_SOURCE_DIR})
+set (RENODE_BINARY ${PROJECT_BINARY_DIR}/${BOARD}_disk.img)
 
-find_package(eul REQUIRED)
-find_package(littlefs REQUIRED)
+configure_file(mspc.repl ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl)
 
-target_link_libraries(
-  yasboot
-  PUBLIC yasboot_public_flags eul::utils
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr board littlefs)
-
-include(generate_binary)
-generate_binary(yasboot)
+add_custom_target(
+  run 
+  COMMAND ${renode_executable} --console --disable-xwt ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl 
+  DEPENDS disk ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl 
+)

@@ -20,6 +20,7 @@
 
 #include <array>
 #include <cstdio>
+#include <cstring>
 
 #include <yasld/loader.hpp>
 
@@ -30,10 +31,41 @@
 
 #include "yasboot/mbr/mbr.hpp"
 
+#include <lfs.h>
+
 extern std::size_t YASBOOT_RAM_LOT;
 extern std::size_t YASBOOT_RAM_LOT_SIZE;
 extern std::byte YASBOOT_RAM_APP;
 extern std::byte YASBOOT_RAM_APP_SIZE;
+
+int littlefs_read(const struct lfs_config *c, lfs_block_t block, 
+  lfs_off_t off, void *buffer, lfs_size_t size)
+{
+  std::memcpy(buffer, reinterpret_cast<const void*>(0x10000000 + *static_cast<const std::size_t*>(c->context)+ block * c->block_size + off), size);
+  return LFS_ERR_OK;
+}
+
+struct lfs_config prepare_lfs_config(std::size_t address, std::size_t size)
+{
+  printf("Preparing LFS configuration for address: 0x%x, with size: %d KB\n", address, size / 1024);
+  if (size % 4096 != 0)
+  {
+    printf("Size must be equal to page size, for now only 4096!\n");
+    return {};
+  }
+
+  static std::size_t littlefs_start = address; 
+  return {
+    .context = &littlefs_start,
+    .read = littlefs_read,
+    .read_size = 16,
+    .block_size = 4096,
+    .block_count = size / 4096,
+    .cache_size = 16,
+    .lookahead_size = 16
+  };
+}
+
 int main()
 {
   yasboot::hal::Uart<0> uart(115200);
@@ -73,6 +105,9 @@ int main()
   if (bootablePartition != nullptr)
   {
     printf("Found bootable partition at address: 0x%x\n", bootablePartition->lba_start);
+    auto lfs_config = prepare_lfs_config(bootablePartition->lba_start * 512, bootablePartition->number_of_sectors * 512); 
+    lfs_t lfs; 
+    lfs_mount(&lfs, &lfs_config); 
   }
   else
   {

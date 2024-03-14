@@ -30,10 +30,19 @@
 
 #include "yasboot/mbr/mbr.hpp"
 
+#include <lfs.h>
+
 extern std::size_t YASBOOT_RAM_LOT;
 extern std::size_t YASBOOT_RAM_LOT_SIZE;
 extern std::byte YASBOOT_RAM_APP;
 extern std::byte YASBOOT_RAM_APP_SIZE;
+
+// int littlefs_read(const struct lfs_config *c, lfs_block_t block, 
+//     lfs_off_t off, void *buffer, lfs_size_t size)
+// {
+//   std::memcpy(buffer, reinterpret_cast<const void*>())
+// }
+
 int main()
 {
   yasboot::hal::Uart<0> uart(115200);

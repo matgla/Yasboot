@@ -1,0 +1,12 @@
+using sysbus
+path add @${RENODE_BOARD_DIR}
+include @initialize_rp2040.repl
+
+showAnalyzer uart0
+sysbus LoadBinary @${RENODE_BINARY} 0x10000000
+
+cpu0 VectorTableOffset 0x10000200
+cpu1 VectorTableOffset 0x10000200
+
+machine StartGdbServer 3333
+

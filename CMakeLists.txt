@@ -133,3 +133,10 @@ add_custom_target(
   reset
   COMMAND ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/reset.py
   VERBATIM)
+
+find_program(renode_executable renode)
+
+if (DEFINED BOARD)
+  add_subdirectory(simulation/${BOARD})
+endif ()
+

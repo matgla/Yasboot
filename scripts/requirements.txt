@@ -2,3 +2,4 @@ pymbr
 openocd
 pyparted
 humanfriendly
+littlefs-python==0.10.0

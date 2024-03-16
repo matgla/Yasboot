@@ -18,8 +18,8 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <array>
 #include <cstdio>
+#include <cstring>
 
 #include <yasld/loader.hpp>
 
@@ -30,14 +30,14 @@
 
 #include "yasboot/mbr/mbr.hpp"
 
-#include <lfs.h>
+#include "yasboot/fs/littlefs.hpp"
 
 extern std::size_t YASBOOT_RAM_LOT;
 extern std::size_t YASBOOT_RAM_LOT_SIZE;
 extern std::byte YASBOOT_RAM_APP;
 extern std::byte YASBOOT_RAM_APP_SIZE;
 
-// int littlefs_read(const struct lfs_config *c, lfs_block_t block, 
+// int littlefs_read(const struct lfs_config *c, lfs_block_t block,
 //     lfs_off_t off, void *buffer, lfs_size_t size)
 // {
 //   std::memcpy(buffer, reinterpret_cast<const void*>())
@@ -81,7 +81,47 @@ int main()
   const auto *bootablePartition = mbr.getBootablePartition();
   if (bootablePartition != nullptr)
   {
-    printf("Found bootable partition at address: 0x%x\n", bootablePartition->lba_start);
+    printf("Found bootable partition at address: 0x%x\n",
+           bootablePartition->lba_start);
+    yasboot::fs::LittleFS fs{
+      yasboot::fs::DiskParameters{
+        .read_size = 32,
+        .write_size = 32,
+        .block_size = 4096, // Winbond W25Q16JV
+        .block_count =
+          bootablePartition->number_of_sectors / 8 // MBR sector size has 512 bytes
+      },
+      [&bootablePartition](std::size_t address, std::span<uint8_t> buffer) {
+        const std::size_t physical_address =
+          0x10000000 + bootablePartition->lba_start * 512 + address;
+        printf("Reading from %x with size: %d\n", physical_address, buffer.size());
+        std::memcpy(buffer.data(), reinterpret_cast<const void *>(physical_address),
+                    buffer.size());
+        printf("Readed buffer: [");
+        for (const uint8_t &byte : buffer)
+        {
+          printf("%x(%c),", byte, byte);
+        }
+        printf("]\n");
+        return buffer.size();
+      },
+      [&bootablePartition](std::size_t address, std::span<const uint8_t> buffer) {
+        return buffer.size();
+      },
+      [&bootablePartition](std::size_t block) {
+        return 0;
+      },
+      [] {
+        return 0;
+      }};
+    if (fs.mount())
+    {
+      printf("Boot partition mounted\n");
+    }
+    else
+    {
+      printf("Boot parition mounting failed\n");
+    }
   }
   else
   {
@@ -92,8 +132,10 @@ int main()
   // but for now we are just testing loader
   printf("Creation of dynamic loader\n");
   printf("RAM memory for LOT: %p, %d\n", &YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE);
-  // yasld::Loader loader(std::span<std::size_t>(&YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE),
-  //                      std::span<std::byte>(&YASBOOT_RAM_APP, &YASBOOT_RAM_APP_SIZE));
+  // yasld::Loader loader(std::span<std::size_t>(&YASBOOT_RAM_LOT,
+  // &YASBOOT_RAM_LOT_SIZE),
+  //                      std::span<std::byte>(&YASBOOT_RAM_APP,
+  //                      &YASBOOT_RAM_APP_SIZE));
 
   // for now let's put image just after disk image
   // image size is hardcoded to 64 KB

@@ -16,6 +16,7 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
+add_subdirectory(fs)
 add_subdirectory(mbr)
 
 add_executable(yasboot)
@@ -28,7 +29,7 @@ find_package(littlefs REQUIRED)
 target_link_libraries(
   yasboot
   PUBLIC yasboot_public_flags eul::utils
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr board littlefs)
+  PRIVATE yasld yasboot_hal_interface yasboot_mbr board yasboot::filesystem)
 
 include(generate_binary)
 generate_binary(yasboot)

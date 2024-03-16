@@ -45,7 +45,7 @@
           "sources_filter": ["lfs.c", "lfs_util.c"],
           "sources_directory": "",
           "include_directories": ["."],
-          "compile_definitions": "-DLFS_READONLY=1"
+          "compile_definitions": "-DLFS_READONLY=1 -DLFS_YES_TRACE=1"
         }
       }
     }

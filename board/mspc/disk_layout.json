@@ -1,16 +1,25 @@
 {
-  "size": "128K",
+  "size": "2M",
   "eraseSize": "4096",
   "partitions": {
     "2": {
       "start": "0x4000",
-      "length": "0x4000",
-      "bootable": false
+      "length": "0xC0000",
+      "bootable": false,
+      "format": "raw"
     },
     "1": {
       "start": "0x8000",
-      "length": "0x4000",
-      "bootable": true
+      "length": "0x20000",
+      "bootable": true,
+      "format": "littlefs",
+      "content": "./boot"
+    },
+    "3": {
+      "start": "0x28000",
+      "length": "0xC0000",
+      "bootable": false,
+      "format": "raw"
     }
   }
 }

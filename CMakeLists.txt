@@ -1,6 +1,5 @@
 #
 # CMakeLists.txt
-#
 # Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
 #
 # This program is free software: you can redistribute it and/or modify it under
@@ -100,6 +99,13 @@ if(${configuration_is_ready})
   if(${BOARD} STREQUAL "host")
     add_subdirectory(tests)
   endif()
+
+  find_program(renode_executable renode)
+
+  if (DEFINED BOARD)
+    add_subdirectory(simulation/${BOARD})
+  endif ()
+
 endif()
 
 create_virtualenv(scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/requirements.txt
@@ -134,9 +140,4 @@ add_custom_target(
   COMMAND ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/reset.py
   VERBATIM)
 
-find_program(renode_executable renode)
-
-if (DEFINED BOARD)
-  add_subdirectory(simulation/${BOARD})
-endif ()
 

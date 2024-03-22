@@ -3,20 +3,20 @@
   "eraseSize": "4096",
   "partitions": {
     "2": {
-      "start": "0x4000",
+      "start": "0x30000",
       "length": "0xC0000",
       "bootable": false,
       "format": "raw"
     },
     "1": {
-      "start": "0x8000",
+      "start": "0x10000",
       "length": "0x20000",
       "bootable": true,
       "format": "littlefs",
       "content": "./boot"
     },
     "3": {
-      "start": "0x28000",
+      "start": "0xF0000",
       "length": "0xC0000",
       "bootable": false,
       "format": "raw"

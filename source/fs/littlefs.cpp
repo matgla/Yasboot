@@ -20,7 +20,11 @@
 
 #include "yasboot/fs/littlefs.hpp"
 
-#include <cstdio>
+#include <limits>
+
+#include <fcntl.h>
+
+#include "common/filesystem/file_descriptors.hpp"
 
 namespace yasboot::fs
 {
@@ -80,10 +84,75 @@ LittleFS::LittleFS(const DiskParameters &disk, ReadFromDisk read, WriteToDisk wr
 
 bool LittleFS::mount()
 {
-  printf("Mounting LittleFS\n");
-  int ec = lfs_mount(&lfs_, &lfs_config_);
-  printf("Error code: %d\n", ec);
-  return ec == LFS_ERR_OK;
+  return lfs_mount(&lfs_, &lfs_config_) == LFS_ERR_OK;
+}
+
+constexpr int convertFlags(int flags)
+{
+  int result = 0;
+  if (flags & O_RDONLY != 0)
+  {
+    result |= LFS_O_RDONLY;
+  }
+  else if (flags & O_WRONLY != 0)
+  {
+    result |= LFS_O_WRONLY;
+  }
+  else if (flags & O_RDWR != 0)
+  {
+    result |= LFS_O_RDWR;
+  }
+
+  if (flags & O_APPEND)
+  {
+    result |= LFS_O_APPEND;
+  }
+
+  if (flags & O_CREAT)
+  {
+    result |= LFS_O_CREAT;
+  }
+  return result;
+}
+
+int LittleFS::open(std::string_view path, int flags)
+{
+  int8_t fd = FileDescriptors::get().allocate();
+  if (fd == -1)
+  {
+    return fd;
+  }
+  files_[fd] = lfs_file_t{};
+
+  if (lfs_file_open(&lfs_, &files_[fd], path.data(), convertFlags(flags)) !=
+      LFS_ERR_OK)
+  {
+    FileDescriptors::get().release(fd);
+    return -1;
+  }
+
+  return fd;
+}
+
+bool LittleFS::has_fd(int fd) const
+{
+  if (fd < 0 || fd > std::numeric_limits<uint8_t>::max())
+  {
+    return false;
+  }
+  return files_.contains(static_cast<int8_t>(fd));
+}
+
+int LittleFS::read_file(int fd, std::span<uint8_t> buffer)
+{
+  if (!has_fd(fd))
+  {
+    return -1;
+  }
+
+  auto r = lfs_file_read(&lfs_, &files_[static_cast<int8_t>(fd)], buffer.data(),
+                         buffer.size());
+  return r;
 }
 
 } // namespace yasboot::fs

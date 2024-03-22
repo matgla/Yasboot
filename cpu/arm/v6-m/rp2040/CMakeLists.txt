@@ -110,8 +110,13 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/arm/v6-m/rp2040)
 target_sources(
   rp2040
   PUBLIC ${include_dir}/configure_clocks.hpp
-  PRIVATE source/configure_mcu.cpp source/configure_clocks.cpp
-          source/hal/disk.cpp source/hal/uart.cpp source/hal/system_stubs.cpp)
+  PRIVATE 
+    source/configure_mcu.cpp 
+    source/configure_clocks.cpp
+    source/hal/disk.cpp 
+    source/hal/panic.cpp
+    source/hal/uart.cpp 
+    source/hal/system_stubs.cpp)
 
 target_link_libraries(
   rp2040

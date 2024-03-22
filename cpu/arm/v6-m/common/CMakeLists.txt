@@ -27,7 +27,7 @@ target_sources(
          source/vector_table.S source/gcc_arm_init.cpp
   PRIVATE source/hal/flow.cpp)
 
-target_link_libraries(arm_v6m_common PRIVATE yasboot_hal_interface)
+target_link_libraries(arm_v6m_common PRIVATE yasboot_hal_interface common)
 
 target_link_options(arm_v6m_common PUBLIC
                     -L${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts)

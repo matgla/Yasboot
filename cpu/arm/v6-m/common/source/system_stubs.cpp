@@ -20,6 +20,8 @@
 
 #include <unistd.h>
 
+#include "common/filesystem/filesystem_mount_points.hpp"
+
 #include "hal/system_stubs.hpp"
 
 extern "C"
@@ -82,8 +84,11 @@ extern "C"
     return 0;
   }
 
-  ssize_t _read(int, void *, size_t)
+  ssize_t _read(int fd, void *buf, size_t size)
   {
+    auto fs = yasboot::fs::FilesystemMountPoints::get().get_filesystem_for_fd(fd);
+
+    return fs->read_file(fd, std::span<uint8_t>(static_cast<uint8_t *>(buf), size));
     return 0;
   }
 
@@ -112,5 +117,13 @@ extern "C"
     char *previous_heap_end = current_heap_end;
     current_heap_end += incr;
     return static_cast<caddr_t>(previous_heap_end);
+  }
+
+  int _open(const char *pathname, int flags)
+  {
+    auto [fs, path] =
+      yasboot::fs::FilesystemMountPoints::get().get_mount_point(pathname);
+
+    return fs->open(path, flags);
   }
 }

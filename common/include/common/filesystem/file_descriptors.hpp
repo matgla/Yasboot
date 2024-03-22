@@ -1,5 +1,5 @@
 /**
- * filesystem.hpp
+ * file_descriptors.hpp
  *
  * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
  *
@@ -20,30 +20,24 @@
 
 #pragma once
 
-#include <eul/functional/function.hpp>
-
-#include <cstddef>
+#include <bitset>
 #include <cstdint>
-#include <span>
 
 namespace yasboot::fs
 {
 
-class Filesystem
+class FileDescriptors
 {
 public:
-  virtual ~Filesystem() = default;
+  static FileDescriptors &get();
 
-  using ReadFromDisk =
-    eul::function<int(std::size_t address, std::span<uint8_t> buffer),
-                  sizeof(void *)>;
-  using WriteToDisk =
-    eul::function<int(std::size_t address, std::span<const uint8_t> buffer),
-                  sizeof(void *)>;
-  using Erase = eul::function<int(std::size_t block), sizeof(void *)>;
-  using Sync = eul::function<int(), sizeof(void *)>;
+  int8_t allocate();
+  void release(int8_t fd);
 
-  virtual bool mount() = 0;
+private:
+  FileDescriptors();
+
+  std::bitset<8> file_descriptors_;
 };
 
 } // namespace yasboot::fs

@@ -25,7 +25,7 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/yasboot/fs)
 
 target_sources(yasboot_filesystem
   PUBLIC
-    ${include_dir}/filesystem.hpp
+    ${include_dir}/littlefs.hpp
   PRIVATE 
     littlefs.cpp  
 )
@@ -34,7 +34,7 @@ find_package(littlefs REQUIRED)
 
 target_link_libraries(yasboot_filesystem 
   PUBLIC 
-    eul::functional
+    common
     littlefs
   PRIVATE 
     yasboot_private_flags 

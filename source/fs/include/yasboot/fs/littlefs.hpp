@@ -20,11 +20,17 @@
 
 #pragma once
 
-#include "yasboot/fs/filesystem.hpp"
+#include <cstddef>
+#include <map>
+#include <span>
+#include <string_view>
 
 #include <lfs.h>
 
-#include "yasboot/fs/disk_parameters.hpp"
+#include <eul/functional/function.hpp>
+
+#include "common/filesystem/disk_parameters.hpp"
+#include "common/filesystem/filesystem.hpp"
 
 namespace yasboot::fs
 {
@@ -32,12 +38,6 @@ namespace yasboot::fs
 class LittleFS : public Filesystem
 {
 public:
-  LittleFS(const DiskParameters &disk, ReadFromDisk read, WriteToDisk write,
-           Erase erase, Sync sync);
-
-  bool mount() override;
-
-private:
   static int lfs_read_callback(const struct lfs_config *c, lfs_block_t block,
                                lfs_off_t off, void *buffer, lfs_size_t size);
   static int lfs_write_callback(const struct lfs_config *c, lfs_block_t block,
@@ -45,13 +45,32 @@ private:
   static int lfs_erase_callback(const struct lfs_config *c, lfs_block_t block);
   static int lfs_sync_callback(const struct lfs_config *c);
 
+  using ReadFromDisk =
+    eul::function<int(std::size_t, std::span<uint8_t>), sizeof(void *)>;
+  using WriteToDisk =
+    eul::function<int(std::size_t, std::span<const uint8_t>), sizeof(void *)>;
+  using Erase = eul::function<int(std::size_t), sizeof(void *)>;
+  using Sync = eul::function<int(), sizeof(void *)>;
+
+  LittleFS(const DiskParameters &disk, ReadFromDisk read, WriteToDisk write,
+           Erase erase, Sync sync);
+
+  bool mount() override;
+  int open(std::string_view path, int flags) override;
+
+  [[nodiscard]] bool has_fd(int fd) const override;
+  [[nodiscard]] int read_file(int fd, std::span<uint8_t> buffer) override;
+
+private:
   ReadFromDisk read_from_disk_;
   WriteToDisk write_to_disk_;
   Erase erase_;
   Sync sync_;
 
-  const struct lfs_config lfs_config_;
+  struct lfs_config lfs_config_;
   lfs_t lfs_;
+
+  std::map<int8_t, lfs_file_t> files_;
 };
 
 } // namespace yasboot::fs

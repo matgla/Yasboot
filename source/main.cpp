@@ -37,6 +37,8 @@
 #include "yasboot/fs/littlefs.hpp"
 #include "yasboot/mbr/mbr.hpp"
 
+#include "yasconf/config.hpp"
+
 extern std::size_t YASBOOT_RAM_LOT;
 extern std::size_t YASBOOT_RAM_LOT_SIZE;
 extern std::byte YASBOOT_RAM_APP;
@@ -120,7 +122,6 @@ int main()
   {
     printf("Boot configuration opening failure\n");
   }
-
   printf("Configuration file dump:\n");
   std::array<char, 32> buf = {};
   while (read(fd, buf.data(), 31) == 31)
@@ -130,9 +131,15 @@ int main()
   }
   printf("%s\n", buf.data());
   printf("======= Config End =========\n");
+  close(fd);
 
-  printf("Creation of dynamic loader\n");
-  printf("RAM memory for LOT: %p, %d\n", &YASBOOT_RAM_LOT, &YASBOOT_RAM_LOT_SIZE);
+  yasconf::Config<32> config("/boot.conf");
+  auto entry = config["BootPartition"];
+
+  std::memset(buf.data(), 0, buf.size());
+  std::memcpy(buf.data(), (*entry).data(), (*entry).length());
+  printf("config[BootPartition]: %s\n", buf.data());
+  printf("config[BootType]: %s\n", (*config["BootType"]).data());
 
   while (!hal::should_exit())
   {

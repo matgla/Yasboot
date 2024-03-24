@@ -74,9 +74,14 @@ extern "C"
     }
   }
 
-  int _close(int)
+  int _close(int fd)
   {
-    return 0;
+    auto fs = yasboot::fs::FilesystemMountPoints::get().get_filesystem_for_fd(fd);
+    if (fs == nullptr)
+    {
+      return -1;
+    }
+    return fs->close(fd);
   }
 
   off_t _lseek(int, off_t, int)
@@ -87,9 +92,11 @@ extern "C"
   ssize_t _read(int fd, void *buf, size_t size)
   {
     auto fs = yasboot::fs::FilesystemMountPoints::get().get_filesystem_for_fd(fd);
-
+    if (fs == nullptr)
+    {
+      return 0;
+    }
     return fs->read_file(fd, std::span<uint8_t>(static_cast<uint8_t *>(buf), size));
-    return 0;
   }
 
   ssize_t _write(int fd, const char *buf, size_t count)

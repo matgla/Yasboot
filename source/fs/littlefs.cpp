@@ -134,6 +134,16 @@ int LittleFS::open(std::string_view path, int flags)
   return fd;
 }
 
+int LittleFS::close(int fd)
+{
+  if (!has_fd(fd))
+  {
+    return -1;
+  }
+
+  return lfs_file_close(&lfs_, &files_[static_cast<int8_t>(fd)]);
+}
+
 bool LittleFS::has_fd(int fd) const
 {
   if (fd < 0 || fd > std::numeric_limits<uint8_t>::max())

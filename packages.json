@@ -48,6 +48,17 @@
           "compile_definitions": ""
         }
       }
+    },
+    {
+      "link": "https://github.com/matgla/Yasconf.git",
+      "type": "git",
+      "version": "main",
+      "target": "yasconf",
+      "options": {
+        "cmake_variables": {
+          "DISABLE_TESTS": "ON"
+        } 
+      }
     }
   ]
 }

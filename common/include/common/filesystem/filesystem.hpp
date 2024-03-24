@@ -46,6 +46,8 @@ public:
 
   virtual bool mount() = 0;
   virtual int open(std::string_view path, int flags) = 0;
+  virtual int close(int fd) = 0;
+
   [[nodiscard]] virtual bool has_fd(int fd) const = 0;
   [[nodiscard]] virtual int read_file(int fd, std::span<uint8_t> buffer) = 0;
 };

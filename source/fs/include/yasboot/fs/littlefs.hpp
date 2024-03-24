@@ -60,6 +60,7 @@ public:
 
   [[nodiscard]] bool has_fd(int fd) const override;
   [[nodiscard]] int read_file(int fd, std::span<uint8_t> buffer) override;
+  [[nodiscard]] int close(int fd) override;
 
 private:
   ReadFromDisk read_from_disk_;

@@ -1,7 +1,7 @@
 #
 # CMakeLists.txt
 #
-# Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+# Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
 #
 # This program is free software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,24 +18,29 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-add_library(yasboot_mbr)
+add_library(yasboot_filesystem STATIC)
+add_library(yasboot::filesystem ALIAS yasboot_filesystem)
 
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/yasboot/mbr)
+set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/yasboot/fs)
 
-target_sources(yasboot_mbr
+target_sources(yasboot_filesystem
   PUBLIC
-    ${include_dir}/mbr.hpp
-
+    ${include_dir}/littlefs.hpp
   PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/mbr.cpp
+    littlefs.cpp  
 )
 
-target_link_libraries(yasboot_mbr
+find_package(littlefs REQUIRED)
+
+target_link_libraries(yasboot_filesystem 
   PUBLIC 
-    yasboot_hal_interface
+    common
+    littlefs
+  PRIVATE 
+    yasboot_private_flags 
 )
 
-target_include_directories(yasboot_mbr 
+target_include_directories(yasboot_filesystem
   PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

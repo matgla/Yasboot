@@ -37,7 +37,7 @@
     {
       "link": "https://github.com/littlefs-project/littlefs.git",
       "type": "git",
-      "version": "master",
+      "version": "v2.9.1",
       "target": "littlefs",
       "options": {
         "create_library": {
@@ -45,8 +45,19 @@
           "sources_filter": ["lfs.c", "lfs_util.c"],
           "sources_directory": "",
           "include_directories": ["."],
-          "compile_definitions": "-DLFS_READONLY=1"
+          "compile_definitions": ""
         }
+      }
+    },
+    {
+      "link": "https://github.com/matgla/Yasconf.git",
+      "type": "git",
+      "version": "main",
+      "target": "yasconf",
+      "options": {
+        "cmake_variables": {
+          "DISABLE_TESTS": "ON"
+        } 
       }
     }
   ]

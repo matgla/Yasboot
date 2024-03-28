@@ -24,13 +24,26 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/common)
 
 target_sources(common 
   PUBLIC 
+    ${include_dir}/filesystem/filesystem_mount_points.hpp
+    ${include_dir}/filesystem/file_descriptors.hpp
+    ${include_dir}/filesystem/disk_parameters.hpp
+    ${include_dir}/filesystem/filesystem.hpp
     ${include_dir}/units.hpp
   PRIVATE 
     source/units.cpp
+    source/filesystem_mount_points.cpp
+    source/file_descriptors.cpp
 )
 
 target_include_directories(common 
   PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(common 
+  PUBLIC 
+    eul::functional
+  PRIVATE 
+    yasboot_private_flags
 )
 

@@ -28,6 +28,7 @@ from pathlib import Path
 import json 
 import parted 
 import humanfriendly
+from littlefs import LittleFS 
 
 parser = argparse.ArgumentParser(description="Script for empty disk creation")
 parser.add_argument("--output", "-o", dest="output", action="store", help="filename of output file", required=True)
@@ -43,6 +44,48 @@ def get_int(value):
       return int(value, 16)
     except ValueError:
       return int(humanfriendly.parse_size(value, binary=True))
+
+def write_mbr(filepath):
+    device = parted.getDevice(str(filepath.absolute()))
+    disk = parted.freshDisk(device, "msdos")
+
+    for key, value in sorted(layout["partitions"].items()):
+      g = parted.Geometry(
+          device=device, 
+          start=int(get_int(value["start"]) / 512),
+          length=int(get_int(value["length"]) / 512)
+          ) 
+      p = parted.Partition(
+          disk=disk, 
+          type=parted.PARTITION_NORMAL,
+          geometry=g
+          )
+      disk.addPartition(partition=p)
+      if value["bootable"]:
+        p.setFlag(parted.PARTITION_BOOT)
+
+    disk.commit()
+
+def create_littlefs_partition(block_size, block_count, config, working_directory):
+    print("Creating littleFS partition with", block_count, "-", block_size, "bytes blocks") 
+    fs = LittleFS(block_size=block_size, block_count=block_count)
+    print("Working directory:", working_directory)
+    if "content" in config:
+        root_dir = working_directory / config["content"]
+        for root, dirs, files in os.walk(root_dir):
+            for dir in dirs: 
+                target_path = Path("/") / Path(root).relative_to(root_dir) / dir
+                host_path = Path(root) / dir
+                print(host_path, "->", target_path) 
+                fs.mkdir(str(target_path))
+            for file in files: 
+                target_path = Path("/") / Path(root).relative_to(root_dir) / file 
+                host_path = Path(root) / file 
+                print(host_path, "->", target_path) 
+                with open(host_path, "rb") as source:
+                    with fs.open(str(target_path), "wb") as out:
+                        out.write(source.read())
+    return fs 
 
 filepath = Path(args.output)
 if os.path.exists(filepath.absolute()):
@@ -60,23 +103,21 @@ print("Disk size is: ", hex(size))
 with open(filepath, "wb") as file:
   file.write(bytearray(size))
 
-device = parted.getDevice(str(filepath.absolute()))
-disk = parted.freshDisk(device, "msdos")
+write_mbr(filepath)
 
+print("Creating filesystems")
 for key, value in sorted(layout["partitions"].items()):
-  g = parted.Geometry(
-      device=device, 
-      start=int(get_int(value["start"]) / 512),
-      length=int(get_int(value["length"]) / 512)
-      ) 
-  p = parted.Partition(
-      disk=disk, 
-      type=parted.PARTITION_NORMAL,
-      geometry=g
-      )
-  disk.addPartition(partition=p)
-  if value["bootable"]:
-    p.setFlag(parted.PARTITION_BOOT)
-
-disk.commit()
-
+    if value["format"] == "littlefs":
+        length = get_int(value["length"])
+        block_size = get_int(layout["eraseSize"])
+        if (length % block_size != 0):
+            raise RuntimeError("LittleFS partition size must be multiple of erase size")
+        working_directory = Path(args.layout).parent.absolute()
+        fs = create_littlefs_partition(block_size, int(length / block_size), value, working_directory)
+        with open(filepath, "r+b") as img:
+            print("Writing partition to", hex(get_int(value["start"])))
+            img.seek(get_int(value["start"]))
+            img.write(fs.context.buffer)
+        with open(working_directory / "lfs.img", "w+b") as img:
+            print("Dumping LittleFS partition to: ", working_directory / "lfs.img")
+            img.write(fs.context.buffer)

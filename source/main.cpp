@@ -39,10 +39,10 @@
 
 #include "yasconf/config.hpp"
 
-extern std::size_t YASBOOT_RAM_LOT;
-extern std::size_t YASBOOT_RAM_LOT_SIZE;
-extern std::byte YASBOOT_RAM_APP;
-extern std::byte YASBOOT_RAM_APP_SIZE;
+extern const std::size_t YASBOOT_RAM_LOT;
+extern const std::size_t YASBOOT_RAM_LOT_SIZE;
+extern const std::byte YASBOOT_RAM_APP;
+extern const std::byte YASBOOT_RAM_APP_SIZE;
 
 int main()
 {
@@ -80,7 +80,7 @@ int main()
     }
   }
 
-  printf("Found bootable partition at address: 0x%x\n",
+  printf("Found bootable partition at address: 0x%lx\n",
          bootablePartition->lba_start);
   std::unique_ptr<yasboot::fs::Filesystem> lfs =
     std::make_unique<yasboot::fs::LittleFS>(
@@ -99,10 +99,10 @@ int main()
                     buffer.size());
         return 0;
       },
-      [&bootablePartition](std::size_t address, std::span<const uint8_t> buffer) {
+      [](std::size_t, std::span<const uint8_t> buffer) {
         return buffer.size();
       },
-      [&bootablePartition](std::size_t block) {
+      [](std::size_t) {
         return 0;
       },
       [] {

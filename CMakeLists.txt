@@ -68,7 +68,14 @@ if(${configuration_is_ready})
   initialize_cpu()
 
   add_library(yasboot_public_flags INTERFACE)
+  target_compile_options(yasboot_public_flags 
+    INTERFACE 
+      -Wall 
+      -Werror
+  )  
+
   add_library(yasboot_private_flags INTERFACE)
+  target_link_libraries(yasboot_private_flags INTERFACE yasboot_public_flags)
 
   include(clang_tidy)
   add_clang_tidy(".*packages/.*")

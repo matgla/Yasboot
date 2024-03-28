@@ -90,25 +90,25 @@ bool LittleFS::mount()
 constexpr int convertFlags(int flags)
 {
   int result = 0;
-  if (flags & O_RDONLY != 0)
+  if ((flags & O_RDONLY) != 0)
   {
     result |= LFS_O_RDONLY;
   }
-  else if (flags & O_WRONLY != 0)
+  else if ((flags & O_WRONLY) != 0)
   {
     result |= LFS_O_WRONLY;
   }
-  else if (flags & O_RDWR != 0)
+  else if ((flags & O_RDWR) != 0)
   {
     result |= LFS_O_RDWR;
   }
 
-  if (flags & O_APPEND)
+  if ((flags & O_APPEND) != 0)
   {
     result |= LFS_O_APPEND;
   }
 
-  if (flags & O_CREAT)
+  if ((flags & O_CREAT) != 0)
   {
     result |= LFS_O_CREAT;
   }

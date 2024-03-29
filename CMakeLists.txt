@@ -66,9 +66,10 @@ if(${configuration_is_ready})
 
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
+  include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/libstd)
   # This will be extracted to external repository
 
-  set(CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 23)
   initialize_cpu()
 
   add_library(yasboot_public_flags INTERFACE)

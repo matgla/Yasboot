@@ -25,8 +25,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     cppfront 
-    GIT_REPOSITORY https://github.com/hsutter/cppfront.git
-    GIT_TAG main
+    GIT_REPOSITORY https://github.com/matgla/cppfront.git
+    GIT_TAG fixNoRtti 
 )
 
 FetchContent_MakeAvailable(cppfront)

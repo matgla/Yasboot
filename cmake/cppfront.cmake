@@ -46,6 +46,7 @@ function(cppfront_generate_source input output)
     add_custom_command(
         OUTPUT ${output}
         COMMAND ${CPPFRONT_BINARY_DIR}/cppfront ${input} -fno-rtti -fno-exceptions -o ${output}
+        DEPENDS ${input}
         VERBATIM
     )
 endfunction()

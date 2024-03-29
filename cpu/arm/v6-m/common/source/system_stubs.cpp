@@ -130,6 +130,13 @@ extern "C"
   {
     auto [fs, path] =
       yasboot::fs::FilesystemMountPoints::get().get_mount_point(pathname);
+    
+    if (!fs)
+    {
+      printf("Responding with -1\n");
+      errno = ENOENT;
+      return -1;
+    }
 
     return fs->open(path, flags);
   }

@@ -1,8 +1,14 @@
 #include "hal/uart.hpp"
+#include "hal/system_stubs.hpp"
 
 main: () = {
     uart: yasboot::hal::Uart<0> = 115200;
+    vec: std::vector<uint8_t> = 0;
     yasboot::hal::setGlobalWrite(: (str: std::string_view) -> std::size_t = 
        uart$.write(str));
     printf("Hello from Yasboot in CPP2\n");
+    f := cpp2::fopen("Non existing file", "r");
+    buf:  std::array<uint8_t, 10> = (); 
+    ret := f.fscanf("%s", buf);
+    printf("File: %s, %d\n", buf.data(), ret);
 }

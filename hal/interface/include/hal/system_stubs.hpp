@@ -22,12 +22,12 @@
 
 #include <string_view>
 
-#include <eul/functional/function.hpp>
+#include <functional>
 
 namespace yasboot::hal
 {
 
-using WriteCallback = eul::function<size_t(const std::string_view &data), sizeof(void *)>;
+using WriteCallback = std::function<size_t(const std::string_view &data)>;
 
 void setGlobalWrite(const WriteCallback &write);
 WriteCallback &getGlobalWrite();

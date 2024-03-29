@@ -39,6 +39,8 @@ setup_yaspem(
   ${CMAKE_CURRENT_BINARY_DIR}/packages PACKAGE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/preconfigure_packages.json)
 
+include(cmake/cppfront.cmake)
+
 find_package(CMakeUtils REQUIRED)
 include(virtualenv)
 create_virtualenv(kconfig ${CMAKE_CURRENT_SOURCE_DIR}/kconfig/requirements.txt
@@ -64,6 +66,8 @@ if(${configuration_is_ready})
 
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
+  # This will be extracted to external repository
+
   set(CXX_STANDARD 20)
   initialize_cpu()
 
@@ -72,6 +76,7 @@ if(${configuration_is_ready})
     INTERFACE 
       -Wall 
       -Werror
+      -Wextra
   )  
 
   add_library(yasboot_private_flags INTERFACE)

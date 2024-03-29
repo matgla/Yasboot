@@ -76,6 +76,15 @@ LittleFS::LittleFS(const DiskParameters &disk, ReadFromDisk read, WriteToDisk wr
       .cache_size =
         256, // plenty of RAM on RP2040, but make this configurable via KConfig
       .lookahead_size = 16,
+      .compact_thresh = static_cast<lfs_size_t>(0.8 * disk.block_size),
+      .read_buffer = nullptr,
+      .prog_buffer = nullptr,
+      .lookahead_buffer = nullptr,
+      .name_max = LFS_NAME_MAX,
+      .file_max = LFS_FILE_MAX,
+      .attr_max = LFS_ATTR_MAX,
+      .metadata_max = disk.block_size,
+      .inline_max = 0
     }
   , lfs_{}
 {

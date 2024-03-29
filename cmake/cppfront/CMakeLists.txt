@@ -1,7 +1,6 @@
 #
 # CMakeLists.txt
-#
-# Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+# Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -16,23 +15,31 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-add_subdirectory(fs)
-add_subdirectory(mbr)
+cmake_minimum_required(VERSION 3.28)
 
-add_executable(yasboot)
+project(cppfront CXX)
 
-target_sources(yasboot PRIVATE main.cpp2 other.cpp2)
-use_cppfront(yasboot)
+set(CMAKE_CXX_STANDARD 23)
 
-find_package(eul REQUIRED)
-find_package(littlefs REQUIRED)
-find_package(yasconf REQUIRED)
+include(FetchContent)
 
+FetchContent_Declare(
+    cppfront 
+    GIT_REPOSITORY https://github.com/hsutter/cppfront.git
+    GIT_TAG main
+)
 
-target_link_libraries(
-  yasboot
-  PUBLIC yasboot_public_flags eul::utils
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr board yasboot::filesystem yasconf)
+FetchContent_MakeAvailable(cppfront)
 
-include(generate_binary)
-generate_binary(yasboot)
+add_executable(cppfront 
+    ${cppfront_SOURCE_DIR}/source/cppfront.cpp
+)
+
+target_include_directories(cppfront
+    PUBLIC 
+        ${cppfront_SOURCE_DIR}/include
+    PRIVATE 
+        ${cppfront_SOURCE_DIR}/source
+)
+
+install(DIRECTORY ${cppfront_SOURCE_DIR}/include/ DESTINATION ${PROJECT_BINARY_DIR}/include)

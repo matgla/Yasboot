@@ -1,0 +1,8 @@
+#include "hal/uart.hpp"
+
+main: () = {
+    uart: yasboot::hal::Uart<0> = 115200;
+    yasboot::hal::setGlobalWrite(: (str: std::string_view) -> std::size_t = 
+       uart$.write(str));
+    printf("Hello from Yasboot in CPP2\n");
+}

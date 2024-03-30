@@ -42,20 +42,25 @@ else ()
     message(STATUS "Setting cppfront compiler path to: $ENV{CPPFRONT_COMPILER_PATH}/cppfront")
 endif ()
 
-function(cppfront_generate_source input output)
-    message(STATUS "Generation of: ${output}")
+macro(cppfront_generate_source input output target)
+    message(STATUS "Generation of: ${output} T: ${target}")
     add_custom_command(
-        OUTPUT ${output}
+        OUTPUT "${output}"
         COMMAND ${CPPFRONT_BINARY_DIR}/cppfront ${input} -fno-rtti -fno-exceptions -p -o ${output}
         DEPENDS ${input}
         VERBATIM
     )
-endfunction()
+    if (output MATCHES ".*h")
+        target_sources(${target} PUBLIC ${output})
+    else ()
+        target_sources(${target} PRIVATE ${output})
+    endif ()
+endmacro()
 
 macro(cppfront_generate_sources)
     set(prefix CPPFRONT_GENERATOR)
     set(optionArgs "")
-    set(singleValueArgs ROOT_DIRECTORY OUTPUT)
+    set(singleValueArgs ROOT_DIRECTORY TARGET)
     set(multiValueArgs SOURCES)
     
     include(CMakeParseArguments)
@@ -68,6 +73,8 @@ macro(cppfront_generate_sources)
     )
 
     set (generated_sources "") 
+    add_library(${CPPFRONT_GENERATOR_TARGET}_cpp2 STATIC)
+    target_include_directories(${target}_cpp2 PUBLIC ${PROJECT_SOURCE_DIR}/cppfront/include)
     foreach(source IN LISTS CPPFRONT_GENERATOR_SOURCES)
         cmake_path(IS_ABSOLUTE source is_absolute)
         if (NOT ${is_absolute})
@@ -79,42 +86,28 @@ macro(cppfront_generate_sources)
         string(LENGTH ${source_name} name_length)
         math(EXPR name_length "${name_length} - 1")
         string(SUBSTRING ${source_name} 0 ${name_length} source_name)
-        cppfront_generate_source(${source} ${CMAKE_CURRENT_BINARY_DIR}/${source_name})
+        cppfront_generate_source(${source} ${CMAKE_CURRENT_BINARY_DIR}/${source_name} ${CPPFRONT_GENERATOR_TARGET}_cpp2)
         message(STATUS "Setting generated on: ${CMAKE_CURRENT_BINARY_DIR}/${source_name}")
-        set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${source_name} PROPERTIES GENERATED 1)
-        list (APPEND generated_sources ${CMAKE_CURRENT_BINARY_DIR}/${source_name}) 
     endforeach()
-    set (${CPPFRONT_GENERATOR_OUTPUT} ${generated_sources})
 endmacro()
 
-function(use_cppfront target root_dir)
+macro(use_cppfront target root_dir)
     message(VERBOSE "Adding cppfront for target: ${target}")
     get_target_property(sources ${target} SOURCES)
     list(FILTER sources INCLUDE REGEX "\\.(cpp|h)2$")
     if (sources)
-    message("Original sources: ${sources}, ${root_dir}") 
+        message("Original sources: ${sources}, ${root_dir}") 
         cppfront_generate_sources(
+            TARGET ${target} 
             ROOT_DIRECTORY ${root_dir}
             OUTPUT generated_cpp_sources 
-            SOURCES ${sources})
-        message("Generated: ${generated_cpp_sources}")
-        # foreach (source IN LISTS generated_cpp_sources)
-        #     message("Setting generated on: ${source}")
-        #     set_source_files_properties(${source} PROPERTIES GENERATED 1)
-        # endforeach ()
-        set(headers ${generated_cpp_sources}) 
-        list(FILTER headers INCLUDE REGEX "\\.(h)$")
-        
-        set(sources ${generated_cpp_sources}) 
-        list(FILTER sources INCLUDE REGEX "\\.(cpp)$")
-        add_library(${target}_cpp2 STATIC)
-        target_sources(${target}_cpp2 PUBLIC ${headers} PRIVATE ${sources})
-        target_include_directories(${target}_cpp2 PUBLIC ${PROJECT_SOURCE_DIR}/cppfront/include)
+            SOURCES ${sources}
+        )
         target_link_libraries(${target} PRIVATE ${target}_cpp2)
     endif()
-endfunction()
+endmacro()
 
-function (enable_cppfront_for_directory directory root_dir)
+macro (enable_cppfront_for_directory directory root_dir)
     get_property(targets DIRECTORY ${directory} PROPERTY BUILDSYSTEM_TARGETS)
     foreach (target IN LISTS targets)
         use_cppfront(${target} ${root_dir})
@@ -124,11 +117,11 @@ function (enable_cppfront_for_directory directory root_dir)
     foreach (subdirectory IN LISTS subdirectories)
         enable_cppfront_for_directory(${subdirectory} ${subdirectory})
     endforeach ()
-endfunction ()
+endmacro ()
 
-function (_enable_cppfront_root)
+macro (_enable_cppfront_root)
     enable_cppfront_for_directory(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
-endfunction ()
+endmacro ()
 
 cmake_language(DEFER DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} CALL _enable_cppfront_root)
 

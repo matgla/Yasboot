@@ -118,6 +118,3 @@ for key, value in sorted(layout["partitions"].items()):
             print("Writing partition to", hex(get_int(value["start"])))
             img.seek(get_int(value["start"]))
             img.write(fs.context.buffer)
-        with open(working_directory / "lfs.img", "w+b") as img:
-            print("Dumping LittleFS partition to: ", working_directory / "lfs.img")
-            img.write(fs.context.buffer)

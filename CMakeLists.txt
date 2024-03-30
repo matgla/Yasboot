@@ -76,7 +76,6 @@ if(${configuration_is_ready})
   target_compile_options(yasboot_public_flags 
     INTERFACE 
       -Wall 
-      -Werror
       -Wextra
   )  
 

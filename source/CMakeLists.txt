@@ -21,8 +21,7 @@ add_subdirectory(mbr)
 
 add_executable(yasboot)
 
-target_sources(yasboot PRIVATE main.cpp2 other.cpp2)
-use_cppfront(yasboot)
+target_sources(yasboot PRIVATE other.h2 hello.cc main.cpp2)
 
 find_package(eul REQUIRED)
 find_package(littlefs REQUIRED)
@@ -33,6 +32,10 @@ target_link_libraries(
   yasboot
   PUBLIC yasboot_public_flags eul::utils
   PRIVATE yasld yasboot_hal_interface yasboot_mbr board yasboot::filesystem yasconf)
+
+target_compile_options(yasboot 
+  PUBLIC -fmodules-ts
+)
 
 include(generate_binary)
 generate_binary(yasboot)

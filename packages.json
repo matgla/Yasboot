@@ -29,8 +29,7 @@
       "version": "main",
       "target": "renode_rp2040",
       "options": {
-        "cmake_variables": {
-        },
+        "cmake_variables": {},
         "is_cmake_library": true
       }
     },
@@ -42,10 +41,33 @@
       "options": {
         "create_library": {
           "type": "STATIC",
-          "sources_filter": ["lfs.c", "lfs_util.c"],
-          "sources_directory": "",
-          "include_directories": ["."],
-          "compile_definitions": ""
+          "sources": {
+            "PRIVATE": [
+              "lfs.c",
+              "lfs_util.c"
+            ],
+            "PUBLIC": [
+              "lfs.h"
+            ]
+          },
+          "include_directories": {
+            "PUBLIC": [
+              "."
+            ]
+          },
+          "link_libraries": {
+            "PUBLIC": [
+              "yasboot_public_flags"
+            ],
+            "PRIVATE": [
+              "yasboot_private_flags"
+            ]
+          },
+          "compile_options": {
+            "PRIVATE": [
+              "-Wno-unused-function"
+            ]
+          }
         }
       }
     },
@@ -57,7 +79,7 @@
       "options": {
         "cmake_variables": {
           "DISABLE_TESTS": "ON"
-        } 
+        }
       }
     }
   ]

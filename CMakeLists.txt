@@ -17,19 +17,25 @@
 
 cmake_minimum_required(VERSION 3.19)
 
-include(FetchContent)
+find_program(yaspem yaspem.py)
 
-FetchContent_Declare(
-  yaspem
-  GIT_REPOSITORY https://github.com/matgla/Yaspem.git
-  GIT_TAG v1.2)
+if (NOT yaspem OR $ENV{YASPEM_FETCH_FROM_GIT}})
+  include(FetchContent)
 
-FetchContent_MakeAvailable(yaspem)
+  FetchContent_Declare(
+    yaspem
+    GIT_REPOSITORY https://github.com/matgla/Yaspem.git
+    GIT_TAG v2.1)
 
-set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake
-    ${yaspem_SOURCE_DIR}/cmake
-    CACHE INTERNAL "")
+  FetchContent_MakeAvailable(yaspem)
+
+else ()
+  cmake_path(GET yaspem PARENT_PATH yaspem_dir)
+  message(STATUS "Populating locally available Yaspem: ${yaspem_dir}")
+  set (yaspem_SOURCE_DIR ${yaspem_dir})
+endif ()
+    
+list (APPEND CMAKE_MODULE_PATH ${yaspem_SOURCE_DIR}/cmake) 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(yaspem)
@@ -52,14 +58,19 @@ generate_config(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 if(${configuration_is_ready})
   message(STATUS "Configuration is processed, starting initialization")
   add_subdirectory(cpu)
+  
+  list(APPEND CMAKE_MODULE_PATH "${CPU_MODULE_PATH}")
+  list(APPEND CMAKE_MODULE_PATH "${ARCHITECTURE_MODULE_PATH}")
 
   include(McuInit)
-
+  
   set(packagesToFetch ${CMAKE_CURRENT_SOURCE_DIR}/packages.json)
   if(CPU_PACKAGES_TO_FETCH)
-    set(packagesToFetch "${packagesToFetch},${CPU_PACKAGES_TO_FETCH}")
+    set(packagesToFetch ${packagesToFetch} ${CPU_PACKAGES_TO_FETCH})
   endif()
 
+ 
+  message(STATUS "************* ${packagesToFetch}")
   setup_yaspem(
     YASPEM_SOURCE ${yaspem_SOURCE_DIR} OUTPUT_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}/packages PACKAGE_FILES ${packagesToFetch})

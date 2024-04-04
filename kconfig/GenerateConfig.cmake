@@ -18,7 +18,7 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-function (generate_config source_directory output_directory)
+macro (generate_config source_directory output_directory)
   file (MAKE_DIRECTORY ${output_directory}/config)
 
   find_file(kconfig_generator generate.py ${source_directory}/kconfig)
@@ -68,4 +68,4 @@ function (generate_config source_directory output_directory)
     set(configuration_is_ready TRUE CACHE INTERNAL "" FORCE)
   endif ()
 
-endfunction()
+endmacro()

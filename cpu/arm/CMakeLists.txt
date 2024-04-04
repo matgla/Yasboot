@@ -18,7 +18,7 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/modules)
+set (ARCHITECTURE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules CACHE INTERNAL "")
 
 if (CPU_ARCHITECTURE)
   message(STATUS "Adding CPU architecture: ${CPU_ARCHITECTURE}")

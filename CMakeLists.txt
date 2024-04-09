@@ -69,8 +69,6 @@ if(${configuration_is_ready})
     set(packagesToFetch ${packagesToFetch} ${CPU_PACKAGES_TO_FETCH})
   endif()
 
- 
-  message(STATUS "************* ${packagesToFetch}")
   setup_yaspem(
     YASPEM_SOURCE ${yaspem_SOURCE_DIR} OUTPUT_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}/packages PACKAGE_FILES ${packagesToFetch})
@@ -81,6 +79,7 @@ if(${configuration_is_ready})
   # This will be extracted to external repository
 
   set(CMAKE_CXX_STANDARD 23)
+  set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
   initialize_cpu()
 
   add_library(yasboot_public_flags INTERFACE)
@@ -88,7 +87,15 @@ if(${configuration_is_ready})
     INTERFACE 
       -Wall 
       -Wextra
+      
+      $<$<COMPILE_LANGUAGE:CXX>:-std=c++23 -fmodules-ts>
   )  
+  target_link_libraries(yasboot_public_flags 
+    INTERFACE 
+      board
+  )
+
+  cppfront_set_flags(yasboot_private_flags)
 
   add_library(yasboot_private_flags INTERFACE)
   target_link_libraries(yasboot_private_flags INTERFACE yasboot_public_flags)

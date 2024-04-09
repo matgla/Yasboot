@@ -120,7 +120,7 @@ target_sources(
 
 target_link_libraries(
   rp2040
-  PUBLIC arm_v6m_common yasboot_hal_interface
+  PUBLIC arm_v6m_common yasboot_hal_interface common
   PRIVATE board_setup hardware_regs hardware_structs)
 
 target_link_options(

@@ -21,15 +21,36 @@ project(cppfront CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-include(FetchContent)
+if (NOT yaspem)
+  find_program(yaspem yaspem.py)
+endif () 
 
-FetchContent_Declare(
-    cppfront 
-    GIT_REPOSITORY https://github.com/matgla/cppfront.git
-    GIT_TAG fixNoRtti 
-)
+if (NOT yaspem OR $ENV{YASPEM_FETCH_FROM_GIT}})
+  include(FetchContent)
 
-FetchContent_MakeAvailable(cppfront)
+  FetchContent_Declare(
+    yaspem
+    GIT_REPOSITORY https://github.com/matgla/Yaspem.git
+    GIT_TAG v2.1)
+
+  FetchContent_MakeAvailable(yaspem)
+else ()
+  cmake_path(GET yaspem PARENT_PATH yaspem_dir)
+  message(STATUS "Populating locally available Yaspem: ${yaspem_dir}")
+  set (yaspem_SOURCE_DIR ${yaspem_dir})
+endif ()
+    
+list (APPEND CMAKE_MODULE_PATH ${yaspem_SOURCE_DIR}/cmake) 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+include(yaspem)
+
+setup_yaspem(
+  YASPEM_SOURCE ${yaspem_SOURCE_DIR} OUTPUT_DIRECTORY
+  ${CMAKE_CURRENT_BINARY_DIR}/packages PACKAGE_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/packages.json)
+
+find_package(cppfront REQUIRED)
 
 add_executable(cppfront 
     ${cppfront_SOURCE_DIR}/source/cppfront.cpp

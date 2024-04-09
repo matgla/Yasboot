@@ -6,5 +6,5 @@ module;
 export module hello;
 export void greet(std::string_view name)
 {
-    printf("Hello %s\n", name.data());
+  printf("Hello %s\n", name.data());
 }

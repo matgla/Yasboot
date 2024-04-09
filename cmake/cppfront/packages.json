@@ -1,0 +1,13 @@
+{
+  "dependencies": [
+    {
+      "link": "https://github.com/matgla/cppfront.git",
+      "type": "git",
+      "version": "modules",
+      "target": "cppfront",
+      "options": {
+        "is_cmake_library": true
+      }
+    }
+  ]
+}

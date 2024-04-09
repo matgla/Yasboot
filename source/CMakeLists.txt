@@ -21,17 +21,21 @@ add_subdirectory(mbr)
 
 add_executable(yasboot)
 
-target_sources(yasboot PRIVATE other.h2 hello.cc main.cpp2)
+target_sources(yasboot 
+  PUBLIC 
+    FILE_SET CXX_MODULES FILES hello.cc
+  PRIVATE other.h2  main.cpp2)
+
+cppfront_enable_pure(yasboot)
 
 find_package(eul REQUIRED)
 find_package(littlefs REQUIRED)
 find_package(yasconf REQUIRED)
 
-
 target_link_libraries(
   yasboot
   PUBLIC yasboot_public_flags eul::utils
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr board yasboot::filesystem yasconf)
+  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf)
 
 target_compile_options(yasboot 
   PUBLIC -fmodules-ts

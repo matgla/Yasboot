@@ -1,16 +1,15 @@
+import hello;
 // #include "hal/uart.hpp"
 // #include "hal/system_stubs.hpp"
-#include "other.h2"
+// #include "other.h2"
 
 main: () = {
-    // uart: yasboot::hal::Uart<0> = 115200;
-    // vec: std::vector<uint8_t> = 0;
-    // yasboot::hal::setGlobalWrite(: (str: std::string_view) -> std::size_t = 
-    //    uart$.write(str));
-    // printf("Hello from Yasboot in CPP2\n");
-    // greet("World!");
-
-    // rect: shape = ();
-    // rect.draw("rectangle");
-    // rect.draw("circle");
+//     uart: yasboot::hal::Uart<0> = 115200;
+//     vec: std::vector<uint8_t> = 0;
+//     yasboot::hal::setGlobalWrite(: (str: std::string_view) -> std::size_t = 
+//        uart$.write(str));
+//     printf("Hello from Yasboot in CPP2\n");
+//     rect: shape = ();
+//     rect.draw("rectangle");
+//     rect.draw("circle");
 }

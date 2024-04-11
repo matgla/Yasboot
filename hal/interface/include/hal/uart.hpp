@@ -32,7 +32,8 @@ enum class Parity
   Odd
 };
 
-template <int uart_id> class Uart
+template <int uart_id>
+class Uart
 {
 public:
   explicit Uart(uint32_t baudrate);

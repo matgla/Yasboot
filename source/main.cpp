@@ -39,6 +39,8 @@
 
 #include "yasconf/config.hpp"
 
+import hello;
+
 extern const std::size_t YASBOOT_RAM_LOT;
 extern const std::size_t YASBOOT_RAM_LOT_SIZE;
 extern const std::byte YASBOOT_RAM_APP;

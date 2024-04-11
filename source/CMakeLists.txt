@@ -19,14 +19,26 @@
 add_subdirectory(fs)
 add_subdirectory(mbr)
 
+add_library(hello)
+
+target_sources(hello
+  PUBLIC 
+    FILE_SET CXX_MODULES FILES hello.cc
+) 
+
+target_link_libraries(hello PRIVATE yasboot_private_flags)
+
 add_executable(yasboot)
 
 target_sources(yasboot 
-  PUBLIC 
-    FILE_SET CXX_MODULES FILES hello.cc
-  PRIVATE other.h2  main.cpp2)
+  PRIVATE 
+  #main.cpp
+    main.cpp2
+)
 
-cppfront_enable_pure(yasboot)
+use_cppfront(yasboot)
+
+#cppfront_enable_pure(yasboot)
 
 find_package(eul REQUIRED)
 find_package(littlefs REQUIRED)
@@ -35,7 +47,7 @@ find_package(yasconf REQUIRED)
 target_link_libraries(
   yasboot
   PUBLIC yasboot_public_flags eul::utils
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf)
+  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf hello)
 
 target_compile_options(yasboot 
   PUBLIC -fmodules-ts

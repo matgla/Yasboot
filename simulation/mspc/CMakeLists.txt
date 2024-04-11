@@ -29,5 +29,7 @@ add_custom_target(
   run 
   COMMAND ${renode_executable} --console --disable-xwt ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl 
   DEPENDS disk ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl 
+  VERBATIM
+  USES_TERMINAL
 )
 

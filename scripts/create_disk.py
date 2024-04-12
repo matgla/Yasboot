@@ -26,7 +26,8 @@ import os
 import sys
 from pathlib import Path
 import json 
-import parted 
+import pymbr
+# import parted 
 import humanfriendly
 from littlefs import LittleFS 
 
@@ -46,25 +47,27 @@ def get_int(value):
       return int(humanfriendly.parse_size(value, binary=True))
 
 def write_mbr(filepath):
-    device = parted.getDevice(str(filepath.absolute()))
-    disk = parted.freshDisk(device, "msdos")
+    mbr = pymbr.MBR()
+    mbr.bootcode = pymbr.Bootcode.ZERO
+    partition_table = pymbr.PartitionTable()
+    mbr.signature = 0xaa55
+    # disk = parted.freshDisk(device, "msdos")
 
     for key, value in sorted(layout["partitions"].items()):
-      g = parted.Geometry(
-          device=device, 
-          start=int(get_int(value["start"]) / 512),
-          length=int(get_int(value["length"]) / 512)
-          ) 
-      p = parted.Partition(
-          disk=disk, 
-          type=parted.PARTITION_NORMAL,
-          geometry=g
-          )
-      disk.addPartition(partition=p)
-      if value["bootable"]:
-        p.setFlag(parted.PARTITION_BOOT)
+        p = pymbr.PartitionEntry(lba = int(get_int(value["start"]) / 512), 
+                                 size = int(get_int(value["length"]) / 512))
+        p.bootflag = value["bootable"]
+        p.startCHS = pymbr.CHSTuple(0, 0, 0)
+        p.endCHS = pymbr.CHSTuple(0, 0, 0)
+        p.type = 0
 
-    disk.commit()
+        partition_table.partitions[key] = p
+
+    mbr.partitionTable = partition_table
+    bin = mbr.compose()
+    with open(filepath, "wb") as file: 
+        file.write(bin)
+    
 
 def create_littlefs_partition(block_size, block_count, config, working_directory):
     print("Creating littleFS partition with", block_count, "-", block_size, "bytes blocks") 

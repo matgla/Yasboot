@@ -21,7 +21,7 @@
 macro (generate_config source_directory output_directory)
   file (MAKE_DIRECTORY ${output_directory}/config)
 
-  find_file(kconfig_generator generate.py ${source_directory}/kconfig)
+  find_file(kconfig_generator generate.py ${source_directory}/kconfig_scripts)
 
   if (USE_CONFIG)
     set (filepath ${source_directory}/configs/${USE_CONFIG}/.config)

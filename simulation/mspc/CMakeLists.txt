@@ -23,12 +23,12 @@ find_package(renode_rp2040 REQUIRED)
 set (RENODE_BOARD_DIR ${renode_rp2040_SOURCE_DIR})
 set (RENODE_BINARY ${PROJECT_BINARY_DIR}/${BOARD}_disk.img)
 
-configure_file(mspc.repl ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl)
+configure_file(mspc.resc ${CMAKE_CURRENT_BINARY_DIR}/mspc.resc)
 
 add_custom_target(
   run 
-  COMMAND ${renode_executable} --console --disable-xwt ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl 
-  DEPENDS disk ${CMAKE_CURRENT_BINARY_DIR}/mspc.repl 
+  COMMAND ${renode_executable} --console --disable-xwt ${CMAKE_CURRENT_BINARY_DIR}/mspc.resc
+  DEPENDS disk ${CMAKE_CURRENT_BINARY_DIR}/mspc.resc
   VERBATIM
   USES_TERMINAL
 )

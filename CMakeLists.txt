@@ -25,7 +25,7 @@ if (NOT yaspem OR $ENV{YASPEM_FETCH_FROM_GIT}})
   FetchContent_Declare(
     yaspem
     GIT_REPOSITORY https://github.com/matgla/Yaspem.git
-    GIT_TAG v2.1)
+    GIT_TAG master)
 
   FetchContent_MakeAvailable(yaspem)
 
@@ -49,10 +49,10 @@ include(cmake/cppfront.cmake)
 
 find_package(CMakeUtils REQUIRED)
 include(virtualenv)
-create_virtualenv(kconfig ${CMAKE_CURRENT_SOURCE_DIR}/kconfig/requirements.txt
+create_virtualenv(kconfig ${CMAKE_CURRENT_SOURCE_DIR}/kconfig_scripts/requirements.txt
                   ${CMAKE_CURRENT_BINARY_DIR}/venvs)
 
-include(kconfig/GenerateConfig.cmake)
+include(kconfig_scripts/GenerateConfig.cmake)
 generate_config(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 if(${configuration_is_ready})
@@ -130,7 +130,15 @@ if(${configuration_is_ready})
     add_subdirectory(tests)
   endif()
 
-  find_program(renode_executable renode)
+  if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin")
+    set(renode_executable mono /Applications/Renode.app/Contents/MacOS/bin/Renode.exe)
+  else () 
+    find_program(renode_executable renode)
+  endif ()
+
+  if (NOT renode_executable)
+    message(FATAL_ERROR "Can't find renode executable")
+  endif ()
 
   if (DEFINED BOARD)
     add_subdirectory(simulation/${BOARD})

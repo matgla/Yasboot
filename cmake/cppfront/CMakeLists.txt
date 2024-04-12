@@ -31,7 +31,7 @@ if (NOT yaspem OR $ENV{YASPEM_FETCH_FROM_GIT}})
   FetchContent_Declare(
     yaspem
     GIT_REPOSITORY https://github.com/matgla/Yaspem.git
-    GIT_TAG v2.1)
+    GIT_TAG master)
 
   FetchContent_MakeAvailable(yaspem)
 else ()

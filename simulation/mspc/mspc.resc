@@ -1,6 +1,6 @@
 using sysbus
 path add @${RENODE_BOARD_DIR}
-include @initialize_rp2040.repl
+include @initialize_rp2040.resc
 
 showAnalyzer uart0
 sysbus LoadBinary @${RENODE_BINARY} 0x10000000

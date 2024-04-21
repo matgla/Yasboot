@@ -1,3 +1,4 @@
+module;
 /**
  * uart.cpp
  *
@@ -18,8 +19,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "hal/uart.hpp"
-
 #include "arm/v6-m/rp2040/configure_clocks.hpp"
 
 #include <hardware/regs/io_bank0.h>
@@ -31,10 +30,38 @@
 #include <hardware/structs/padsbank0.h>
 #include <hardware/structs/uart.h>
 
+#include <cstdint>
+#include <string_view>
+
+export module hal.uart;
+
+export namespace yasboot::hal
+{
+
+template <int id>
+class Uart
+{
+public:
+  explicit Uart(uint32_t baudrate);
+
+  void set_baudrate(uint32_t baudrate);
+  std::size_t write(const std::string_view &data);
+};
+
+} // namespace yasboot::hal
+
 namespace yasboot::hal
 {
 
-template <int uart_id> void uart_reset()
+enum class Parity
+{
+  None,
+  Even,
+  Odd
+};
+
+template <int uart_id>
+inline void uart_reset()
 {
   if constexpr (uart_id == 0)
   {
@@ -45,8 +72,8 @@ template <int uart_id> void uart_reset()
     reset_block(RESETS_RESET_UART1_BITS);
   }
 }
-
-template <int uart_id> void uart_unreset()
+template <int uart_id>
+void uart_unreset()
 {
   if constexpr (uart_id == 0)
   {
@@ -58,7 +85,8 @@ template <int uart_id> void uart_unreset()
   }
 }
 
-template <int uart_id> uart_hw_t *get_uart_instance()
+template <int uart_id>
+uart_hw_t *get_uart_instance()
 {
   if constexpr (uart_id == 0)
     return uart0_hw;
@@ -66,15 +94,16 @@ template <int uart_id> uart_hw_t *get_uart_instance()
     return uart1_hw;
 }
 
-void set_format(uart_hw_t *uart, uint32_t data_bits, uint32_t stop_bits, Parity parity)
+void set_format(uart_hw_t *uart, uint32_t data_bits, uint32_t stop_bits,
+                Parity parity)
 {
   hw_write_masked(&uart->lcr_h,
                   ((data_bits - 5u) << UART_UARTLCR_H_WLEN_LSB) |
-                      ((stop_bits - 1u) << UART_UARTLCR_H_STP2_LSB) |
-                      (bool_to_bit(parity != Parity::None) << UART_UARTLCR_H_PEN_LSB) |
-                      (bool_to_bit(parity == Parity::Even) << UART_UARTLCR_H_EPS_LSB),
-                  UART_UARTLCR_H_WLEN_BITS | UART_UARTLCR_H_STP2_BITS | UART_UARTLCR_H_PEN_BITS |
-                      UART_UARTLCR_H_EPS_BITS);
+                    ((stop_bits - 1u) << UART_UARTLCR_H_STP2_LSB) |
+                    (bool_to_bit(parity != Parity::None) << UART_UARTLCR_H_PEN_LSB) |
+                    (bool_to_bit(parity == Parity::Even) << UART_UARTLCR_H_EPS_LSB),
+                  UART_UARTLCR_H_WLEN_BITS | UART_UARTLCR_H_STP2_BITS |
+                    UART_UARTLCR_H_PEN_BITS | UART_UARTLCR_H_EPS_BITS);
 }
 
 void configure_gpio(int gpio)
@@ -85,7 +114,8 @@ void configure_gpio(int gpio)
   iobank0_hw->io[gpio].ctrl = gpio_uart_function << IO_BANK0_GPIO0_CTRL_FUNCSEL_LSB;
 }
 
-template <int uart_id> void configure_uart_gpio()
+template <int uart_id>
+void configure_uart_gpio()
 {
   if constexpr (uart_id == 0)
   {
@@ -94,21 +124,31 @@ template <int uart_id> void configure_uart_gpio()
   }
 }
 
-template <int uart_id> Uart<uart_id>::Uart(uint32_t baudrate)
+bool is_uart_writable(uart_hw_t *uart)
 {
-  uart_reset<uart_id>();
-  uart_unreset<uart_id>();
-  set_baudrate(baudrate);
-  set_format(get_uart_instance<uart_id>(), 8, 1, Parity::None);
-
-  get_uart_instance<uart_id>()->cr =
-      UART_UARTCR_UARTEN_BITS | UART_UARTCR_TXE_BITS | UART_UARTCR_RXE_BITS;
-  hw_set_bits(&get_uart_instance<uart_id>()->lcr_h, UART_UARTLCR_H_FEN_BITS);
-  get_uart_instance<uart_id>()->dmacr = UART_UARTDMACR_TXDMAE_BITS | UART_UARTDMACR_RXDMAE_BITS;
-  configure_uart_gpio<uart_id>();
+  return !(uart->fr & UART_UARTFR_TXFF_BITS);
 }
 
-template <int uart_id> void Uart<uart_id>::set_baudrate(uint32_t baudrate)
+template <int id>
+Uart<id>::Uart(uint32_t baudrate)
+{
+  static_assert(id == 0 || id == 1, "Only UART0 and UART1 is available on RP2040");
+
+  uart_reset<id>();
+  uart_unreset<id>();
+  set_baudrate(baudrate);
+  set_format(get_uart_instance<id>(), 8, 1, Parity::None);
+
+  get_uart_instance<id>()->cr =
+    UART_UARTCR_UARTEN_BITS | UART_UARTCR_TXE_BITS | UART_UARTCR_RXE_BITS;
+  hw_set_bits(&get_uart_instance<id>()->lcr_h, UART_UARTLCR_H_FEN_BITS);
+  get_uart_instance<id>()->dmacr =
+    UART_UARTDMACR_TXDMAE_BITS | UART_UARTDMACR_RXDMAE_BITS;
+  configure_uart_gpio<id>();
+}
+
+template <int id>
+void Uart<id>::set_baudrate(uint32_t baudrate)
 {
   const uint32_t baudrate_div = (8 * get_clock(clk_peri) / baudrate);
   uint32_t baudrate_ibrd = baudrate_div >> 7;
@@ -129,20 +169,16 @@ template <int uart_id> void Uart<uart_id>::set_baudrate(uint32_t baudrate)
     baudrate_fbrd = ((baudrate_div & 0x7f) + 1) / 2;
   }
 
-  get_uart_instance<uart_id>()->ibrd = baudrate_ibrd;
-  get_uart_instance<uart_id>()->fbrd = baudrate_fbrd;
+  get_uart_instance<id>()->ibrd = baudrate_ibrd;
+  get_uart_instance<id>()->fbrd = baudrate_fbrd;
 
-  hw_set_bits(&get_uart_instance<uart_id>()->lcr_h, 0);
+  hw_set_bits(&get_uart_instance<id>()->lcr_h, 0);
 }
 
-bool is_uart_writable(uart_hw_t *uart)
+template <int id>
+std::size_t Uart<id>::write(const std::string_view &data)
 {
-  return !(uart->fr & UART_UARTFR_TXFF_BITS);
-}
-
-template <int uart_id> std::size_t Uart<uart_id>::write(const std::string_view &data)
-{
-  uart_hw_t *uart = get_uart_instance<uart_id>();
+  uart_hw_t *uart = get_uart_instance<id>();
   for (char byte : data)
   {
     while (!is_uart_writable(uart))
@@ -152,8 +188,5 @@ template <int uart_id> std::size_t Uart<uart_id>::write(const std::string_view &
   }
   return data.size();
 }
-
-template class Uart<0>;
-template class Uart<1>;
 
 } // namespace yasboot::hal

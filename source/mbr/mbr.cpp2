@@ -1,0 +1,100 @@
+module;
+
+/**
+ * mbr.cpp2
+ *
+ * Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+ *
+ * This program is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General
+ * Public License along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
+ */
+
+import hal.system.disk;
+
+export module yasboot.mbr;
+
+export yasboot: namespace = {
+  Test: type = { 
+    get_bootable_partition: (this, i: i32) -> std::expected<int, std::string_view> = {
+      if (i == 0) {
+        return 123;
+      }
+      return std::unexpected("Incorrect i value");
+    } 
+  }
+
+  MbrPartitionEntry: @struct type = {
+    status: u8;
+    chs_start: std::array<u8, 3>;
+    type: u8;
+    chs_end: std::array<u8, 3>;
+    lba_start: u32;
+    number_of_sectors: u32;
+  }
+
+  MbrHeader: @struct type = {
+    partitions: std::array<MbrPartitionEntry, 4>;
+    signature: u16;
+  }
+
+  MbrParser: type = {
+    private mbr_: MbrHeader = ();
+
+    private read_partition: (this, partition_number: i32, disk: hal::system::Disk) -> MbrPartitionEntry = {
+      partition_size:= 16u; 
+      address: std::size_t = 446 + partition_number * partition_size; 
+      p: MbrPartitionEntry = (
+        disk.read<u8>(address),
+        disk.read<std::array<u8, 3>>(address + 1),
+        disk.read<u8>(address + 4),
+        disk.read<std::array<u8, 3>>(address + 5),
+        disk.read<u32>(address + 8),
+        disk.read<u32>(address + 12)
+      );
+      return p;
+    }
+
+    operator=: (out this, in disk :hal::system::Disk) = { 
+      for (0, 1, 2, 3) do (p) {
+        mbr_.partitions[p] = read_partition(0, disk);
+      }
+      mbr_.signature = disk.read<u16>(510);
+    }
+
+    is_valid_mbr: (this) -> bool = {
+      return mbr_.signature == 0xaa55;
+    }
+    
+    mbr: (this) -> MbrHeader = {
+      return mbr_;
+    }
+   
+    err: () -> std::expected<int, std::string_view> = {
+      return std::unexpected("Hola");
+    }
+
+    get_bootable_partition: (this) -> std::expected<MbrPartitionEntry, std::string_view> = {
+      for mbr_.partitions do (p) {
+        if ((p.status & 0x80) != 0) {
+          return p;
+        }
+      }
+      return std::unexpected("No bootable partition found");
+    }
+  } 
+}
+
+yasboot: namespace = {
+  
+}

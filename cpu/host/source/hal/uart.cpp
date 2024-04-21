@@ -27,12 +27,14 @@
 namespace yasboot::hal
 {
 
-template <int uart_id> Uart<uart_id>::Uart(uint32_t baudrate)
+template <int uart_id>
+Uart<uart_id>::Uart(uint32_t baudrate)
 {
   UNUSED(baudrate);
 }
 
-template <int uart_id> std::size_t Uart<uart_id>::write(const std::string_view &data)
+template <int uart_id>
+std::size_t Uart<uart_id>::write(const std::string_view &data)
 {
   std::cout << data;
   return data.size();

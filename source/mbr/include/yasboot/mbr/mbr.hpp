@@ -21,7 +21,7 @@
 
 #include <cstdint>
 
-#include "hal/disk.hpp"
+import hal.system.disk;
 
 namespace yasboot
 {
@@ -46,7 +46,7 @@ struct __attribute__((packed)) MbrHeader
 class MbrParser
 {
 public:
-  explicit MbrParser(const hal::Disk &disk);
+  explicit MbrParser(const hal::system::Disk &disk);
 
   bool isValidMbr() const;
   const MbrHeader &mbr() const;
@@ -56,7 +56,7 @@ public:
   const MbrPartitionEntry *getBootablePartition() const;
 
 private:
-  const hal::Disk &disk_;
+  const hal::system::Disk &disk_;
   MbrHeader mbr_;
 };
 

@@ -15,7 +15,7 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.28)
 
 find_program(yaspem yaspem.py)
 
@@ -73,8 +73,11 @@ if(${configuration_is_ready})
     YASPEM_SOURCE ${yaspem_SOURCE_DIR} OUTPUT_DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}/packages PACKAGE_FILES ${packagesToFetch})
 
+  set(CMAKE_CXX_SCAN_FOR_MODULES ON) 
+
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmodules-ts")
   set(CMAKE_CXX_SCAN_FOR_MODULES ON) 
   include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/libstd)
   # This will be extracted to external repository
@@ -94,8 +97,6 @@ if(${configuration_is_ready})
     INTERFACE 
       board
   )
-
-  cppfront_set_flags(yasboot_private_flags)
 
   add_library(yasboot_private_flags INTERFACE)
   target_link_libraries(yasboot_private_flags INTERFACE yasboot_public_flags)

@@ -107,16 +107,24 @@ add_library(rp2040 STATIC)
 # TODO this public may be probably removed and only system_init provided as
 # public
 set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/arm/v6-m/rp2040)
+
+target_sources(rp2040
+  PUBLIC
+  FILE_SET CXX_MODULES FILES 
+    source/hal/disk.cc
+    source/hal/uart.cc
+    source/hal/system_stubs.cc
+)
+
 target_sources(
   rp2040
-  PUBLIC ${include_dir}/configure_clocks.hpp
+  PUBLIC 
+    ${include_dir}/configure_clocks.hpp
+   
   PRIVATE 
     source/configure_mcu.cpp 
     source/configure_clocks.cpp
-    source/hal/disk.cpp 
-    source/hal/panic.cpp
-    source/hal/uart.cpp 
-    source/hal/system_stubs.cpp)
+    source/hal/panic.cpp)
 
 target_link_libraries(
   rp2040

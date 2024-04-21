@@ -26,8 +26,12 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/yasboot/fs)
 target_sources(yasboot_filesystem
   PUBLIC
     ${include_dir}/littlefs.hpp
-  PRIVATE 
-    littlefs.cpp  
+)
+
+use_cppfront(
+  TARGET yasboot_filesystem
+  FLAGS -fno-rtti -fno-exceptions
+  MODULE_SOURCES littlefs.cpp2
 )
 
 find_package(littlefs REQUIRED)

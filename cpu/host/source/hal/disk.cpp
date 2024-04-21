@@ -18,8 +18,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "hal/disk.hpp"
-
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -49,7 +47,8 @@ bool initialize_disk()
                 << ", with size: " << disk.size() << std::endl;
       return true;
     }
-    std::cerr << "<HOST_ERROR> unable to open file: " << disk_path.native() << std::endl;
+    std::cerr << "<HOST_ERROR> unable to open file: " << disk_path.native()
+              << std::endl;
   }
   return false;
 }

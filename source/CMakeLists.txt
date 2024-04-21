@@ -19,6 +19,13 @@
 add_subdirectory(fs)
 add_subdirectory(mbr)
 
+add_library(other_module)
+
+target_sources(other_module 
+  PUBLIC 
+    FILE_SET CXX_MODULES FILES other.cc
+)
+
 add_library(hello)
 
 target_sources(hello
@@ -26,7 +33,9 @@ target_sources(hello
     FILE_SET CXX_MODULES FILES hello.cc
 ) 
 
-target_link_libraries(hello PRIVATE yasboot_private_flags)
+target_link_libraries(other_module PRIVATE yasboot_private_flags)
+
+target_link_libraries(hello PRIVATE yasboot_private_flags other_module)
 
 add_executable(yasboot)
 
@@ -36,18 +45,20 @@ target_sources(yasboot
     main.cpp2
 )
 
-use_cppfront(yasboot)
-
-#cppfront_enable_pure(yasboot)
+use_cppfront(
+  TARGET yasboot
+  FLAGS -p -fno-rtti -fno-exceptions)
 
 find_package(eul REQUIRED)
 find_package(littlefs REQUIRED)
 find_package(yasconf REQUIRED)
 
+# note: 
+# additional manual linking to libc enforces newlib stubs propagation from static library
 target_link_libraries(
   yasboot
-  PUBLIC yasboot_public_flags eul::utils
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf hello)
+  PUBLIC c yasboot_public_flags eul::utils
+  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf hello c)
 
 target_compile_options(yasboot 
   PUBLIC -fmodules-ts

@@ -7,7 +7,8 @@
       "target": "eul",
       "options": {
         "cmake_variables": {
-          "DISABLE_TESTS": "ON"
+          "DISABLE_TESTS": "ON",
+          "eul_cxx_compilation_flags": "-std=c++23"
         }
       }
     },

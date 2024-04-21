@@ -22,7 +22,7 @@
 
 #include "common/filesystem/filesystem_mount_points.hpp"
 
-#include "hal/system_stubs.hpp"
+import hal.system.io;
 
 extern "C"
 {
@@ -101,7 +101,7 @@ extern "C"
 
   ssize_t _write(int fd, const char *buf, size_t count)
   {
-    yasboot::hal::WriteCallback write = yasboot::hal::getGlobalWrite();
+    const auto write = yasboot::hal::system::io::get_global_write();
     if ((fd == 1 || fd == 2) && write)
     {
       return write(std::string_view(buf, count));
@@ -130,7 +130,7 @@ extern "C"
   {
     auto [fs, path] =
       yasboot::fs::FilesystemMountPoints::get().get_mount_point(pathname);
-    
+
     if (!fs)
     {
       printf("Responding with -1\n");

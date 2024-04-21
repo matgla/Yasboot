@@ -1,18 +1,32 @@
 import hello;
 
-#include "hal/uart.hpp"
-#include "hal/system_stubs.hpp"
-// #include "other.h2"
+import hal.uart;
+import hal.system.io;
+import hal.system.disk;
+
+import yasboot.mbr;
+
+test: () -> std::expected<int, std::string_view> = {
+  return std::unexpected("Errored");
+}
 
 main: () = {
-  uart: yasboot::hal::Uart<0> = 115200;
-  vec: std::vector<uint8_t> = 0;
-  yasboot::hal::setGlobalWrite(: (str: std::string_view) -> std::size_t = 
+  uart: yasboot::hal::Uart<0> = (115200);
+
+  yasboot::hal::system::io::set_global_write(: (str: std::string_view) -> std::size_t = 
     uart$.write(str));
-  printf("Hello from Yasboot in CPP2\n");
-  greet("What's up?\n");
-//     rect: shape = ();
-//     rect.draw("rectangle");
-//     rect.draw("circle");
+
+  disk: yasboot::hal::system::Disk = ();
+  mbr: yasboot::MbrParser = (disk);
+  
+  boot:= mbr.get_bootable_partition(); 
+  if (!boot)
+  {
+    printf("Error: %s\n", boot.error().data());
+  }
+  else {
+    printf("Found bootable partition: %d\n", boot*.type);
+  }
 
 }
+

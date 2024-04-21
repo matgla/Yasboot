@@ -35,6 +35,13 @@ target_sources(common
     source/file_descriptors.cpp
 )
 
+use_cppfront(
+  TARGET common
+  FLAGS -fno-rtti -fno-exceptions -p
+  MODULE_SOURCES 
+    source/disk_parameters.cpp2
+)
+
 target_include_directories(common 
   PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}/include

@@ -1,0 +1,54 @@
+module;
+/**
+ * littlefs.cpp2
+ *
+ * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
+ *
+ * This program is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General
+ * Public License along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
+ */
+
+#include <map>
+
+#include <eul/functional/function.hpp>
+
+#include <lfs.h>
+
+import yasboot.filesystem.disk_parameters;
+
+export module yasboot.filesystem.littlefs;
+
+export yasboot: namespace = {
+filesystem: namespace = {
+  LittleFS: type = {
+    ReadFromDisk: type == eul::function<
+      int(std::size_t, std::span<uint8_t>), 
+      sizeof(std::size_t)>;
+
+    operator=: (out this, in DiskParameters disk, in read: ReadFromDisk) = {
+      read_ = read;
+      config_ = lfs_config(
+        .context = this,
+        .read = lfs_read_callback,
+        .read_size = disk.read_size,
+        .
+      )
+    }
+  
+    private read_: ReadFromDisk = ();
+    private config_: lfs_config = ();
+    private files_: std::map<i8, lfs_file_t> = ();
+  } 
+}
+}

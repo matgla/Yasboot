@@ -1,6 +1,5 @@
----
 BasedOnStyle: Microsoft
-AllowShortBlocksOnASingleLine: 'false'
+AllowShortBlocksOnASingleLine: Never 
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: None

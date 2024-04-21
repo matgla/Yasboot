@@ -17,17 +17,29 @@
 #
 # <https://www.gnu.org/licenses/>.
 
+set(CMAKE_CXX_SCAN_FOR_MODULES ON) 
+
+
 add_library(arm_v6m_common STATIC)
 
 set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/arm/v6-m/common)
 
 target_sources(
   arm_v6m_common
-  PUBLIC ${include_dir}/gcc_arm_init.hpp source/system_stubs.cpp
-         source/vector_table.S source/gcc_arm_init.cpp
-  PRIVATE source/hal/flow.cpp)
+  PUBLIC 
+    ${include_dir}/gcc_arm_init.hpp 
+    source/vector_table.S 
+  PRIVATE  
+    
+    source/system_stubs.cpp
+    source/gcc_arm_init.cpp
+    source/hal/flow.cpp
+)
 
-target_link_libraries(arm_v6m_common PRIVATE yasboot_hal_interface common)
+target_compile_options(arm_v6m_common PRIVATE -fmodules-ts -std=c++23)
+target_link_libraries(arm_v6m_common 
+  PRIVATE yasboot_hal_interface common 
+  PUBLIC rp2040)
 
 target_link_options(arm_v6m_common PUBLIC
                     -L${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts)

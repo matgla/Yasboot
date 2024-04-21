@@ -1,3 +1,4 @@
+module;
 /**
  * system_stubs.cpp
  *
@@ -18,24 +19,28 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "hal/system_stubs.hpp"
+#include <functional>
+#include <string_view>
 
-namespace yasboot::hal
-{
+export module hal.system.io;
 
-namespace
+export namespace yasboot::hal::system::io
 {
-WriteCallback writer_;
+using WriteCallback = std::function<size_t(const std::string_view &data)>;
 }
 
-void setGlobalWrite(const WriteCallback &write)
+export namespace yasboot::hal::system::io
 {
-  writer_ = write;
+
+WriteCallback &get_global_write()
+{
+  static WriteCallback writer;
+  return writer;
 }
 
-WriteCallback &getGlobalWrite()
+void set_global_write(const WriteCallback &write)
 {
-  return writer_;
+  get_global_write() = write;
 }
 
-} // namespace yasboot::hal
+} // namespace yasboot::hal::system::io

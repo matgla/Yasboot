@@ -22,17 +22,16 @@ add_library(yasboot_mbr)
 
 set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/yasboot/mbr)
 
-target_sources(yasboot_mbr
-  PUBLIC
-    ${include_dir}/mbr.hpp
-
-  PRIVATE 
-    ${CMAKE_CURRENT_SOURCE_DIR}/mbr.cpp
+use_cppfront(
+  TARGET yasboot_mbr
+  FLAGS -p -fno-rtti -fno-exceptions
+  MODULE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/mbr.cpp2
 )
 
 target_link_libraries(yasboot_mbr
   PUBLIC 
     yasboot_hal_interface
+    board
 )
 
 target_include_directories(yasboot_mbr 

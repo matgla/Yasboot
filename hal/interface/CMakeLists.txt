@@ -45,11 +45,9 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/hal)
 
 target_sources(yasboot_hal_interface
   INTERFACE 
-    ${include_dir}/disk.hpp 
     ${include_dir}/flow.hpp
     ${include_dir}/panic.hpp
-    ${include_dir}/system_stubs.hpp
-    ${include_dir}/uart.hpp)
+    )
 
 target_link_libraries(yasboot_hal_interface INTERFACE yasboot_public_flags
                                                       eul::functional)

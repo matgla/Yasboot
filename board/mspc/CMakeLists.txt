@@ -22,7 +22,7 @@ add_library(board INTERFACE)
 
 target_link_libraries(board 
   INTERFACE 
-    rp2040
+   rp2040
 )
 
 add_library(board_setup INTERFACE)

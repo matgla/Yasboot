@@ -28,10 +28,10 @@ filesystem: namespace =
 
 export DiskParameters: type = 
 {
-  read_size: std::size_t;
-  write_size: std::size_t;
-  block_size: std::size_t;
-  block_count: std::size_t;
+  public read_size: std::size_t;
+  public write_size: std::size_t;
+  public block_size: std::size_t;
+  public block_count: std::size_t;
 }
 
 } // namespace filesystem

@@ -22,7 +22,6 @@ module;
 
 #include <cstdint>
 #include <cstring>
-#include <span>
 
 #include <hardware/regs/addressmap.h>
 

@@ -21,14 +21,23 @@ public:
         printf("%s", t.data()); 
         return *this;
     }
+
+//    stream& operator<<(const std::string& t) 
+//    {
+//        printf("%s", t.c_str());
+//        return *this;
+//    }
+
     stream& operator<<(const char* t)
     {
         printf("%s", t); 
         return *this;
     }
 
-
-
+//    stream& operator<<(const decltype(std::setw(0))&)
+//    {
+//        return *this;
+//    }
 };
 
 [[maybe_unused]] static inline stream cerr;

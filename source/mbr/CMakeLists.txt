@@ -24,7 +24,7 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/yasboot/mbr)
 
 use_cppfront(
   TARGET yasboot_mbr
-  FLAGS -p -fno-rtti -fno-exceptions
+  FLAGS -fno-rtti -fno-exceptions
   MODULE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/mbr.cpp2
 )
 

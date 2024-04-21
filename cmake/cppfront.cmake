@@ -85,6 +85,7 @@ macro(cppfront_generate_sources)
     set (generated_sources "") 
     target_include_directories(${CPPFRONT_GENERATOR_TARGET}
       PRIVATE ${PROJECT_BINARY_DIR}/cppfront/include)
+          
   
     foreach(source IN LISTS CPPFRONT_GENERATOR_SOURCES)
         cmake_path(IS_ABSOLUTE source is_absolute)
@@ -158,7 +159,7 @@ macro(use_cppfront)
             SOURCES ${sources}
             MODULE_SOURCES ${CPP2_MODULE_SOURCES}
             FLAGS ${CPP2_FLAGS}
-        )
+        ) 
     endif()
 endmacro()
 

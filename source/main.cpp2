@@ -6,10 +6,6 @@ import hal.system.disk;
 
 import yasboot.mbr;
 
-test: () -> std::expected<int, std::string_view> = {
-  return std::unexpected("Errored");
-}
-
 main: () = {
   uart: yasboot::hal::Uart<0> = (115200);
 
@@ -17,6 +13,7 @@ main: () = {
     uart$.write(str));
 
   disk: yasboot::hal::system::Disk = ();
+  printf("Searching bootable partition\n");
   mbr: yasboot::MbrParser = (disk);
   
   boot:= mbr.get_bootable_partition(); 
@@ -27,6 +24,5 @@ main: () = {
   else {
     printf("Found bootable partition: %d\n", boot*.type);
   }
-
 }
 

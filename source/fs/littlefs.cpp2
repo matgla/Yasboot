@@ -20,34 +20,103 @@ module;
  */
 
 #include <map>
+#include <fcntl.h>
 
 #include <eul/functional/function.hpp>
 
 #include <lfs.h>
 
+#include "common/filesystem/file_descriptors.hpp"
+
 import yasboot.filesystem.disk_parameters;
 
 export module yasboot.filesystem.littlefs;
 
-
+using ConstLfsConfig = const lfs_config *;
 yasboot: namespace = {
 filesystem: namespace = {
   LittleFS: type = {
-    ReadFromDisk: type == eul::function<
-      int(std::size_t, std::span<uint8_t>), 
-      sizeof(std::size_t)>;
+    ReadFromDisk: type == std::function<int(std::size_t, std::span<uint8_t>)>; 
 
     operator=: (out this, in disk: DiskParameters, in read: ReadFromDisk) = {
       read_ = read;
-      config_ = lfs_config();
-    //   //   .read = lfs_read_callback,
-    //   //   .read_size = disk.read_size
-    //   // )
+      config_ = lfs_config(
+        this&,
+        lfs_read_callback,
+        nullptr,
+        nullptr,
+        nullptr,
+        disk.read_size,
+        0,
+        disk.block_size,
+        disk.block_count,
+        600,
+        256,
+        16,
+        0.8 * disk.block_size, 
+        nullptr,
+        nullptr,
+        nullptr,
+        LFS_NAME_MAX,
+        LFS_FILE_MAX,
+        LFS_ATTR_MAX,
+        disk.block_size,
+        0
+      );
     }
-  
-    private read_: ReadFromDisk = ();
-    private config_: lfs_config = ();
-    private files_: std::map<i8, lfs_file_t> = ();
+
+    public mount: (inout this) -> std::expected<void, int> = {
+      ec:= lfs_mount(lfs_&, config_&);
+      if (ec != LFS_ERR_OK) {
+        return std::unexpected(ec);
+      }
+
+      return ();
+    }
+    
+    convert_flags: (in flags: i32) -> i32 = {
+      result: i32 = 0;
+      if ((flags & O_RDONLY) != 0) { result |= LFS_O_RDONLY; }
+      else if ((flags & O_WRONLY) != 0) { result |= LFS_O_WRONLY; }
+      else if ((flags & O_RDWR) != 0) { result |= LFS_O_RDWR; }
+      if ((flags & O_APPEND) != 0) { result |= LFS_O_APPEND; }
+      if ((flags & O_CREAT) != 0) { result |= LFS_O_CREAT; }
+      return result;
+    }
+
+    open: (inout this, path: std::string_view, flags: i32) -> std::expected<int8_t, int8_t> = {
+      fd:= yasboot::fs::FileDescriptors::get().allocate();
+      if (fd == -1) {
+        return std::unexpected(fd);
+      }
+      files_[fd] = ();
+      if (lfs_file_open(lfs_&, files_[fd]&, path.data(), 
+        convert_flags(flags)) != LFS_ERR_OK) {
+          yasboot::fs::FileDescriptors::get().release(fd);
+          return std::unexpected(-1);
+      }
+      return fd;
+    }
+
+    
+    lfs_read_callback: (in c: ConstLfsConfig, block: lfs_block_t, off: lfs_off_t, 
+      buffer: *void, size: lfs_size_t) -> int = {
+        o:= cpp2::unsafe_narrow<* LittleFS>(c*.context);
+        return o*.read_(block * c*.block_size + off, std::span<uint8_t>(cpp2::unsafe_narrow<*uint8_t>(buffer), size));//, std::span<uint8_t>(); 
+    }
+
+    read_: ReadFromDisk = ();
+    config_: lfs_config = ();
+    files_: std::map<i8, lfs_file_t> = ();
+    lfs_: lfs_t = ();
   } 
 } // namespace filesystem
 } // namespace yasboot
+
+// int lfs_read_callback(const lfs_config *c, lfs_block_t block,
+//   lfs_off_t off, void *buffer, lfs_size_t size) {
+//   return static_cast<yasboot::filesystem::LittleFS *>(c->context)
+//     ->read_(block * c->block_size + off, std::span<uint8_t>(
+//       static_cast<uint8_t *>(buffer), size 
+//     )); 
+// }

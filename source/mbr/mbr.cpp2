@@ -25,15 +25,6 @@ import hal.system.disk;
 export module yasboot.mbr;
 
 export yasboot: namespace = {
-  Test: type = { 
-    get_bootable_partition: (this, i: i32) -> std::expected<int, std::string_view> = {
-      if (i == 0) {
-        return 123;
-      }
-      return std::unexpected("Incorrect i value");
-    } 
-  }
-
   MbrPartitionEntry: @struct type = {
     status: u8;
     chs_start: std::array<u8, 3>;

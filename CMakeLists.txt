@@ -81,8 +81,9 @@ if(${configuration_is_ready})
   set(CMAKE_CXX_SCAN_FOR_MODULES ON) 
   include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/libstd)
   # This will be extracted to external repository
-
-  set(CMAKE_CXX_STANDARD 23)
+  set (CMAKE_CXX_STANDARD 23)
+  set (CMAKE_CXX_STANDARD_REQUIRED ON)
+  set (CMAKE_CXX_EXTENSIONS OFF)
   initialize_cpu()
 
   add_library(yasboot_public_flags INTERFACE)
@@ -91,7 +92,7 @@ if(${configuration_is_ready})
       -Wall 
       -Wextra
       
-      $<$<COMPILE_LANGUAGE:CXX>:-std=c++23 -fmodules-ts>
+      $<$<COMPILE_LANGUAGE:CXX>: -fmodules-ts>
   )  
   target_link_libraries(yasboot_public_flags 
     INTERFACE 

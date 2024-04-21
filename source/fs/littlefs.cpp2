@@ -29,26 +29,25 @@ import yasboot.filesystem.disk_parameters;
 
 export module yasboot.filesystem.littlefs;
 
-export yasboot: namespace = {
+
+yasboot: namespace = {
 filesystem: namespace = {
   LittleFS: type = {
     ReadFromDisk: type == eul::function<
       int(std::size_t, std::span<uint8_t>), 
       sizeof(std::size_t)>;
 
-    operator=: (out this, in DiskParameters disk, in read: ReadFromDisk) = {
+    operator=: (out this, in disk: DiskParameters, in read: ReadFromDisk) = {
       read_ = read;
-      config_ = lfs_config(
-        .context = this,
-        .read = lfs_read_callback,
-        .read_size = disk.read_size,
-        .
-      )
+      config_ = lfs_config();
+    //   //   .read = lfs_read_callback,
+    //   //   .read_size = disk.read_size
+    //   // )
     }
   
     private read_: ReadFromDisk = ();
     private config_: lfs_config = ();
     private files_: std::map<i8, lfs_file_t> = ();
   } 
-}
-}
+} // namespace filesystem
+} // namespace yasboot

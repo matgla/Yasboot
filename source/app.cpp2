@@ -1,5 +1,6 @@
+module;
 /**
- * main.cpp2
+ * app.cpp2
  *
  * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
  *
@@ -18,30 +19,37 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-import hal.uart;
-import hal.system.io;
+#include <boost/sml.hpp>
 
-// import yasboot.app;
+export module yasboot.app;
 
-main: () = {
-  uart: yasboot::hal::Uart<0> = (115200);
+yasboot: namespace = {
 
-  yasboot::hal::system::io::set_global_write(: (str: std::string_view) -> std::size_t = 
-    uart$.write(str));
-  
-//  app: yasboot::App = ();
-//  app.start();
-  
-//  disk: yasboot::hal::system::Disk = ();
-//  mbr: yasboot::MbrParser = (disk);
-//  
-//  boot:= mbr.get_bootable_partition(); 
-//  if (!boot)
-//  {
-//    printf("Error: %s\n", boot.error().data());
-//  }
-//  else {
-//    printf("Found bootable partition: %d\n", boot*.type);
-//  }
+release: @struct type = {
 }
 
+timeout: @struct type = {
+}
+
+export App: type = {
+  operator(): (inout this) -> _ = {
+    using namespace boost::sml;
+    s:= :() -> void = {printf("S\n");};
+    a:= :() -> void = {printf("A\n");};
+    return boost::sml::make_transition_table(
+      "established"_s* + event<release> / s = "fin wait 1"_s,
+      "fin wait 1"_s + event<timeout> / a = X 
+    );
+  }  
+
+  print_hello: () = {
+    printf("\n\n");
+    printf("============== YASBOOT ===============\n");
+  }
+
+  start: () = {
+    print_hello(); 
+  }
+}
+
+}

@@ -24,21 +24,28 @@ add_executable(yasboot)
 target_sources(yasboot 
   PRIVATE 
     main.cpp2
+    app.cpp
 )
 
 use_cppfront(
   TARGET yasboot
-  PURE
+  MODULE_SOURCES 
+    app.cpp2
 )
 
 find_package(eul REQUIRED)
 find_package(littlefs REQUIRED)
 find_package(yasconf REQUIRED)
-
+find_package(sml REQUIRED)
 target_link_libraries(
   yasboot
   PUBLIC eul::utils newlib_stubs
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf)
+  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf sml)
+
+target_compile_options(
+  yasboot 
+  PRIVATE -Wno-shadow
+)
 
 include(generate_binary)
 generate_binary(yasboot)

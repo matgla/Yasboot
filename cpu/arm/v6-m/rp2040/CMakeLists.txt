@@ -134,18 +134,19 @@ target_link_libraries(
 target_link_options(
   rp2040
   PUBLIC
-  --specs=nano.specs
   -nostartfiles
   LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/yasboot.ld
   -Wl,--gc-sections
-  -flto)
+  --specs=nano.specs
+  --specs=nosys.specs
+  )
 
 target_compile_options(
   rp2040
   PUBLIC -ffunction-sections -fdata-sections
-         $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics -fno-exceptions
-         -fno-use-cxa-atexit>
+         $<$<COMPILE_LANGUAGE:CXX>:-fno-use-cxa-atexit>
   PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Werror
+          -Wno-pedantic
           -Wall
           -Wextra
           -Wconversion
@@ -153,6 +154,7 @@ target_compile_options(
           -Wshadow
           -Wpointer-arith
           -Wcast-qual
+          -Wdouble-promotion
           -Wmissing-braces>)
 
 target_include_directories(

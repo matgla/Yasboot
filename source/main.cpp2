@@ -1,5 +1,3 @@
-import hello;
-
 import hal.uart;
 import hal.system.io;
 import hal.system.disk;

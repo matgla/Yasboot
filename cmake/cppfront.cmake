@@ -17,7 +17,7 @@
 
 cmake_minimum_required(VERSION 3.28)
 
-set (cppfront_flags "")
+set (CMAKE_CPPFRONT_FLAGS "")
 
 message(STATUS "Adding cppfront toolchain generation: ${CMAKE_CURRENT_LIST_DIR}/cppfront")
 
@@ -47,7 +47,7 @@ endif ()
 macro(cppfront_generate_source input output target is_module flags)
     add_custom_command(
         OUTPUT ${output}
-        COMMAND ${CPPFRONT_BINARY_DIR}/cppfront ${flags} ${input} -o ${output}
+        COMMAND ${CPPFRONT_BINARY_DIR}/cppfront ${flags} ${CMAKE_CPPFRONT_FLAGS} ${input} -o ${output}
         DEPENDS ${input}
         VERBATIM
     )

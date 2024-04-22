@@ -77,10 +77,32 @@ if(${configuration_is_ready})
 
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmodules-ts -Os")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os")
+  # Global flags that breaks ABI are specified globally  
+  set(CMAKE_CPPFRONT_FLAGS "-fno-exceptions -fno-rtti")
+ 
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces")
+  set(common_release_flags "") 
+  set(common_debug_flags "-g")
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics ${common_flags}")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${common_release_flags}")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${common_debug_flags}")
+ 
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${common_flags}")
+  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${common_release_flags}")
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${common_debug_flags}")
+ 
+  set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${common_flags}")
+  set(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_ASM_FLAGS_RELEASE} ${common_release_flags}")
+  set(CMAKE_ASM_FLAGS_DEBUG "${CMAKE_ASM_FLAGS_DEBUG} ${common_debug_flags}")
+  
+
+
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}") 
+  
   set(CMAKE_CXX_SCAN_FOR_MODULES ON) 
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -Map=output.map -flto") 
+
   include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/libstd)
   # This will be extracted to external repository
   set (CMAKE_CXX_STANDARD 23)

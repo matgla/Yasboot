@@ -22,6 +22,8 @@
 
 #include "common/filesystem/filesystem_mount_points.hpp"
 
+#include <string_view>
+
 import hal.system.io;
 
 extern "C"
@@ -47,34 +49,34 @@ extern "C"
     }
   }
 
-  int _kill(pid_t, int)
+  int __attribute__((used)) _kill(pid_t, int)
   {
     return 0;
   }
 
-  pid_t _getpid(void)
+  pid_t __attribute__((used)) _getpid(void)
   {
     return 0;
   }
 
-  int _fstat(int, struct stat *)
+  int __attribute__((used)) _fstat(int, struct stat *)
   {
     return 0;
   }
 
-  int _isatty(int)
+  int __attribute((used)) _isatty(int)
   {
     return 0;
   }
 
-  void _exit(int)
+  void __attribute__((used)) _exit(int)
   {
     while (true)
     {
     }
   }
 
-  int _close(int fd)
+  int __attribute__((used)) _close(int fd)
   {
     auto fs = yasboot::fs::FilesystemMountPoints::get().get_filesystem_for_fd(fd);
     if (fs == nullptr)
@@ -84,12 +86,12 @@ extern "C"
     return fs->close(fd);
   }
 
-  off_t _lseek(int, off_t, int)
+  off_t __attribute__((used)) _lseek(int, off_t, int)
   {
     return 0;
   }
 
-  ssize_t _read(int fd, void *buf, size_t size)
+  ssize_t __attribute__((used)) _read(int fd, void *buf, size_t size)
   {
     auto fs = yasboot::fs::FilesystemMountPoints::get().get_filesystem_for_fd(fd);
     if (fs == nullptr)
@@ -97,9 +99,10 @@ extern "C"
       return 0;
     }
     return fs->read_file(fd, std::span<uint8_t>(static_cast<uint8_t *>(buf), size));
+    return 0;
   }
 
-  ssize_t _write(int fd, const char *buf, size_t count)
+  ssize_t __attribute__((used)) _write(int fd, const char *buf, size_t count)
   {
     const auto write = yasboot::hal::system::io::get_global_write();
     if ((fd == 1 || fd == 2) && write)
@@ -126,7 +129,7 @@ extern "C"
     return static_cast<caddr_t>(previous_heap_end);
   }
 
-  int _open(const char *pathname, int flags)
+  int __attribute__((used)) _open(const char *pathname, int flags)
   {
     auto [fs, path] =
       yasboot::fs::FilesystemMountPoints::get().get_mount_point(pathname);

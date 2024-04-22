@@ -1,5 +1,0 @@
-shape: type = {
-    public draw: (this, what: std::string_view) -> void = {
-        printf("Drawing: %s\n", what.data());
-    }
-}

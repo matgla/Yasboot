@@ -44,7 +44,7 @@ FilesystemMountPoints &FilesystemMountPoints::get()
 std::pair<Filesystem *, std::string_view> FilesystemMountPoints::get_mount_point(
   std::string_view pathname)
 {
-  std::pair<Filesystem *, std::string_view> result{nullptr, ""};
+  std::pair<Filesystem *, std::string_view> result{};
   for (const auto &[path, filesystem] : mount_points_)
   {
     if (pathname.starts_with(path) && path.size() > result.second.size())

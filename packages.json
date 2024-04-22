@@ -3,7 +3,7 @@
     {
       "link": "https://github.com/matgla/EmbeddedUtilityLibraries.git",
       "type": "git",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "target": "eul",
       "options": {
         "cmake_variables": {
@@ -65,7 +65,9 @@
           },
           "compile_options": {
             "PRIVATE": [
-              "-Wno-unused-function"
+              "-Wno-unused-function",
+              "-Wno-sign-conversion",
+              "-Wno-conversion"
             ]
           }
         }

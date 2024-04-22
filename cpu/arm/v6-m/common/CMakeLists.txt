@@ -22,6 +22,16 @@ set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
 add_library(arm_v6m_common STATIC)
 
+add_library(newlib_stubs INTERFACE)
+target_sources(newlib_stubs
+  INTERFACE 
+  source/system_stubs.cpp
+)
+
+set(newlib_stubs_file "${CMAKE_CURRENT_SOURCE_DIR}/source/system_stubs.cpp" CACHE INTERNAL "")
+
+target_link_libraries(newlib_stubs INTERFACE common)
+
 set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/arm/v6-m/common)
 
 target_sources(
@@ -29,16 +39,15 @@ target_sources(
   PUBLIC 
     ${include_dir}/gcc_arm_init.hpp 
     source/vector_table.S 
+  
   PRIVATE  
-    
-    source/system_stubs.cpp
     source/gcc_arm_init.cpp
     source/hal/flow.cpp
 )
 
 target_compile_options(arm_v6m_common PRIVATE -fmodules-ts -std=c++23)
 target_link_libraries(arm_v6m_common 
-  PRIVATE yasboot_hal_interface common 
+  PRIVATE yasboot_hal_interface common
   PUBLIC rp2040)
 
 target_link_options(arm_v6m_common PUBLIC

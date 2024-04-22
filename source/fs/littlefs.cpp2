@@ -53,7 +53,7 @@ filesystem: namespace = {
         600,
         256,
         16,
-        0.8 * disk.block_size, 
+        cpp2::unsafe_narrow<lfs_size_t>(0.8 * disk.block_size), 
         nullptr,
         nullptr,
         nullptr,
@@ -113,10 +113,3 @@ filesystem: namespace = {
 } // namespace filesystem
 } // namespace yasboot
 
-// int lfs_read_callback(const lfs_config *c, lfs_block_t block,
-//   lfs_off_t off, void *buffer, lfs_size_t size) {
-//   return static_cast<yasboot::filesystem::LittleFS *>(c->context)
-//     ->read_(block * c->block_size + off, std::span<uint8_t>(
-//       static_cast<uint8_t *>(buffer), size 
-//     )); 
-// }

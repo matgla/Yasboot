@@ -30,7 +30,6 @@ target_sources(yasboot_filesystem
 
 use_cppfront(
   TARGET yasboot_filesystem
-  FLAGS -fno-rtti -fno-exceptions
   MODULE_SOURCES littlefs.cpp2
 )
 

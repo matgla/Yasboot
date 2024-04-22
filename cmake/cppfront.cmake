@@ -45,9 +45,11 @@ else ()
 endif ()
 
 macro(cppfront_generate_source input output target is_module flags)
+    set(global_flags ${CMAKE_CPPFRONT_FLAGS})
+    string(REPLACE " " ";" global_flags ${global_flags})
     add_custom_command(
         OUTPUT ${output}
-        COMMAND ${CPPFRONT_BINARY_DIR}/cppfront ${flags} ${CMAKE_CPPFRONT_FLAGS} ${input} -o ${output}
+        COMMAND ${CPPFRONT_BINARY_DIR}/cppfront ${flags} ${global_flags} ${input} -o ${output}
         DEPENDS ${input}
         VERBATIM
     )
@@ -98,7 +100,6 @@ macro(cppfront_generate_sources)
         string(LENGTH ${source_name} name_length)
         math(EXPR name_length "${name_length} - 1")
         string(SUBSTRING ${source_name} 0 ${name_length} source_name)
-        # message(FATAL_ERROR "${CPPFRONT_GENERATOR_FLAGS}")
         cppfront_generate_source(${source} ${CMAKE_CURRENT_BINARY_DIR}/${source_name} ${CPPFRONT_GENERATOR_TARGET} OFF "${CPPFRONT_GENERATOR_FLAGS}")
     endforeach()
 
@@ -135,7 +136,7 @@ endmacro()
 
 macro(use_cppfront)
     set(prefix CPP2)
-    set(optionArgs "")
+    set(optionArgs PURE)
     set(singleValueArgs TARGET)
     set(multiValueArgs MODULE_SOURCES FLAGS)
     
@@ -153,6 +154,9 @@ macro(use_cppfront)
     get_target_property(sources ${CPP2_TARGET} SOURCES)
     list(FILTER sources INCLUDE REGEX "\\.(cpp|h)(2|2p)$")
     if (sources OR (NOT "${CPP2_MODULE_SOURCES}" STREQUAL ""))
+        if (${CPP2_PURE})
+            set (CPP2_FLAGS ${CPP2_FLAGS} -p)
+        endif ()
         cppfront_generate_sources(
             TARGET ${CPP2_TARGET} 
             ROOT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

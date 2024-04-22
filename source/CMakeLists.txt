@@ -24,14 +24,12 @@ add_executable(yasboot)
 target_sources(yasboot 
   PRIVATE 
     main.cpp2
-    ${newlib_stubs_file}
-    wut.cpp
-    #$<TARGET_OBJECTS:newlib_stubs>
 )
 
 use_cppfront(
   TARGET yasboot
-  FLAGS -p -fno-rtti -fno-exceptions)
+  PURE
+)
 
 find_package(eul REQUIRED)
 find_package(littlefs REQUIRED)
@@ -39,12 +37,8 @@ find_package(yasconf REQUIRED)
 
 target_link_libraries(
   yasboot
-  PUBLIC yasboot_public_flags eul::utils newlib_stubs
+  PUBLIC eul::utils newlib_stubs
   PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf)
-
-target_compile_options(yasboot 
-  PUBLIC -fmodules-ts
-)
 
 include(generate_binary)
 generate_binary(yasboot)

@@ -67,7 +67,9 @@
             "PRIVATE": [
               "-Wno-unused-function",
               "-Wno-sign-conversion",
-              "-Wno-conversion"
+              "-Wno-conversion",
+              "-Wno-cast-qual",
+              "-Wno-shadow"
             ]
           }
         }

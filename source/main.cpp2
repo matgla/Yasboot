@@ -4,14 +4,20 @@ import hal.system.disk;
 
 import yasboot.mbr;
 
+print_hello: () = {
+  printf("\n\n");
+  printf("============== YASBOOT ===============\n");
+}
+
 main: () = {
   uart: yasboot::hal::Uart<0> = (115200);
 
   yasboot::hal::system::io::set_global_write(: (str: std::string_view) -> std::size_t = 
     uart$.write(str));
 
+  print_hello();
+
   disk: yasboot::hal::system::Disk = ();
-  printf("Searching bootable partition\n");
   mbr: yasboot::MbrParser = (disk);
   
   boot:= mbr.get_bootable_partition(); 

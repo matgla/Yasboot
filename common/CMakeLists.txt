@@ -37,7 +37,6 @@ target_sources(common
 
 use_cppfront(
   TARGET common
-  FLAGS -fno-rtti -fno-exceptions -p
   MODULE_SOURCES 
     source/disk_parameters.cpp2
 )

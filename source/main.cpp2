@@ -18,10 +18,17 @@
  * <https://www.gnu.org/licenses/>.
  */
 
+
+#include <format>
+
 import hal.uart;
 import hal.system.io;
 
 import yasboot.app;
+
+import hal.system.disk;
+import yasboot.mbr;
+
 
 main: () = {
   uart: yasboot::hal::Uart<0> = (115200);
@@ -29,19 +36,19 @@ main: () = {
   yasboot::hal::system::io::set_global_write(: (str: std::string_view) -> std::size_t = 
     uart$.write(str));
 
-  yasboot::app();
+ // yasboot::app();
   
 //  app: yasboot::App = ();
 //  app.start();
   
-//  disk: yasboot::hal::system::Disk = ();
-//  mbr: yasboot::MbrParser = (disk);
-//  
-//  boot:= mbr.get_bootable_partition(); 
-//  if (!boot)
-//  {
-//    printf("Error: %s\n", boot.error().data());
-//  }
+  disk: yasboot::hal::system::Disk = ();
+  mbr: yasboot::MbrParser = (disk);
+  
+  boot:= mbr.get_bootable_partition(); 
+  if (!boot)
+  {
+    printf("Error: %s\n", boot.error().data());
+  }
 //  else {
 //    printf("Found bootable partition: %d\n", boot*.type);
 //  }

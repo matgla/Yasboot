@@ -24,7 +24,6 @@ add_executable(yasboot)
 target_sources(yasboot 
   PRIVATE 
     main.cpp2
-    app.cpp
 )
 
 use_cppfront(

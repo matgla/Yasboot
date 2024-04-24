@@ -19,57 +19,63 @@ module;
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <boost/sml.hpp>
+//#include <boost/sml.hpp>
+
+
 
 export module yasboot.app;
 
 import hal.system.disk;
 import yasboot.mbr;
+#include <format>
 
 yasboot: namespace = {
 
 release: @struct type = {
-}
-
-timeout: @struct type = {
-}
-
-export App: type = {
-  operator(): (in this) -> _ = {
-    using namespace boost::sml;
-    a:= :() -> void = {printf("A\n");};
-    return boost::sml::make_transition_table(
-      "initialize"_s*                       / :() = { initialize(); } = "mount_disks"_s,
-      "mount_disks"_s + on_entry<_>    / :() = { mount_disks(); },
-      "mount_disks"_s [:() -> bool = { return false; }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
-      "find_boot"_s / :() = { printf("searching boot parition\n"); } = X
-    );
-  }  
-
-  print_hello: () = {
-    printf("\n\n");
-    printf("============== YASBOOT ===============\n");
-  }
-
-  initialize: () = {
-    print_hello();
-  }
-
-  mount_disks: () = {
-    printf("Mounting disks\n");
-    mbr:
-  }
-
-  operator=:(out this) = {
-    mbr_ := yasboot::MbrParser(disk);
-  }
-
-  disk_: yasboot::hal::system::Disk = ();
-  mbr_: yasboot::MbrParser;
-}
-
-export app: () -> void = {
-  sm: boost::sml::sm<App> = ();
+  disk_: hal::system::Disk = (); 
+  mbr_: yasboot::MbrParser = (disk_);
 }
 
 }
+//
+//timeout: @struct type = {
+//}
+//
+//export App: @copyable type = {
+//  operator(): (in this) -> _ = {
+//    using namespace boost::sml;
+//    a:= :() -> void = {printf("A\n");};
+//    return boost::sml::make_transition_table(
+//      "initialize"_s*                       / :() = { initialize(); } = "mount_disks"_s,
+//      "mount_disks"_s + on_entry<_>    / :() = { mount_disks(); },
+//      "mount_disks"_s [:() -> bool = { return false; }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
+//      "find_boot"_s / :() = { printf("searching boot parition\n"); } = X
+//    );
+//  }  
+//
+//  print_hello: () = {
+//    printf("\n\n");
+//    printf("============== YASBOOT ===============\n");
+//  }
+//
+//  initialize: () = {
+//    print_hello();
+//  }
+//
+//  mount_disks: () = {
+//    printf("Mounting disks\n");
+//  }
+//
+//  operator=:(out this) = {
+//  }
+//
+//  disk_: hal::system::Disk = ();
+//  mbr_: yasboot::MbrParser = (disk_);
+//}
+//
+//export app: () -> void = {
+//  data: App = ();
+//  sm: boost::sml::sm<App> = (data);
+//}
+//
+//}

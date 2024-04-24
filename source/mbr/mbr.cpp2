@@ -24,7 +24,7 @@ import hal.system.disk;
 
 export module yasboot.mbr;
 
-export yasboot: namespace = {
+yasboot: namespace = {
   MbrPartitionEntry: @struct type = {
     status: u8;
     chs_start: std::array<u8, 3>;
@@ -39,10 +39,10 @@ export yasboot: namespace = {
     signature: u16;
   }
 
-  MbrParser: type = {
+  export MbrParser: @copyable type = {
     private mbr_: MbrHeader = ();
 
-    private read_partition: (this, partition_number: i32, disk: hal::system::Disk) -> MbrPartitionEntry = {
+    private read_partition: (this, in partition_number: i32, in disk: hal::system::Disk) -> MbrPartitionEntry = {
       partition_size:= 16u; 
       address: std::size_t = 446 + partition_number * partition_size; 
       p: MbrPartitionEntry = (

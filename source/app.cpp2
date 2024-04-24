@@ -23,6 +23,9 @@ module;
 
 export module yasboot.app;
 
+import hal.system.disk;
+import yasboot.mbr;
+
 yasboot: namespace = {
 
 release: @struct type = {
@@ -32,13 +35,14 @@ timeout: @struct type = {
 }
 
 export App: type = {
-  operator(): (inout this) -> _ = {
+  operator(): (in this) -> _ = {
     using namespace boost::sml;
-    s:= :() -> void = {printf("S\n");};
     a:= :() -> void = {printf("A\n");};
     return boost::sml::make_transition_table(
-      "established"_s* + event<release> / s = "fin wait 1"_s,
-      "fin wait 1"_s + event<timeout> / a = X 
+      "initialize"_s*                       / :() = { initialize(); } = "mount_disks"_s,
+      "mount_disks"_s + on_entry<_>    / :() = { mount_disks(); },
+      "mount_disks"_s [:() -> bool = { return false; }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
+      "find_boot"_s / :() = { printf("searching boot parition\n"); } = X
     );
   }  
 
@@ -47,9 +51,25 @@ export App: type = {
     printf("============== YASBOOT ===============\n");
   }
 
-  start: () = {
-    print_hello(); 
+  initialize: () = {
+    print_hello();
   }
+
+  mount_disks: () = {
+    printf("Mounting disks\n");
+    mbr:
+  }
+
+  operator=:(out this) = {
+    mbr_ := yasboot::MbrParser(disk);
+  }
+
+  disk_: yasboot::hal::system::Disk = ();
+  mbr_: yasboot::MbrParser;
+}
+
+export app: () -> void = {
+  sm: boost::sml::sm<App> = ();
 }
 
 }

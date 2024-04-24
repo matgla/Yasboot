@@ -21,13 +21,15 @@
 import hal.uart;
 import hal.system.io;
 
-// import yasboot.app;
+import yasboot.app;
 
 main: () = {
   uart: yasboot::hal::Uart<0> = (115200);
 
   yasboot::hal::system::io::set_global_write(: (str: std::string_view) -> std::size_t = 
     uart$.write(str));
+
+  yasboot::app();
   
 //  app: yasboot::App = ();
 //  app.start();

@@ -1,0 +1,11 @@
+@startuml 
+
+[*] -> initialize
+initialize -> mounted 
+mounted -> boot_discovery : [mounted paritions > 0]
+mounted -> wait_on_cli : [mounted paritions = 0] 
+boot_discovery -> execute : []
+found_image --> [*]
+
+
+@enduml

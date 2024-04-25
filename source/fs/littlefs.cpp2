@@ -19,26 +19,26 @@ module;
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <map>
+
 #include <fcntl.h>
-
-#include <eul/functional/function.hpp>
-
+#include <map>
+  
 #include <lfs.h>
-
+  
 #include "common/filesystem/file_descriptors.hpp"
-
-import yasboot.filesystem.disk_parameters;
-
+  
 export module yasboot.filesystem.littlefs;
-
+ 
+export import yasboot.filesystem.disk_parameters;
+ 
 using ConstLfsConfig = const lfs_config *;
-yasboot: namespace = {
-filesystem: namespace = {
+export yasboot: namespace = {
+fs: namespace = {
   LittleFS: type = {
-    ReadFromDisk: type == std::function<int(std::size_t, std::span<uint8_t>)>; 
+    ReadFromDisk: type == std::function<int(std::size_t, std::span<u8>)>; 
 
-    operator=: (out this, in disk: DiskParameters, in read: ReadFromDisk) = {
+    operator=: (out this) = {}
+    operator=: (out this, in disk: filesystem::DiskParameters, in read: ReadFromDisk) = {
       read_ = read;
       config_ = lfs_config(
         this&,
@@ -91,7 +91,7 @@ filesystem: namespace = {
       }
       files_[fd] = ();
       if (lfs_file_open(lfs_&, files_[fd]&, path.data(), 
-        convert_flags(flags)) != LFS_ERR_OK) {
+          convert_flags(flags)) != LFS_ERR_OK) {
           yasboot::fs::FileDescriptors::get().release(fd);
           return std::unexpected(-1);
       }
@@ -112,4 +112,4 @@ filesystem: namespace = {
   } 
 } // namespace filesystem
 } // namespace yasboot
-
+ 

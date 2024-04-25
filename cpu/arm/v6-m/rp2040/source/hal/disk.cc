@@ -27,7 +27,7 @@ module;
 
 export module hal.system.disk;
 
-export namespace yasboot::hal::system
+export namespace hal::system
 {
 
 class Disk
@@ -36,14 +36,14 @@ public:
   void read_sector(uint32_t sector_number, void *buffer) const;
 
   template <typename T>
-  T read(std::size_t address) const;
+  T read(std::size_t address, std::size_t size = sizeof(T)) const;
 };
 
-} // namespace yasboot::hal::system
+} // namespace hal::system
 
 /* This implementation is valid only for drive 0 (main memory) */
 
-namespace yasboot::hal::system
+namespace hal::system
 {
 
 void Disk::read_sector(uint32_t sector_number, void *buffer) const
@@ -55,11 +55,11 @@ void Disk::read_sector(uint32_t sector_number, void *buffer) const
 }
 
 template <typename T>
-T Disk::read(std::size_t address) const
+T Disk::read(std::size_t address, std::size_t size) const
 {
   T d;
-  std::memcpy(&d, reinterpret_cast<void *>(XIP_BASE + address), sizeof(T));
+  std::memcpy(&d, reinterpret_cast<void *>(XIP_BASE + address), size);
   return d;
 }
 
-} // namespace yasboot::hal::system
+} // namespace hal::system

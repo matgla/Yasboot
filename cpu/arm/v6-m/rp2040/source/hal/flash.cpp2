@@ -1,6 +1,7 @@
 module;
+
 /**
- * disk_parameters.cpp2
+ * flash.cpp2
  *
  * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
  *
@@ -19,20 +20,19 @@ module;
  * <https://www.gnu.org/licenses/>.
  */
 
-export module yasboot.filesystem.disk_parameters;
+#include <cstring>
 
-yasboot: namespace =
-{
-filesystem: namespace =
-{
+export module hal.flash;
 
-export DiskParameters: @struct type = 
-{
-  public read_size: std::size_t;
-  public write_size: std::size_t;
-  public block_size: std::size_t;
-  public block_count: std::size_t;
-}
-
-} // namespace filesystem
-} // namespace yasboot
+yasboot: namespace = {
+hal: namespace = {
+ 
+export InternalFlash: type = {
+  read: (address: std::size_t, buffer: std::span<u8>) -> std::size_t = {
+    std::memcpy(buffer.data(), reinterpret_cast<*void>(0x10000000 + address), buffer.size());
+    return buffer.size();
+  }
+} 
+ 
+} // namespace hal
+} // namespace yasboot 

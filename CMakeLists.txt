@@ -80,12 +80,13 @@ if(${configuration_is_ready})
   # Global flags that breaks ABI are specified globally  
   set(CMAKE_CPPFRONT_FLAGS "-fno-exceptions -fno-rtti")
  
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces")
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces ")
   set(common_release_flags "") 
   set(common_debug_flags "-g")
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics ${common_flags}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics -fno-module-lazy  ${common_flags}")
+
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${common_release_flags}")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${common_debug_flags}")
  

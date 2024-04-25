@@ -18,17 +18,87 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-
-#include <format>
+#include <boost/sml.hpp>
 
 import hal.uart;
 import hal.system.io;
-
-import yasboot.app;
-
 import hal.system.disk;
 import yasboot.mbr;
 
+import hal.flash;
+import yasboot.filesystem.littlefs;
+
+App: @copyable type = {
+  operator(): (in this) -> _ = {
+    using namespace boost::sml;
+    a:= :() -> void = {printf("A\n");};
+    return boost::sml::make_transition_table(
+      "initialize"_s*                       / :() = { initialize(); } = "mount_disks"_s,
+      "mount_disks"_s + on_entry<_>    / :() = { mount_disks(); },
+      "mount_disks"_s [:() -> bool = { return mbr_.is_valid_mbr(); }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
+      "find_boot"_s / :() = { prepare_boot_parition(); } = X
+    );
+  }  
+
+  print_hello: () = {
+    printf("\n\n");
+    printf("============== YASBOOT ===============\n");
+  }
+
+  initialize: () = {
+    print_hello();
+  }
+
+  mount_disks: () = {
+    printf("Mounting disks\n");
+  }
+
+  prepare_boot_parition: (this) = {
+    //f: std::unique_ptr<yasboot::filesystem::Fun> = ();
+    //fs : new<yasboot::filesystem::LittleFS> = ();
+    //fs: yasboot::filesystem::LittleFS = (); 
+    p:= mbr_.get_bootable_partition(); 
+    if (p) 
+    {
+      printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
+      params:= yasboot::filesystem::DiskParameters(
+        4,
+        4, 
+        4096,
+        (p*.number_of_sectors * 512) >> 12
+      ); 
+      offset:= p*.lba_start * 512;
+      fs := new<yasboot::fs::LittleFS>(params, 
+        : (address: std::size_t, buffer: std::span<u8>) -> int = {
+          flash: yasboot::hal::InternalFlash = ();
+          if (buffer.size() == flash.read(address + offset$, buffer)) {
+            return 0;
+          }
+          return -1;
+        }
+      ); 
+      s:= fs*.mount();
+      if (s)
+      {
+        printf("Mounted successfuly\n");
+      }
+      else
+      {
+        printf("Mounting failure\n");
+      }
+    }
+    else 
+    {
+      printf("%s\n", p.error().data());
+    }
+  }
+
+  operator=:(out this) = {
+  }
+
+  disk_: hal::system::Disk = ();
+  mbr_: yasboot::MbrParser = (disk_);
+}
 
 main: () = {
   uart: yasboot::hal::Uart<0> = (115200);
@@ -36,21 +106,7 @@ main: () = {
   yasboot::hal::system::io::set_global_write(: (str: std::string_view) -> std::size_t = 
     uart$.write(str));
 
- // yasboot::app();
-  
-//  app: yasboot::App = ();
-//  app.start();
-  
-  disk: yasboot::hal::system::Disk = ();
-  mbr: yasboot::MbrParser = (disk);
-  
-  boot:= mbr.get_bootable_partition(); 
-  if (!boot)
-  {
-    printf("Error: %s\n", boot.error().data());
-  }
-//  else {
-//    printf("Found bootable partition: %d\n", boot*.type);
-//  }
+  data: App = ();
+  sm: boost::sml::sm<App> = (data);
 }
 

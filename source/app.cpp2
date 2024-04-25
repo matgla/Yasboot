@@ -19,63 +19,96 @@ module;
  * <https://www.gnu.org/licenses/>.
  */
 
-//#include <boost/sml.hpp>
-
-
+#include <boost/sml.hpp>
+#include <map>
 
 export module yasboot.app;
 
 import hal.system.disk;
 import yasboot.mbr;
-#include <format>
+
+import yasboot.filesystem.disk_parameters;
+import hal.flash;
+import yasboot.filesystem.littlefs;
+
 
 yasboot: namespace = {
 
 release: @struct type = {
-  disk_: hal::system::Disk = (); 
+}
+
+timeout: @struct type = {
+}
+
+export App: @copyable type = {
+  operator(): (in this) -> _ = {
+    using namespace boost::sml;
+    a:= :() -> void = {printf("A\n");};
+    return boost::sml::make_transition_table(
+      "initialize"_s*                       / :() = { initialize(); } = "mount_disks"_s,
+      "mount_disks"_s + on_entry<_>    / :() = { mount_disks(); },
+      "mount_disks"_s [:() -> bool = { return mbr_.is_valid_mbr(); }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
+      "find_boot"_s / :() = { prepare_boot_parition(); } = X
+    );
+  }  
+
+  print_hello: () = {
+    printf("\n\n");
+    printf("============== YASBOOT ===============\n");
+  }
+
+  initialize: () = {
+    print_hello();
+  }
+
+  mount_disks: () = {
+    printf("Mounting disks\n");
+  }
+
+  prepare_boot_parition: (this) = {
+    //f: std::unique_ptr<yasboot::filesystem::Fun> = ();
+    fs : std::unique_ptr<yasboot::filesystem::LittleFS> = ();
+    //fs: yasboot::filesystem::LittleFS = (); 
+    p:= mbr_.get_bootable_partition(); 
+    if (p) 
+    {
+      printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
+      params:= yasboot::filesystem::DiskParameters(
+        4,
+        4, 
+        4096,
+        (p*.number_of_sectors * 512) >> 12
+      ); 
+      //fs := new<yasboot::filesystem::LittleFS>(params, 
+      //  : (address: std::size_t, buffer: std::span<u8>) -> int = {
+      //    offset:= p*.lba_start * 512;
+      //    printf("%ld %d\n", address + offset, buffer.size());
+      //    flash: yasboot::hal::InternalFlash = ();
+      //    if (buffer.size() == flash.read(address + offset, buffer)) {
+      //      return 0;
+      //    }
+      //    return -1;
+      //  }
+      //); 
+      printf("%u\n", params.read_size);
+    }
+    else 
+    {
+      printf("%s\n", p.error().data());
+    }
+  }
+
+  operator=:(out this) = {
+  }
+
+  disk_: hal::system::Disk = ();
   mbr_: yasboot::MbrParser = (disk_);
+  //f: std::function<void()> = ();
+}
+
+export app: () -> void = {
+  data: App = ();
+  sm: boost::sml::sm<App> = (data);
 }
 
 }
-//
-//timeout: @struct type = {
-//}
-//
-//export App: @copyable type = {
-//  operator(): (in this) -> _ = {
-//    using namespace boost::sml;
-//    a:= :() -> void = {printf("A\n");};
-//    return boost::sml::make_transition_table(
-//      "initialize"_s*                       / :() = { initialize(); } = "mount_disks"_s,
-//      "mount_disks"_s + on_entry<_>    / :() = { mount_disks(); },
-//      "mount_disks"_s [:() -> bool = { return false; }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
-//      "find_boot"_s / :() = { printf("searching boot parition\n"); } = X
-//    );
-//  }  
-//
-//  print_hello: () = {
-//    printf("\n\n");
-//    printf("============== YASBOOT ===============\n");
-//  }
-//
-//  initialize: () = {
-//    print_hello();
-//  }
-//
-//  mount_disks: () = {
-//    printf("Mounting disks\n");
-//  }
-//
-//  operator=:(out this) = {
-//  }
-//
-//  disk_: hal::system::Disk = ();
-//  mbr_: yasboot::MbrParser = (disk_);
-//}
-//
-//export app: () -> void = {
-//  data: App = ();
-//  sm: boost::sml::sm<App> = (data);
-//}
-//
-//}

@@ -1,8 +1,7 @@
-module;
 /**
- * disk_parameters.cpp2
+ * uart.hpp
  *
- * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
+ * Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
  *
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,20 +18,6 @@ module;
  * <https://www.gnu.org/licenses/>.
  */
 
-export module yasboot.filesystem.disk_parameters;
+hal = namespace {
 
-yasboot: namespace =
-{
-filesystem: namespace =
-{
-
-export DiskParameters: @struct type = 
-{
-  public read_size: std::size_t;
-  public write_size: std::size_t;
-  public block_size: std::size_t;
-  public block_count: std::size_t;
 }
-
-} // namespace filesystem
-} // namespace yasboot

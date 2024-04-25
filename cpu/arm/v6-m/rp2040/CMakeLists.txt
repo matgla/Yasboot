@@ -116,6 +116,11 @@ target_sources(rp2040
     source/hal/system_stubs.cc
 )
 
+use_cppfront(
+  TARGET rp2040 
+  MODULE_SOURCES source/hal/flash.cpp2
+)
+
 target_sources(
   rp2040
   PUBLIC 

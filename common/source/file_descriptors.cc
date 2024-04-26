@@ -1,3 +1,4 @@
+module;
 /**
  * file_descriptors.cpp
  *
@@ -18,23 +19,36 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include "common/filesystem/file_descriptors.hpp"
+#include <bitset>
+#include <cstdint>
 
-namespace yasboot::fs
-{
+export module yasboot.filesystem.file_descriptors;
 
-FileDescriptors &FileDescriptors::get()
-{
+export namespace yasboot::fs {
+class FileDescriptors {
+public:
+  static FileDescriptors &get();
+
+  int8_t allocate();
+  void release(int8_t fd);
+
+private:
+  FileDescriptors();
+
+  std::bitset<8> file_descriptors_;
+};
+} // namespace yasboot::fs
+
+namespace yasboot::fs {
+
+FileDescriptors &FileDescriptors::get() {
   static FileDescriptors instance;
   return instance;
 }
 
-int8_t FileDescriptors::allocate()
-{
-  for (int8_t i = 0; i < static_cast<int8_t>(file_descriptors_.size()); i++)
-  {
-    if (!file_descriptors_.test(i))
-    {
+int8_t FileDescriptors::allocate() {
+  for (int8_t i = 0; i < static_cast<int8_t>(file_descriptors_.size()); i++) {
+    if (!file_descriptors_.test(i)) {
       file_descriptors_.set(i);
       return i;
     }
@@ -42,10 +56,7 @@ int8_t FileDescriptors::allocate()
   return -1;
 }
 
-void FileDescriptors::release(int8_t fd)
-{
-  file_descriptors_.reset(fd);
-}
+void FileDescriptors::release(int8_t fd) { file_descriptors_.reset(fd); }
 
 FileDescriptors::FileDescriptors() = default;
 

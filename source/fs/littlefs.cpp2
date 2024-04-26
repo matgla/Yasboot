@@ -24,9 +24,10 @@ module;
 #include <map>
   
 #include <lfs.h>
-  
-#include "common/filesystem/file_descriptors.hpp"
-  
+
+import yasboot.filesystem.file_descriptors;
+import yasboot.filesystem;
+
 export module yasboot.filesystem.littlefs;
  
 export import yasboot.filesystem.disk_parameters;
@@ -36,8 +37,9 @@ export yasboot: namespace = {
 fs: namespace = {
   LittleFS: type = {
     ReadFromDisk: type == std::function<int(std::size_t, std::span<u8>)>; 
+    
+    this: FileSystem = (); 
 
-    operator=: (out this) = {}
     operator=: (out this, in disk: filesystem::DiskParameters, in read: ReadFromDisk) = {
       read_ = read;
       config_ = lfs_config(
@@ -65,7 +67,7 @@ fs: namespace = {
       );
     }
 
-    public mount: (inout this) -> std::expected<void, int> = {
+    public mount: (override inout this) -> std::expected<void, i32> = {
       ec:= lfs_mount(lfs_&, config_&);
       if (ec != LFS_ERR_OK) {
         return std::unexpected(ec);
@@ -77,14 +79,10 @@ fs: namespace = {
     convert_flags: (in flags: i32) -> i32 = {
       result: i32 = 0;
       if ((flags & O_RDONLY) != 0) { result |= LFS_O_RDONLY; }
-      else if ((flags & O_WRONLY) != 0) { result |= LFS_O_WRONLY; }
-      else if ((flags & O_RDWR) != 0) { result |= LFS_O_RDWR; }
-      if ((flags & O_APPEND) != 0) { result |= LFS_O_APPEND; }
-      if ((flags & O_CREAT) != 0) { result |= LFS_O_CREAT; }
       return result;
     }
 
-    open: (inout this, path: std::string_view, flags: i32) -> std::expected<int8_t, int8_t> = {
+    open: (override inout this, path: std::string_view, flags: i32) -> std::expected<int8_t, int8_t> = {
       fd:= yasboot::fs::FileDescriptors::get().allocate();
       if (fd == -1) {
         return std::unexpected(fd);
@@ -96,6 +94,25 @@ fs: namespace = {
           return std::unexpected(-1);
       }
       return fd;
+    }
+
+    has_fd: (override this, fd: i32) -> bool = {
+      if (fd < 0 || fd > std::numeric_limits<i8>::max())
+      {
+        return false;
+      }
+      return files_.contains(cpp2::unsafe_narrow<i8>(fd));
+    }
+
+    read_file: (override inout this, fd: i32, buffer: std::span<u8>) -> i32 =
+    {
+      if (!has_fd(fd))
+      {
+        return -1;
+      }
+
+      return lfs_file_read(lfs_&, files_[cpp2::unsafe_narrow<i8>(fd)]&, buffer.data(),
+                         buffer.size());
     }
 
     

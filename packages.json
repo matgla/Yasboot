@@ -77,6 +77,11 @@
               "-Wno-cast-qual",
               "-Wno-shadow"
             ]
+          },
+          "compile_definitions": {
+            "PUBLIC": [
+              "-DLFS_READONLY=1"
+            ]
           }
         }
       }

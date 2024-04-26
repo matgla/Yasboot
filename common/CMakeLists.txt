@@ -24,21 +24,21 @@ set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include/common)
 
 target_sources(common 
   PUBLIC 
-    ${include_dir}/filesystem/filesystem_mount_points.hpp
-    ${include_dir}/filesystem/file_descriptors.hpp
     ${include_dir}/filesystem/disk_parameters.hpp
-    ${include_dir}/filesystem/filesystem.hpp
     ${include_dir}/units.hpp
   PRIVATE 
     source/units.cpp
-    source/filesystem_mount_points.cpp
-    source/file_descriptors.cpp
+  PUBLIC 
+    FILE_SET CXX_MODULES FILES
+      source/file_descriptors.cc
+      source/filesystem_mount_points.cc
 )
 
 use_cppfront(
   TARGET common
   MODULE_SOURCES 
     source/disk_parameters.cpp2
+    source/filesystem.cpp2
 )
 
 target_include_directories(common 

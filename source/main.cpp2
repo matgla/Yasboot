@@ -54,9 +54,6 @@ App: @copyable type = {
   }
 
   prepare_boot_parition: (this) = {
-    //f: std::unique_ptr<yasboot::filesystem::Fun> = ();
-    //fs : new<yasboot::filesystem::LittleFS> = ();
-    //fs: yasboot::filesystem::LittleFS = (); 
     p:= mbr_.get_bootable_partition(); 
     if (p) 
     {
@@ -81,6 +78,7 @@ App: @copyable type = {
       if (s)
       {
         printf("Mounted successfuly\n");
+        //yasboot::fs::register_mount_point("/boot", fs);
       }
       else
       {

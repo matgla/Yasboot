@@ -24,11 +24,19 @@ export module yasboot.filesystem;
 yasboot: namespace = {
 fs: namespace = {
 
+export FileSystemError: @enum type = {
+  Success := 0;
+  InputOutput;
+  InvalidArgument;
+  Unknown;
+}
+
 export FileSystem: @interface type = {
-  mount: (inout this) -> std::expected<void, i32>;
-  open: (inout this, path: std::string_view, flags: i32) -> std::expected<i8, i8>;
+  mount: (inout this) -> std::expected<void, FileSystemError>;
+  open: (inout this, path: std::string_view, flags: i32) -> std::expected<i8, FileSystemError>;
+  close: (inout this, fd: i32) -> std::expected<i32, FileSystemError>;
   has_fd: (this, fd: i32) -> bool;
-  read_file: (inout this, fd: i32, buffer: std::span<u8>) -> i32;
+  read_file: (inout this, fd: i32, buffer: std::span<u8>) -> std::expected<i32, FileSystemError>;
 }
 
 } // namespace fs

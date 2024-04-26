@@ -22,10 +22,12 @@ module;
 
 #include <fcntl.h>
 #include <map>
+
+#include <span>
   
 #include <lfs.h>
 
-import yasboot.filesystem.file_descriptors;
+import yasboot.filesystem.file_descriptors; 
 import yasboot.filesystem;
 
 export module yasboot.filesystem.littlefs;
@@ -67,25 +69,18 @@ fs: namespace = {
       );
     }
 
-    public mount: (override inout this) -> std::expected<void, i32> = {
+    public mount: (override inout this) -> std::expected<void, FileSystemError> = {
       ec:= lfs_mount(lfs_&, config_&);
       if (ec != LFS_ERR_OK) {
-        return std::unexpected(ec);
+        return lfs_error_to_filesystem_error(ec);
       }
-
       return ();
     }
-    
-    convert_flags: (in flags: i32) -> i32 = {
-      result: i32 = 0;
-      if ((flags & O_RDONLY) != 0) { result |= LFS_O_RDONLY; }
-      return result;
-    }
-
-    open: (override inout this, path: std::string_view, flags: i32) -> std::expected<int8_t, int8_t> = {
+ 
+    public open: (override inout this, path: std::string_view, flags: i32) -> std::expected<int8_t, FileSystemError> = {
       fd:= yasboot::fs::FileDescriptors::get().allocate();
       if (fd == -1) {
-        return std::unexpected(fd);
+        return std::unexpected(FileSystemError::InvalidArgument);
       }
       files_[fd] = ();
       if (lfs_file_open(lfs_&, files_[fd]&, path.data(), 
@@ -96,18 +91,16 @@ fs: namespace = {
       return fd;
     }
 
-    has_fd: (override this, fd: i32) -> bool = {
-      if (fd < 0 || fd > std::numeric_limits<i8>::max())
-      {
+    public has_fd: (override this, fd: i32) -> bool = {
+      if (fd < 0 || fd > std::numeric_limits<i8>::max()) {
         return false;
       }
       return files_.contains(cpp2::unsafe_narrow<i8>(fd));
     }
 
-    read_file: (override inout this, fd: i32, buffer: std::span<u8>) -> i32 =
+    public read_file: (override inout this, fd: i32, buffer: std::span<u8>) -> std::expected<i32, FileSystemError> =
     {
-      if (!has_fd(fd))
-      {
+      if (!has_fd(fd)) {
         return -1;
       }
 
@@ -115,6 +108,27 @@ fs: namespace = {
                          buffer.size());
     }
 
+    public close: (override inout this, fd: i32) -> std::expected<i32, FileSystemError> = {
+      if (!has_fd(fd)) {
+        return std::unexpected(FileSystemError::InvalidArgument); 
+      }
+      ec:= lfs_close(lfs_&, files_[cpp2::unsafe_narrow<i8>(fd)]&);
+      if (ec != LFS_ERR_OK) {
+        return lfs_error_to_filesystem_error(ec);
+      }
+      return fd;
+    }
+
+    convert_flags: (in flags: i32) -> i32 = {
+      result: i32 = 0;
+      if ((flags & O_RDONLY) != 0) { result |= LFS_O_RDONLY; }
+      return result;
+    }
+
+    lfs_error_to_filesystem_error: (ec: i32) -> std::unexpected<FileSystemError> = {
+      if (LFS_ERR_OK) { return (FileSystemError::Success); }
+      return (FileSystemError::Unknown);
+    }
     
     lfs_read_callback: (in c: ConstLfsConfig, block: lfs_block_t, off: lfs_off_t, 
       buffer: *void, size: lfs_size_t) -> int = {

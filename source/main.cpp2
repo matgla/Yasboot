@@ -27,6 +27,7 @@ import yasboot.mbr;
 
 import hal.flash;
 import yasboot.filesystem.littlefs;
+import yasboot.filesystem.filesystem_mount_points;
 
 App: @copyable type = {
   operator(): (in this) -> _ = {
@@ -65,7 +66,7 @@ App: @copyable type = {
         (p*.number_of_sectors * 512) >> 12
       ); 
       offset:= p*.lba_start * 512;
-      fs := new<yasboot::fs::LittleFS>(params, 
+      fs : std::unique_ptr<yasboot::fs::FileSystem> = new<yasboot::fs::LittleFS>(params, 
         : (address: std::size_t, buffer: std::span<u8>) -> int = {
           flash: yasboot::hal::InternalFlash = ();
           if (buffer.size() == flash.read(address + offset$, buffer)) {
@@ -78,7 +79,7 @@ App: @copyable type = {
       if (s)
       {
         printf("Mounted successfuly\n");
-        //yasboot::fs::register_mount_point("/boot", fs);
+        yasboot::fs::FileSystemMountPoints::get().register_mount_point("/boot", fs);
       }
       else
       {

@@ -77,17 +77,19 @@ fs: namespace = {
       return ();
     }
  
-    public open: (override inout this, path: std::string_view, flags: i32) -> std::expected<int8_t, FileSystemError> = {
+    public open: (override inout this, path: std::string_view, flags: i32) -> std::expected<i32, FileSystemError> = {
       fd:= yasboot::fs::FileDescriptors::get().allocate();
       if (fd == -1) {
         return std::unexpected(FileSystemError::InvalidArgument);
       }
       files_[fd] = ();
-      if (lfs_file_open(lfs_&, files_[fd]&, path.data(), 
-          convert_flags(flags)) != LFS_ERR_OK) {
+      ec:= lfs_file_open(lfs_&, files_[fd]&, path.data(), convert_flags(flags));
+      
+      if (ec != LFS_ERR_OK) {
           yasboot::fs::FileDescriptors::get().release(fd);
-          return std::unexpected(-1);
+          return lfs_error_to_filesystem_error(ec);
       }
+
       return fd;
     }
 
@@ -112,7 +114,7 @@ fs: namespace = {
       if (!has_fd(fd)) {
         return std::unexpected(FileSystemError::InvalidArgument); 
       }
-      ec:= lfs_close(lfs_&, files_[cpp2::unsafe_narrow<i8>(fd)]&);
+      ec:= lfs_file_close(lfs_&, files_[cpp2::unsafe_narrow<i8>(fd)]&);
       if (ec != LFS_ERR_OK) {
         return lfs_error_to_filesystem_error(ec);
       }
@@ -126,8 +128,19 @@ fs: namespace = {
     }
 
     lfs_error_to_filesystem_error: (ec: i32) -> std::unexpected<FileSystemError> = {
-      if (LFS_ERR_OK) { return (FileSystemError::Success); }
-      return (FileSystemError::Unknown);
+      if (ec == LFS_ERR_OK)           { return std::unexpected(FileSystemError::Success); }
+      if (ec == LFS_ERR_NOENT)        { return std::unexpected(FileSystemError::NoEntry); }
+      if (ec == LFS_ERR_EXIST)        { return std::unexpected(FileSystemError::NotDirectory); }
+      if (ec == LFS_ERR_ISDIR)        { return std::unexpected(FileSystemError::Directory); }
+      if (ec == LFS_ERR_NOTEMPTY)     { return std::unexpected(FileSystemError::NotEmpty); }
+      if (ec == LFS_ERR_BADF)         { return std::unexpected(FileSystemError::BadFileDescriptor); }
+      if (ec == LFS_ERR_FBIG)         { return std::unexpected(FileSystemError::FileTooLarge); }
+      if (ec == LFS_ERR_INVAL)        { return std::unexpected(FileSystemError::InvalidArgument); }
+      if (ec == LFS_ERR_NOSPC)        { return std::unexpected(FileSystemError::NoSpaceLeft); }
+      if (ec == LFS_ERR_NOMEM)        { return std::unexpected(FileSystemError::NoMemoryLeft); }
+      if (ec == LFS_ERR_NOATTR)       { return std::unexpected(FileSystemError::InvalidArgument); }
+      if (ec == LFS_ERR_NAMETOOLONG)  { return std::unexpected(FileSystemError::FileNameTooLong); }
+      return std::unexpected(FileSystemError::Unknown);
     }
     
     lfs_read_callback: (in c: ConstLfsConfig, block: lfs_block_t, off: lfs_off_t, 

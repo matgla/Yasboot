@@ -31,7 +31,6 @@ target_sources(common
   PUBLIC 
     FILE_SET CXX_MODULES FILES
       source/file_descriptors.cc
-      source/filesystem_mount_points.cc
 )
 
 use_cppfront(
@@ -39,6 +38,7 @@ use_cppfront(
   MODULE_SOURCES 
     source/disk_parameters.cpp2
     source/filesystem.cpp2
+    source/filesystem_mount_points.cpp2
 )
 
 target_include_directories(common 

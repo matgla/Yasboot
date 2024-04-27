@@ -26,7 +26,6 @@ module;
 #include <utility>
 
 export module yasboot.filesystem.filesystem_mount_points;
-
 export import yasboot.filesystem;
 
 export namespace yasboot::fs
@@ -37,12 +36,13 @@ public:
   using MountPoints = std::map<std::string, std::unique_ptr<FileSystem>>;
 
   int register_mount_point(std::string_view path,
-                           std::unique_ptr<FileSystem> filesystem);
+                           std::unique_ptr<FileSystem> &&filesystem);
 
   std::pair<FileSystem *, std::string_view> get_mount_point(
     std::string_view pathname);
 
   const FileSystem *get_filesystem_for_fd(int fd) const;
+  FileSystem *get_filesystem_for_fd(int fd);
 
   static FileSystemMountPoints &get();
 
@@ -57,7 +57,7 @@ namespace yasboot::fs
 {
 
 int FileSystemMountPoints::register_mount_point(
-  std::string_view path, std::unique_ptr<FileSystem> filesystem)
+  std::string_view path, std::unique_ptr<FileSystem> &&filesystem)
 {
   if (mount_points_.count(std::string(path)))
   {
@@ -92,6 +92,18 @@ std::pair<FileSystem *, std::string_view> FileSystemMountPoints::get_mount_point
 const FileSystem *FileSystemMountPoints::get_filesystem_for_fd(int fd) const
 {
   for (const auto &[path, fs] : mount_points_)
+  {
+    if (fs->has_fd(fd))
+    {
+      return fs.get();
+    }
+  }
+  return nullptr;
+}
+
+FileSystem *FileSystemMountPoints::get_filesystem_for_fd(int fd)
+{
+  for (auto &[path, fs] : mount_points_)
   {
     if (fs->has_fd(fd))
     {

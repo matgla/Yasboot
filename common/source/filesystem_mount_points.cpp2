@@ -1,0 +1,49 @@
+/**
+ * filesystem_mount_points.cpp2
+ *
+ * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
+ *
+ * This program is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General
+ * Public License along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
+ */
+
+export module yasboot.filesystem.filesystem_mount_points;
+export import yasboot.filesystem;
+
+export yasboot: namespace = {
+fs: namespace = { 
+
+FileSystemMountPoints: type = {
+  //MountPoints == std::map<std::string, std::unique_ptr<FileSystem>>; 
+  
+  public get: () -> *FileSystemMountPoints = {
+    return nullptr;   
+  }
+
+  public register_mount_point: (path: std::string_view, move filesystem: std::unique_ptr<FileSystem>) -> int = {
+    return 0; 
+  }
+   
+  public get_filesystem_for_fd: (fd: i32) -> *FileSystem = {
+    return nullptr;  
+  }
+
+  //public get_filesystem_for_fd(fd: i32) -> *FileSystem =  {
+  //  return nullptr;
+  //}
+
+}
+
+}
+}

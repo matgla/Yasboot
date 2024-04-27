@@ -18,9 +18,12 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <unistd.h>
-
+#include <cerrno>
+#include <expected>
+#include <span>
 #include <string_view>
+
+#include <unistd.h>
 
 import hal.system.io;
 
@@ -78,12 +81,18 @@ extern "C"
 
   int __attribute__((used)) _close(int fd)
   {
-    auto fs = yasboot::fs::FileSystemMountPoints::get().get_filesystem_for_fd(fd);
-    if (fs == nullptr)
+    auto fs = yasboot::fs::FileSystemMountPoints::get()->get_filesystem_for_fd(fd);
+    if (!fs)
     {
       return -1;
     }
-    return fs->close(fd);
+    const auto r = fs->close(fd);
+    if (r)
+    {
+      return *r;
+    }
+    errno = r.error().get_raw_value();
+    return -1;
   }
 
   off_t __attribute__((used)) _lseek(int, off_t, int)
@@ -93,12 +102,21 @@ extern "C"
 
   ssize_t __attribute__((used)) _read(int fd, void *buf, size_t size)
   {
-    auto fs = yasboot::fs::FileSystemMountPoints::get().get_filesystem_for_fd(fd);
+    const auto fs =
+      yasboot::fs::FileSystemMountPoints::get()->get_filesystem_for_fd(fd);
     if (fs == nullptr)
     {
       return 0;
     }
-    return fs->read_file(fd, std::span<uint8_t>(static_cast<uint8_t *>(buf), size));
+
+    const auto r =
+      fs->read_file(fd, std::span<uint8_t>(static_cast<uint8_t *>(buf), size));
+    if (r)
+    {
+      return *r;
+    }
+    errno = r.error().get_raw_value();
+    return -1;
   }
 
   ssize_t __attribute__((used)) _write(int fd, const char *buf, size_t count)
@@ -131,7 +149,7 @@ extern "C"
   int __attribute__((used)) _open(const char *pathname, int flags)
   {
     auto [fs, path] =
-      yasboot::fs::FileSystemMountPoints::get().get_mount_point(pathname);
+      yasboot::fs::FileSystemMountPoints::get()->get_mount_point(pathname);
 
     if (!fs)
     {
@@ -144,6 +162,7 @@ extern "C"
     {
       return *r;
     }
-    return r.error();
+    errno = r.error().get_raw_value();
+    return -1;
   }
 }

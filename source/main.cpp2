@@ -29,18 +29,7 @@ import hal.flash;
 import yasboot.filesystem.littlefs;
 import yasboot.filesystem.filesystem_mount_points;
 
-App: @copyable type = {
-  operator(): (in this) -> _ = {
-    using namespace boost::sml;
-    a:= :() -> void = {printf("A\n");};
-    return boost::sml::make_transition_table(
-      "initialize"_s*                       / :() = { initialize(); } = "mount_disks"_s,
-      "mount_disks"_s + on_entry<_>    / :() = { mount_disks(); },
-      "mount_disks"_s [:() -> bool = { return mbr_.is_valid_mbr(); }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
-      "find_boot"_s / :() = { prepare_boot_parition(); } = X
-    );
-  }  
-
+AppData: @copyable type = {
   print_hello: () = {
     printf("\n\n");
     printf("============== YASBOOT ===============\n");
@@ -54,7 +43,7 @@ App: @copyable type = {
     printf("Mounting disks\n");
   }
 
-  prepare_boot_parition: (this) = {
+  prepare_boot_parition: (in this) = {
     p:= mbr_.get_bootable_partition(); 
     if (p) 
     {
@@ -79,7 +68,9 @@ App: @copyable type = {
       if (s)
       {
         printf("Mounted successfuly\n");
-        yasboot::fs::FileSystemMountPoints::get().register_mount_point("/boot", fs);
+        if (yasboot::fs::FileSystemMountPoints::get()*.register_mount_point("/boot", move fs) >= 0) {
+          //boot_partition_mounted_ = true;
+        }
       }
       else
       {
@@ -95,9 +86,41 @@ App: @copyable type = {
   operator=:(out this) = {
   }
 
+  has_valid_mbr: (this) -> bool = {
+    return mbr_.is_valid_mbr();
+  }
+
   disk_: hal::system::Disk = ();
   mbr_: yasboot::MbrParser = (disk_);
+  boot_partition_mounted_: bool = (false);
 }
+
+// This must be C++ class due to ref-qualified member function bug in boost::sml
+class App {
+  public:
+    auto operator()() {
+      using namespace boost::sml;
+      
+      const auto has_valid_mbr = [this]{ return data_.has_valid_mbr(); };
+      return boost::sml::make_transition_table(
+    //  +      FROM      +    EVENT     +      GUARD       +                 ACTION                     +  DESTINATION  +
+        *"initialize"_s                                    / [this]{ data_.initialize(); }              = "mount_disks"_s  
+        ,"mount_disks"_s + on_entry<_>                     / [this]{ data_.mount_disks(); }                              
+        ,"mount_disks"_s                 [has_valid_mbr]   / [this]{ printf("Disks mounted\n"); }       = "find_boot"_s
+        ,"find_boot"_s                                     / [this]{ data_.prepare_boot_parition(); }   = X
+      );
+    }
+
+  private:
+    AppData data_;
+//     //  "mount_disks"_s [:() -> bool = { return mbr_.is_valid_mbr(); }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
+//     //  "find_boot"_s / :() = { prepare_boot_parition(); } = X
+//     //);
+//     return f;
+//   }  
+
+};
+
 
 main: () = {
   uart: yasboot::hal::Uart<0> = (115200);

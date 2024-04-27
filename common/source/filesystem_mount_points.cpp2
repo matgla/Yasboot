@@ -28,22 +28,25 @@ FileSystemMountPoints: type = {
   //MountPoints == std::map<std::string, std::unique_ptr<FileSystem>>; 
   
   public get: () -> *FileSystemMountPoints = {
-    return nullptr;   
+    return instance&;   
   }
 
-  public register_mount_point: (path: std::string_view, move filesystem: std::unique_ptr<FileSystem>) -> int = {
+  public register_mount_point: (_: std::string_view, move _: std::unique_ptr<FileSystem>) -> int = {
     return 0; 
   }
    
-  public get_filesystem_for_fd: (fd: i32) -> *FileSystem = {
+  public get_filesystem_for_fd: (_: i32) -> *FileSystem = {
     return nullptr;  
   }
 
+  public get_mount_point: (_: std::string_view) -> std::pair<*FileSystem, std::string_view> = {
+    return (nullptr, "");
+  }
   //public get_filesystem_for_fd(fd: i32) -> *FileSystem =  {
   //  return nullptr;
   //}
 
 }
-
 }
 }
+instance: yasboot::fs::FileSystemMountPoints = ();

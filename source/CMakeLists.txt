@@ -29,6 +29,7 @@ target_sources(yasboot
 use_cppfront(
   TARGET yasboot
   MODULE_SOURCES 
+    app.cpp2
 )
 
 find_package(eul REQUIRED)

@@ -81,7 +81,7 @@ extern "C"
 
   int __attribute__((used)) _close(int fd)
   {
-    auto fs = yasboot::fs::FileSystemMountPoints::get()->get_filesystem_for_fd(fd);
+    auto fs = yasboot::fs::FileSystemMountPoints::get().get_filesystem_for_fd(fd);
     if (!fs)
     {
       return -1;
@@ -103,7 +103,7 @@ extern "C"
   ssize_t __attribute__((used)) _read(int fd, void *buf, size_t size)
   {
     const auto fs =
-      yasboot::fs::FileSystemMountPoints::get()->get_filesystem_for_fd(fd);
+      yasboot::fs::FileSystemMountPoints::get().get_filesystem_for_fd(fd);
     if (fs == nullptr)
     {
       return 0;
@@ -149,7 +149,7 @@ extern "C"
   int __attribute__((used)) _open(const char *pathname, int flags)
   {
     auto [fs, path] =
-      yasboot::fs::FileSystemMountPoints::get()->get_mount_point(pathname);
+      yasboot::fs::FileSystemMountPoints::get().get_mount_point(pathname);
 
     if (!fs)
     {

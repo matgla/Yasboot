@@ -22,85 +22,20 @@
 
 import hal.uart;
 import hal.system.io;
-import hal.system.disk;
-import yasboot.mbr;
+//import hal.system.disk;
+//import yasboot.mbr;
 
-import hal.flash;
-import yasboot.filesystem.littlefs;
-import yasboot.filesystem.filesystem_mount_points;
-
-AppData: @copyable type = {
-  print_hello: () = {
-    printf("\n\n");
-    printf("============== YASBOOT ===============\n");
-  }
-
-  initialize: () = {
-    print_hello();
-  }
-
-  mount_disks: () = {
-    printf("Mounting disks\n");
-  }
-
-  prepare_boot_parition: (in this) = {
-    p:= mbr_.get_bootable_partition(); 
-    if (p) 
-    {
-      printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
-      params:= yasboot::filesystem::DiskParameters(
-        4,
-        4, 
-        4096,
-        (p*.number_of_sectors * 512) >> 12
-      ); 
-      offset:= p*.lba_start * 512;
-      fs : std::unique_ptr<yasboot::fs::FileSystem> = new<yasboot::fs::LittleFS>(params, 
-        : (address: std::size_t, buffer: std::span<u8>) -> int = {
-          flash: yasboot::hal::InternalFlash = ();
-          if (buffer.size() == flash.read(address + offset$, buffer)) {
-            return 0;
-          }
-          return -1;
-        }
-      ); 
-      s:= fs*.mount();
-      if (s)
-      {
-        printf("Mounted successfuly\n");
-        if (yasboot::fs::FileSystemMountPoints::get()*.register_mount_point("/boot", move fs) >= 0) {
-          //boot_partition_mounted_ = true;
-        }
-      }
-      else
-      {
-        printf("Mounting failure\n");
-      }
-    }
-    else 
-    {
-      printf("%s\n", p.error().data());
-    }
-  }
-
-  operator=:(out this) = {
-  }
-
-  has_valid_mbr: (this) -> bool = {
-    return mbr_.is_valid_mbr();
-  }
-
-  disk_: hal::system::Disk = ();
-  mbr_: yasboot::MbrParser = (disk_);
-  boot_partition_mounted_: bool = (false);
-}
+//import hal.flash;
+//import yasboot.filesystem.littlefs;
+//import yasboot.filesystem.filesystem_mount_points;
+import yasboot.app;
 
 // This must be C++ class due to ref-qualified member function bug in boost::sml
 class App {
   public:
     auto operator()() {
       using namespace boost::sml;
-      
+       
       const auto has_valid_mbr = [this]{ return data_.has_valid_mbr(); };
       return boost::sml::make_transition_table(
     //  +      FROM      +    EVENT     +      GUARD       +                 ACTION                     +  DESTINATION  +
@@ -112,13 +47,7 @@ class App {
     }
 
   private:
-    AppData data_;
-//     //  "mount_disks"_s [:() -> bool = { return mbr_.is_valid_mbr(); }] / :() = { printf("disks mounted\n"); } = "find_boot"_s,
-//     //  "find_boot"_s / :() = { prepare_boot_parition(); } = X
-//     //);
-//     return f;
-//   }  
-
+    yasboot::AppData data_;
 };
 
 

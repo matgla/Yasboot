@@ -23,6 +23,8 @@ module;
 export module yasboot.app;
 
 import hal.system.disk;
+import hal.flash;
+
 import yasboot.mbr;
 
 import yasboot.filesystem.disk_parameters;
@@ -59,7 +61,7 @@ export AppData: @copyable type = {
       ); 
 
       offset:= p*.lba_start * 512;
-      fs : std::unique_ptr<yasboot::fs::FileSystem> = new<yasboot::fs::LittleFS>(params, 
+      fs := new<yasboot::fs::LittleFS>(params, 
         : (address: std::size_t, buffer: std::span<u8>) -> int = {
           flash: yasboot::hal::InternalFlash = ();
           if (buffer.size() == flash.read(address + offset$, buffer)) {

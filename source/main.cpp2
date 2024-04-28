@@ -20,36 +20,178 @@
 
 #include <boost/sml.hpp>
 
+#include <yasconf/config.hpp>
+
 import hal.uart;
 import hal.system.io;
-//import hal.system.disk;
-//import yasboot.mbr;
+import hal.system.disk;
+import yasboot.mbr;
 
-//import hal.flash;
-//import yasboot.filesystem.littlefs;
-//import yasboot.filesystem.filesystem_mount_points;
-import yasboot.app;
+import hal.flash;
+import yasboot.filesystem.littlefs;
+import yasboot.filesystem.filesystem_mount_points;
 
-// This must be C++ class due to ref-qualified member function bug in boost::sml
-class App {
-  public:
-    auto operator()() {
-      using namespace boost::sml;
-       
-      const auto has_valid_mbr = [this]{ return data_.has_valid_mbr(); };
-      return boost::sml::make_transition_table(
-    //  +      FROM      +    EVENT     +      GUARD       +                 ACTION                     +  DESTINATION  +
-        *"initialize"_s                                    / [this]{ data_.initialize(); }              = "mount_disks"_s  
-        ,"mount_disks"_s + on_entry<_>                     / [this]{ data_.mount_disks(); }                              
-        ,"mount_disks"_s                 [has_valid_mbr]   / [this]{ printf("Disks mounted\n"); }       = "find_boot"_s
-        ,"find_boot"_s                                     / [this]{ data_.prepare_boot_parition(); }   = X
-      );
+yasboot: namespace = {
+
+AppData: @copyable type = {
+  print_hello: () = {
+    printf("\n\n");
+    printf("============== YASBOOT ===============\n");
+  }
+
+  initialize: () = {
+    print_hello();
+  }
+
+  mount_disks: () = {
+    printf("Mounting disks\n");
+  }
+ 
+  prepare_boot_parition: (inout this) = {
+    p:= mbr_.get_bootable_partition(); 
+    if (p) {
+      printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
+      params:= yasboot::filesystem::DiskParameters(
+        4,
+        4, 
+        4096,
+        (p*.number_of_sectors * 512) >> 12
+      ); 
+
+      offset:= p*.lba_start * 512;
+      fs := new<yasboot::fs::LittleFS>(params, 
+        : (address: std::size_t, buffer: std::span<u8>) -> int = {
+          flash: yasboot::hal::InternalFlash = ();
+          if (buffer.size() == flash.read(address + offset$, buffer)) {
+             return 0;
+          }
+          return -1;
+        }
+      ); 
+      s:= fs*.mount();
+      if (s) {
+        printf("Mounted successfuly\n");
+        if (yasboot::fs::FileSystemMountPoints::get().register_mount_point("/", move fs) >= 0) {
+          boot_partition_mounted_ = true;
+        }
+      }
+      else {
+        printf("Mounting failure\n");
+      }
+    }
+    else {
+      printf("%s\n", p.error().data());
+    }
+  }
+ 
+  operator=:(out this) = {
+  }
+ 
+  has_valid_mbr: (this) -> bool = {
+    return mbr_.is_valid_mbr();
+  }
+
+  has_boot_partition_available: (this) -> bool = {
+    return boot_partition_mounted_;
+  }
+
+  find_target_executable: (inout this) = {
+    printf("Searching executable in config\n");
+    config: yasconf::Config<32> = ("/boot.conf");
+    if (!config.is_open()) {
+      printf("Can't open boot.conf\n"); 
+      return;
+    }
+    
+    bootPartition:= config["BootPartition"];
+    bootType:= config["BootType"];
+    imageType:= config["ImageType"];
+    
+    if (bootType*.empty())
+    {
+      printf("Empty 'BootType' in boot.conf\n");
+      return; 
     }
 
-  private:
-    yasboot::AppData data_;
-};
+    if (bootPartition*.empty())
+    {
+      printf("Key size: %d\n", bootPartition.key().size());
+      printf("Empty 'BootPartition' in boot.conf\n");
+      return; 
+    }
 
+    if (imageType*.empty())
+    {
+      printf("Empty 'ImageType' in boot.conf\n");
+      return; 
+    }
+
+    partition:=atoi(bootPartition*.data());
+    
+    printf("Execute image type '%s' from partition %d with type: '%s'\n",
+      imageType*.data(), partition, bootType*.data());
+
+    if (bootType*.empty() || bootPartition*.empty() || imageType*.empty()) {
+      return;
+    }
+
+
+    if (bootType* == "raw") {
+     execute_ = :() = {
+         
+      };
+    }
+    
+  }
+
+  has_valid_firmware_to_boot: (this) -> bool = {
+    return has_valid_firmware_to_boot_;
+  }
+
+  execute: (this) = {
+    execute_(); 
+  }
+ 
+  disk_: ::hal::system::Disk = ();
+  mbr_: yasboot::MbrParser = (disk_);
+  boot_partition_mounted_: bool = (false);
+  has_valid_firmware_to_boot_: bool = (false);
+  execute_: std::function<void()> = ();
+  partition_: int = ();
+}
+
+} // namespace yasboot
+
+namespace yasboot {
+  // This must be C++ class due to ref-qualified member function bug in boost::sml
+  class App {
+    public:
+      auto operator()() {
+        using namespace boost::sml;
+         
+        const auto has_valid_mbr = [this]{ return data_.has_valid_mbr(); };
+        const auto has_valid_boot_partition = [this]{ return data_.has_boot_partition_available(); };
+        const auto has_valid_firmware = [this]{ return data_.has_valid_firmware_to_boot(); };
+        return boost::sml::make_transition_table(
+      //  +      FROM      +    EVENT     +      GUARD                  +                 ACTION                     +  DESTINATION  +
+          *"initialize"_s                                               / [this]{ data_.initialize(); }              = "mount_disks"_s  
+          ,"mount_disks"_s + on_entry<_>                                / [this]{ data_.mount_disks(); }                              
+          ,"mount_disks"_s                 [has_valid_mbr]              / [this]{ printf("Disks mounted\n"); }       = "find_boot"_s
+          ,"find_boot"_s                                                / [this]{ data_.prepare_boot_parition(); }   = "read_config"_s
+          ,"read_config"_s                 [has_valid_boot_partition]   / [this]{ data_.find_target_executable(); }  = "prepare_execution"_s
+          ,"read_config"_s                 [!has_valid_boot_partition]  / [this]{ printf("Unable to find boot parition\n"); } = "cli_mode"_s
+          ,"prepare_execution"_s           [has_valid_firmware]         / [this]{ printf("Executing!\n"); }          = "execute_with_timer"_s
+          ,"prepare_execution"_s           [!has_valid_firmware]        / [this]{ printf("Any firmware to be executed found!\n"); } = "cli_mode"_s
+          ,"execute_with_timer"_s                                       / [this]{ printf("Count: 5\n"); }            = "wait_for_startup"_s
+          ,"cli_mode"_s                                                 / [this]{ printf("Recovery Shell:\n >\n"); } = "wait_for_startup"_s 
+          ,"wait_for_startup"_s                                         / [this]{ data_.execute(); }                 = X
+        );
+      }
+
+    private:
+      yasboot::AppData data_;
+  };
+} // namespace yasboot
 
 main: () = {
   uart: yasboot::hal::Uart<0> = (115200);
@@ -57,7 +199,7 @@ main: () = {
   yasboot::hal::system::io::set_global_write(: (str: std::string_view) -> std::size_t = 
     uart$.write(str));
 
-  data: App = ();
-  sm: boost::sml::sm<App> = (data);
+  data: yasboot::App = ();
+  sm: boost::sml::sm<yasboot::App> = (data);
 }
 

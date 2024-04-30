@@ -95,8 +95,23 @@ extern "C"
     return -1;
   }
 
-  off_t __attribute__((used)) _lseek(int, off_t, int)
+  off_t __attribute__((used)) _lseek(int fd, off_t offset, int flags)
   {
+    const auto fs =
+      yasboot::fs::FileSystemMountPoints::get().get_filesystem_for_fd(fd);
+    if (fs == nullptr)
+    {
+      return 0;
+    }
+
+    const auto r = fs->seek(fd, offset, flags);
+    if (r)
+    {
+      return *r;
+    }
+    errno = r.error().get_raw_value();
+    return -1;
+
     return 0;
   }
 
@@ -110,7 +125,7 @@ extern "C"
     }
 
     const auto r =
-      fs->read_file(fd, std::span<uint8_t>(static_cast<uint8_t *>(buf), size));
+      fs->read(fd, std::span<uint8_t>(static_cast<uint8_t *>(buf), size));
     if (r)
     {
       return *r;

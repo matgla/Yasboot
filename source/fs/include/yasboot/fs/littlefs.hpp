@@ -59,7 +59,7 @@ public:
   int open(std::string_view path, int flags) override;
 
   [[nodiscard]] bool has_fd(int fd) const override;
-  [[nodiscard]] int read_file(int fd, std::span<uint8_t> buffer) override;
+  [[nodiscard]] int read(int fd, std::span<uint8_t> buffer) override;
   [[nodiscard]] int close(int fd) override;
 
 private:

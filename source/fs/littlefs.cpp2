@@ -42,8 +42,8 @@ fs: namespace = {
     
     this: FileSystem = (); 
 
-    operator=: (out this, in disk: filesystem::DiskParameters, in read: ReadFromDisk) = {
-      read_ = read;
+    operator=: (out this, in disk: filesystem::DiskParameters, in read_from_disk: ReadFromDisk) = {
+      read_ = read_from_disk;
       config_ = lfs_config(
         this&,
         lfs_read_callback,
@@ -100,7 +100,7 @@ fs: namespace = {
       return files_.contains(cpp2::unsafe_narrow<i8>(fd));
     }
 
-    public read_file: (override inout this, fd: i32, buffer: std::span<u8>) -> std::expected<i32, FileSystemError> =
+    public read: (override inout this, fd: i32, buffer: std::span<u8>) -> std::expected<i32, FileSystemError> =
     {
       if (!has_fd(fd)) {
         return -1;
@@ -121,13 +121,36 @@ fs: namespace = {
       return fd;
     }
 
+    private convert_whence: (whence: i32) -> i32 = {
+      if (whence == SEEK_SET) { return LFS_SEEK_SET; }
+      if (whence == SEEK_CUR) { return LFS_SEEK_CUR; }
+      if (whence == SEEK_END) { return LFS_SEEK_END; }
+      return -1;
+    }
+    
+    public seek: (override inout this, fd: i32, offset: off_t, whence: i32) -> std::expected<off_t, FileSystemError> = {
+      if (!has_fd(fd)) {
+        return std::unexpected(FileSystemError::InvalidArgument); 
+      }
+
+      w:= convert_whence(whence);
+      if (w == -1) { 
+        return std::unexpected(FileSystemError::InvalidArgument);
+      }
+      r:= lfs_file_seek(lfs_&, files_[cpp2::unsafe_narrow<i8>(fd)]&, offset, w);
+      if (r < 0) {
+        return lfs_error_to_filesystem_error(r);
+      }
+      return r;
+    }
+
     convert_flags: (in flags: i32) -> i32 = {
       result: i32 = 0;
       if ((flags & O_RDONLY) != 0) { result |= LFS_O_RDONLY; }
       return result;
     }
 
-    lfs_error_to_filesystem_error: (ec: i32) -> std::unexpected<FileSystemError> = {
+    private lfs_error_to_filesystem_error: (ec: i32) -> std::unexpected<FileSystemError> = {
       if (ec == LFS_ERR_OK)           { return std::unexpected(FileSystemError::Success); }
       if (ec == LFS_ERR_NOENT)        { return std::unexpected(FileSystemError::NoEntry); }
       if (ec == LFS_ERR_EXIST)        { return std::unexpected(FileSystemError::NotDirectory); }
@@ -143,7 +166,7 @@ fs: namespace = {
       return std::unexpected(FileSystemError::Unknown);
     }
     
-    lfs_read_callback: (in c: ConstLfsConfig, block: lfs_block_t, off: lfs_off_t, 
+    private lfs_read_callback: (in c: ConstLfsConfig, block: lfs_block_t, off: lfs_off_t, 
       buffer: *void, size: lfs_size_t) -> int = {
         o:= cpp2::unsafe_narrow<* LittleFS>(c*.context);
         return o*.read_(block * c*.block_size + off, std::span<uint8_t>(cpp2::unsafe_narrow<*uint8_t>(buffer), size));//, std::span<uint8_t>(); 

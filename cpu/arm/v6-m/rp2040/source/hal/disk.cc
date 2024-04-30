@@ -37,6 +37,8 @@ public:
 
   template <typename T>
   T read(std::size_t address, std::size_t size = sizeof(T)) const;
+
+  static std::size_t get_memory_mapped_address(std::size_t address);
 };
 
 } // namespace hal::system
@@ -60,6 +62,11 @@ T Disk::read(std::size_t address, std::size_t size) const
   T d;
   std::memcpy(&d, reinterpret_cast<void *>(XIP_BASE + address), size);
   return d;
+}
+
+std::size_t Disk::get_memory_mapped_address(std::size_t address)
+{
+  return address + XIP_BASE;
 }
 
 } // namespace hal::system

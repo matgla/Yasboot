@@ -47,7 +47,8 @@ export FileSystem: @interface type = {
   open: (inout this, path: std::string_view, flags: i32) -> std::expected<i32, FileSystemError>;
   close: (inout this, fd: i32) -> std::expected<i32, FileSystemError>;
   has_fd: (this, fd: i32) -> bool;
-  read_file: (inout this, fd: i32, buffer: std::span<u8>) -> std::expected<i32, FileSystemError>;
+  read: (inout this, fd: i32, buffer: std::span<u8>) -> std::expected<i32, FileSystemError>;
+  seek: (inout this, fd: i32, offset: off_t, whence: i32) -> std::expected<off_t, FileSystemError>;
 }
 
 } // namespace fs

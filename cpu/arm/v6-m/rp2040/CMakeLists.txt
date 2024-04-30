@@ -114,6 +114,7 @@ target_sources(rp2040
     source/hal/disk.cc
     source/hal/uart.cc
     source/hal/system_stubs.cc
+    source/hal/cpu.cc
 )
 
 use_cppfront(

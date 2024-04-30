@@ -79,6 +79,11 @@ yasboot: namespace = {
       }
       return std::unexpected("No bootable partition found");
     }
+    
+    get_partition: (this, id: i32) -> MbrPartitionEntry 
+      pre(id >= 0 && id <= 3) = {
+        return mbr_.partitions[id]; 
+    }
   } 
 }
 

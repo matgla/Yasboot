@@ -153,9 +153,7 @@ if(${configuration_is_ready})
 
   # add_subdirectory(modules)
 
-  if(${BOARD} STREQUAL "host")
-    add_subdirectory(tests)
-  endif()
+  add_subdirectory(tests)
 
   if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin")
     set(renode_executable mono /Applications/Renode.app/Contents/MacOS/bin/Renode.exe)

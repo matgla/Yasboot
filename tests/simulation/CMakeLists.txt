@@ -1,7 +1,7 @@
 #
 # CMakeLists.txt
 #
-# Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+# Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
 #
 # This program is free software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,5 +18,8 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-#add_subdirectory(st)
-add_subdirectory(simulation)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${BOARD})
+  message(STATUS "Adding MSPC simulation tests") 
+  add_subdirectory(${BOARD})
+endif ()
+

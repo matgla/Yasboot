@@ -104,21 +104,9 @@ AppData: @copyable type = {
       return;
     }
     
-    bootType:= config["BootType"];
-    printf("with type: '%s'\n",
-       bootType*.data());
-
-
-    bootPartition:= config["BootPartition"];
-    printf("2with type: '%s'\n",
-       bootType*.data());
-
-
-
-imageType:= config["ImageType"];
-     printf("3with type: '%s'\n",
-       bootType*.data());
-
+    bootType: yasconf::ConfigEntry<32> = config["BootType"];
+    bootPartition: yasconf::ConfigEntry<32> = config["BootPartition"];
+    imageType: yasconf::ConfigEntry<32> = config["ImageType"];
    
     if (bootType*.empty())
     {
@@ -142,7 +130,6 @@ imageType:= config["ImageType"];
     printf("Execute image type '%s' from partition %d with type: '%s'\n",
       imageType*.data(), partition, bootType*.data());
 
-    printf("BootType size: %d (%c)\n", bootType*.size(), bootType*[0]);
     if (bootType*.contains("raw")) {
       firmware_address: std::optional<std::size_t> = (std::nullopt);
       if (imageType*.contains("raw")) {

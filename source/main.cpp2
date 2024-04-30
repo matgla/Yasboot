@@ -105,9 +105,21 @@ AppData: @copyable type = {
     }
     
     bootType:= config["BootType"];
+    printf("with type: '%s'\n",
+       bootType*.data());
+
+
     bootPartition:= config["BootPartition"];
-    imageType:= config["ImageType"];
-    
+    printf("2with type: '%s'\n",
+       bootType*.data());
+
+
+
+imageType:= config["ImageType"];
+     printf("3with type: '%s'\n",
+       bootType*.data());
+
+   
     if (bootType*.empty())
     {
       printf("Empty 'BootType' in boot.conf\n");
@@ -125,14 +137,15 @@ AppData: @copyable type = {
       printf("Empty 'ImageType' in boot.conf\n");
       return; 
     }
+    
+    partition:= atoi(bootPartition*.data());
+    printf("Execute image type '%s' from partition %d with type: '%s'\n",
+      imageType*.data(), partition, bootType*.data());
 
-    if (bootType* == "raw") {
-      partition:= atoi(bootPartition*.data());
-      printf("Execute image type '%s' from partition %d with type: '%s'\n",
-        imageType*.data(), partition, bootType*.data());
-      
-      firmware_address: std::optional<std::size_t> = (std::nullopt); 
-      if (imageType* == "raw") {
+    printf("BootType size: %d (%c)\n", bootType*.size(), bootType*[0]);
+    if (bootType*.contains("raw")) {
+      firmware_address: std::optional<std::size_t> = (std::nullopt);
+      if (imageType*.contains("raw")) {
         printf("Calculation of firmware address\n");
         p:= mbr_.get_partition(partition);
         firmware_address = ::hal::system::Disk::get_memory_mapped_address((p.lba_start as std::size_t) * 512);

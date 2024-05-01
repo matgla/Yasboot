@@ -20,15 +20,6 @@ SECTIONS
         __flash_binary_start = .;
     } > FLASH
 
-    .boot2 : {
-        __boot2_start__ = .;
-        KEEP (*(.boot2))
-        __boot2_end__ = .;
-    } > FLASH
-
-    ASSERT(__boot2_end__ - __boot2_start__ == 256,
-        "ERROR: Pico second stage bootloader must be 256 bytes in size")
-
     /* The second stage will always enter the image at the start of .text.
        The debugger will use the ELF entry point, which is the _entry_point
        symbol if present, otherwise defaults to start of .text.
@@ -227,11 +218,3 @@ SECTIONS
     /* todo assert on extra code */
 }
 
-
-
-MEMORY
-{
-  FLASH(rx) : ORIGIN = 0x10010000, LENGTH = 
-  RAM(RWX) : ORIGIN = 0x20000000,
-  S
-}

@@ -90,6 +90,14 @@ def create_littlefs_partition(block_size, block_count, config, working_directory
                         out.write(source.read())
     return fs 
 
+def create_raw_partition(config, working_directory):
+    print("Creating RAW parition")
+    if "content" in config:
+        file = working_directory / config["content"]
+        with open(file, "rb") as data:
+            return data.read()
+    return bytearray() 
+
 filepath = Path(args.output)
 if os.path.exists(filepath.absolute()):
   print("File already exists:", filepath.absolute())
@@ -121,3 +129,9 @@ for key, value in sorted(layout["partitions"].items()):
             print("Writing partition to", hex(get_int(value["start"])))
             img.seek(get_int(value["start"]))
             img.write(fs.context.buffer)
+    elif value["format"] == "raw":
+        data = create_raw_partition(value, working_directory)
+        with open(filepath, "r+b") as img:
+            img.seek(get_int(value["start"]))
+            img.write(data)
+

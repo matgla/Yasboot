@@ -188,7 +188,7 @@ add_custom_target(
     #cat ${PROJECT_BINARY_DIR}/${BOARD}_disk.img
     #${PROJECT_BINARY_DIR}/south_bridge >
     #${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
-  DEPENDS yasboot
+    DEPENDS yasboot ${PROJECT_SOURCE_DIR}/scripts/create_disk.py
   VERBATIM)
 
 add_custom_target(

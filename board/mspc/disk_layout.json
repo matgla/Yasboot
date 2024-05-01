@@ -2,20 +2,21 @@
   "size": "2M",
   "eraseSize": "4096",
   "partitions": {
-    "2": {
+    "1": {
       "start": "0x30000",
       "length": "0xC0000",
       "bootable": false,
-      "format": "raw"
+      "format": "raw",
+      "content": "./hello.bin"
     },
-    "1": {
+    "0": {
       "start": "0x10000",
       "length": "0x20000",
       "bootable": true,
       "format": "littlefs",
       "content": "./boot"
     },
-    "3": {
+    "2": {
       "start": "0xF0000",
       "length": "0xC0000",
       "bootable": false,

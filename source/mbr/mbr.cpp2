@@ -58,7 +58,7 @@ yasboot: namespace = {
 
     operator=: (out this, in disk :hal::system::Disk) = { 
       for (0, 1, 2, 3) do (p) {
-        mbr_.partitions[p] = read_partition(0, disk);
+        mbr_.partitions[p] = read_partition(p, disk);
       }
       mbr_.signature = disk.read<u16>(510);
     }

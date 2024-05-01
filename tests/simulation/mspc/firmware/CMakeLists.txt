@@ -18,13 +18,27 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-add_executable(mspc_firmware_hello
-  main.cpp
+
+cmake_minimum_required(VERSION 3.25)
+
+list (APPEND CMAKE_MODULE_PATH ${yaspem_SOURCE_DIR}/cmake)
+
+include(yaspem)
+
+setup_yaspem(
+  YASPEM_SOURCE ${yaspem_SOURCE_DIR}
+  OUTPUT_DIRECTORY ${yaspem_BINARY_DIR}
+  PACKAGE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/packages.json
 )
 
-target_link_libraries(mspc_firmware_hello 
-  PRIVATE 
-    pico_stdlib
-)
+find_package (picosdk REQUIRED)
+include (pico_sdk_init)
 
-pico_add_extra_outputs(mspc_firmware_hello)
+list (APPEND PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/board)
+set (PICO_BOARD mspc)
+pico_sdk_init()
+
+project (mspc_firmware ASM C CXX)
+
+add_subdirectory (hello)
+

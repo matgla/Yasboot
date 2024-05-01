@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    {
+      "link": "https://github.com/raspberrypi/pico-sdk.git",
+      "type": "git",
+      "version": "1.5.1",
+      "target": "picosdk",
+      "options": {
+        "update_submodules": true,
+        "is_cmake_library": true
+      }
+    }
+  ]
+}

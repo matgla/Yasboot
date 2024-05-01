@@ -18,3 +18,14 @@
 # <https://www.gnu.org/licenses/>.
 #
 
+message(STATUS "Adding external project with firmware examples for MSPC")
+
+include(ExternalProject)
+
+ExternalProject_Add(mspc_firmwares
+  CMAKE_ARGS -Dyaspem_SOURCE_DIR=${yaspem_SOURCE_DIR} -Dyaspem_BINARY_DIR=${PROJECT_BINARY_DIR}/packages
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/firmware
+  BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/firmware
+  INSTALL_COMMAND ""
+  BUILD_ALWAYS 1
+)

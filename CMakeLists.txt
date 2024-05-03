@@ -153,6 +153,8 @@ if(${configuration_is_ready})
 
   # add_subdirectory(modules)
 
+  enable_testing()
+  list (APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
   add_subdirectory(tests)
 
   if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin")
@@ -184,11 +186,7 @@ add_custom_target(
     ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/write_yasboot.py
     --drive ${PROJECT_BINARY_DIR}/${BOARD}_disk.img --yasboot
     ${PROJECT_BINARY_DIR}/yasboot.bin --bootcode ${PROJECT_BINARY_DIR}/boot.bin
-  #COMMAND
-    #cat ${PROJECT_BINARY_DIR}/${BOARD}_disk.img
-    #${PROJECT_BINARY_DIR}/south_bridge >
-    #${PROJECT_BINARY_DIR}/${BOARD}_disk_with_app.img
-    DEPENDS yasboot ${PROJECT_SOURCE_DIR}/scripts/create_disk.py
+  DEPENDS yasboot ${PROJECT_SOURCE_DIR}/scripts/create_disk.py mspc_firmwares 
   VERBATIM)
 
 add_custom_target(

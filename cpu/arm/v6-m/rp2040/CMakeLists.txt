@@ -115,6 +115,8 @@ target_sources(rp2040
     source/hal/uart.cc
     source/hal/system_stubs.cc
     source/hal/cpu.cc
+  PRIVATE 
+    source/hal/jump.S
 )
 
 use_cppfront(

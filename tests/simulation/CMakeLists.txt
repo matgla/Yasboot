@@ -20,6 +20,7 @@
 
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${BOARD})
   message(STATUS "Adding MSPC simulation tests") 
+  list (APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
   add_subdirectory(${BOARD})
 endif ()
 

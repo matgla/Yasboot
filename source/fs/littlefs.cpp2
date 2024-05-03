@@ -51,7 +51,7 @@ fs: namespace = {
         nullptr,
         nullptr,
         disk.read_size,
-        0,
+        disk.read_size,
         disk.block_size,
         disk.block_count,
         600,
@@ -144,10 +144,10 @@ fs: namespace = {
       return r;
     }
 
-    convert_flags: (in flags: i32) -> i32 = {
-      result: i32 = 0;
-      if ((flags & O_RDONLY) != 0) { result |= LFS_O_RDONLY; }
-      return result;
+    convert_flags: (in _: i32) -> i32 = {
+      //result: i32 = 0;
+      //if ((flags & O_RDONLY) != 0) { result = LFS_O_RDONLY; }
+      return LFS_O_RDONLY;
     }
 
     private lfs_error_to_filesystem_error: (ec: i32) -> std::unexpected<FileSystemError> = {

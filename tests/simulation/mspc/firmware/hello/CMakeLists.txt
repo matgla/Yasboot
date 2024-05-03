@@ -27,6 +27,8 @@ target_link_libraries(mspc_firmware_hello
     pico_stdlib
 )
 
+target_compile_options(mspc_firmware_hello PUBLIC -O0)
+
 pico_set_linker_script(mspc_firmware_hello ${CMAKE_CURRENT_SOURCE_DIR}/../board/mspc_yasboot_firmware.ld)
 
 pico_add_extra_outputs(mspc_firmware_hello)

@@ -18,16 +18,20 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-message(STATUS "Adding external project with firmware examples for MSPC")
+include (create_test_targets)
 
-include(ExternalProject)
+add_custom_target(boot_standalone_non_relocatable)
+add_dependencies(boot_standalone_non_relocatable mspc_firmwares)
 
-ExternalProject_Add(mspc_firmwares
-  CMAKE_ARGS -Dyaspem_SOURCE_DIR=${yaspem_SOURCE_DIR} -Dyaspem_BINARY_DIR=${PROJECT_BINARY_DIR}/packages -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/firmware
-  BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/firmware
-  INSTALL_COMMAND ""
-  BUILD_ALWAYS 1
+add_custom_command(TARGET boot_standalone_non_relocatable 
+  POST_BUILD 
+  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/../../firmware/hello/mspc_firmware_hello.bin ${CMAKE_CURRENT_BINARY_DIR}/disk/mspc_firmware_hello.bin
+  VERBATIM
+)
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/disk ${CMAKE_CURRENT_BINARY_DIR}/disk)
+
+create_test_targets(
+  NAME boot_standalone_non_relocatable
+  DISK_LAYOUT ${CMAKE_CURRENT_BINARY_DIR}/disk/disk_layout.json
 )
 
-add_subdirectory(tests)

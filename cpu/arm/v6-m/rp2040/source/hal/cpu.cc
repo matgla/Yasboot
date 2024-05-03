@@ -25,26 +25,25 @@ module;
 
 export module hal.cpu;
 
+extern "C"
+{
+  void jump(std::size_t vector_table, std::size_t target);
+}
+
 export namespace hal::cpu
 {
 
-std::size_t load_vector_table(std::size_t firmware)
+std::size_t load_vector_table(size_t firmware)
 {
-  std::size_t *stack_pointer = reinterpret_cast<std::size_t *>(firmware);
-  asm(R"(
-    cpsid i
-    msr msp, %0)"
-      :
-      : "r"(stack_pointer));
-  scb_hw->vtor = firmware;
-
+  static_cast<void>(firmware);
   return 4;
 }
 
 void jump(std::size_t address)
 {
-  void (**reset_handler)(void) = (void (**)(void))(address);
-  (*reset_handler)();
+  scb_hw->vtor = address - 4;
+  ::jump(*reinterpret_cast<std::size_t *>(address - 4),
+         *reinterpret_cast<std::size_t *>(address));
 }
 
 } // namespace hal::cpu

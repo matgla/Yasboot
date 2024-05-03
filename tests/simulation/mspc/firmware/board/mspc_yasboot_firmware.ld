@@ -1,8 +1,8 @@
 /* Based on Pico-SDK memmap-default.ld */
 MEMORY
 {
-    FLASH(rx) : ORIGIN = 0x10030000, LENGTH = 2048k
-    RAM(rwx) : ORIGIN =  0x20000000, LENGTH = 0xC0000
+    FLASH(rx) : ORIGIN = 0x10030000, LENGTH = 0xc0000 
+    RAM(rwx) : ORIGIN =  0x20000000, LENGTH = 256k 
     SCRATCH_X(rwx) : ORIGIN = 0x20040000, LENGTH = 4k
     SCRATCH_Y(rwx) : ORIGIN = 0x20041000, LENGTH = 4k
 }
@@ -20,14 +20,9 @@ SECTIONS
         __flash_binary_start = .;
     } > FLASH
 
-    /* The second stage will always enter the image at the start of .text.
-       The debugger will use the ELF entry point, which is the _entry_point
-       symbol if present, otherwise defaults to start of .text.
-       This can be used to transfer control back to the bootrom on debugger
-       launches only, to perform proper flash setup.
-    */
 
     .text : {
+
         __logical_binary_start = .;
         KEEP (*(.vectors))
         KEEP (*(.binary_info_header))

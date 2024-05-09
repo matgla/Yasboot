@@ -14,7 +14,7 @@
     {
       "link": "https://github.com/matgla/Yasld.git",
       "type": "git",
-      "version": "0.0.3",
+      "version": "main",
       "target": "yasld",
       "options": {
         "cmake_variables": {

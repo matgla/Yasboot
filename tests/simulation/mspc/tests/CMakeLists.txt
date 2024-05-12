@@ -19,3 +19,4 @@
 #
 
 add_subdirectory(boot_standalone_non_relocatable)
+add_subdirectory(boot_relocatable_hello)

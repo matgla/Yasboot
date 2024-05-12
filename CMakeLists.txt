@@ -130,8 +130,6 @@ if(${configuration_is_ready})
   include(clang_tidy)
   add_clang_tidy(".*packages/.*")
 
-  find_package(yasld REQUIRED)
-
   if(${BOARD} STREQUAL "host")
     include(sanitizers)
     add_sanitizers()

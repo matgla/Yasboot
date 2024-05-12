@@ -23,11 +23,23 @@ message(STATUS "Adding external project with firmware examples for MSPC")
 include(ExternalProject)
 
 ExternalProject_Add(mspc_firmwares
-  CMAKE_ARGS -Dyaspem_SOURCE_DIR=${yaspem_SOURCE_DIR} -Dyaspem_BINARY_DIR=${PROJECT_BINARY_DIR}/packages -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+  CMAKE_ARGS 
+    -Dyaspem_SOURCE_DIR=${yaspem_SOURCE_DIR} 
+    -Dyaspem_BINARY_DIR=${PROJECT_BINARY_DIR}/packages 
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -Dyasboot_test_toolchain_path=${yasboot_test_toolchain_path}
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/firmware
   BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/firmware
   INSTALL_COMMAND ""
   BUILD_ALWAYS 1
+)
+
+include(firmware/cmake/include_yasld_targets.cmake)
+
+include_yasld_targets(
+  YASPEM_SOURCE_DIR ${yaspem_SOURCE_DIR}
+  YASPEM_BINARY_DIR ${PROJECT_BINARY_DIR}/packages
+  TOOLCHAINS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../toolchains
 )
 
 add_subdirectory(tests)

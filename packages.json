@@ -12,18 +12,6 @@
       }
     },
     {
-      "link": "https://github.com/matgla/Yasld.git",
-      "type": "git",
-      "version": "main",
-      "target": "yasld",
-      "options": {
-        "cmake_variables": {
-          "YASLD_ARCH": "armv6-m",
-          "YASLD_DISABLE_TESTS": "OFF"
-        }
-      }
-    },
-    {
       "link": "https://github.com/matgla/Renode_RP2040.git",
       "type": "git",
       "version": "main",

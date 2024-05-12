@@ -18,10 +18,26 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${BOARD})
-  message(STATUS "Adding MSPC simulation tests") 
-  list (APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-  set (yasboot_test_toolchain_path ${CMAKE_CURRENT_SOURCE_DIR}/toolchains)
-  add_subdirectory(${BOARD})
-endif ()
+add_executable (hello_from_relocatable_module)
+
+target_sources (hello_from_relocatable_module 
+  PRIVATE
+    main.cpp
+)
+
+target_link_libraries(hello_from_relocatable_module PRIVATE yasld_executable_flags gcc c)
+
+set_target_properties(hello_from_relocatable_module 
+  PROPERTIES PICO_TARGET_LINKER_SCRIPT 
+  ${CMAKE_CURRENT_SOURCE_DIR}/executable.ld
+)
+
+set_target_properties(hello_from_relocatable_module 
+  PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/executable.ld)
+
+include (ConvertElfToYasiff)
+
+convert_elf_to_yasiff(
+  TARGET hello_from_relocatable_module
+  TYPE   executable)
 

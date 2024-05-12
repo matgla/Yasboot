@@ -18,10 +18,20 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${BOARD})
-  message(STATUS "Adding MSPC simulation tests") 
-  list (APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-  set (yasboot_test_toolchain_path ${CMAKE_CURRENT_SOURCE_DIR}/toolchains)
-  add_subdirectory(${BOARD})
-endif ()
+include (create_test_targets)
+
+add_custom_target(boot_relocatable_hello)
+add_dependencies(boot_relocatable_hello mspc_yasld_firmwares)
+
+add_custom_command(TARGET boot_relocatable_hello
+  POST_BUILD 
+  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/../../firmware/hello/mspc_firmware_hello.bin ${CMAKE_CURRENT_BINARY_DIR}/disk/mspc_firmware_hello.bin
+  VERBATIM
+)
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/disk ${CMAKE_CURRENT_BINARY_DIR}/disk)
+
+create_test_targets(
+  NAME boot_relocatable_hello
+  DISK_LAYOUT ${CMAKE_CURRENT_BINARY_DIR}/disk/disk_layout.json
+)
 

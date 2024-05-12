@@ -38,4 +38,12 @@ set (PICO_BOARD mspc)
 
 pico_sdk_init()
 
+project (yasld_firmwares ASM C CXX)
+
+set (YASLD_USE_CUSTOM_LINKER_SCRIPT ON)
 find_package (yasld REQUIRED)
+list (APPEND CMAKE_MODULE_PATH ${yasld_SOURCE_DIR}/cmake)
+
+add_subdirectory(hello)
+
+

@@ -7,7 +7,7 @@
       "length": "0xC0000",
       "bootable": false,
       "format": "raw",
-      "content": "./hello_from_relocatable_module.bin"
+      "content": "./mspc_firmware_hello.bin"
     },
     "0": {
       "start": "0x10000",

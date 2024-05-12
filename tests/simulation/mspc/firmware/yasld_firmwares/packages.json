@@ -1,0 +1,26 @@
+{
+  "dependencies": [
+    {
+      "link": "https://github.com/raspberrypi/pico-sdk.git",
+      "type": "git",
+      "version": "1.5.1",
+      "target": "picosdk",
+      "options": {
+        "update_submodules": true,
+        "is_cmake_library": true
+      }
+    },
+    {
+      "link": "https://github.com/matgla/Yasld.git",
+      "type": "git",
+      "version": "main",
+      "target": "yasld",
+      "options": {
+        "cmake_variables": {
+          "YASLD_ARCH": "armv6-m",
+          "YASLD_DISABLE_TESTS": "OFF"
+        }
+      }
+    }
+  ]
+}

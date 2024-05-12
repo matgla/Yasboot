@@ -40,7 +40,7 @@ find_package(sml REQUIRED)
 target_link_libraries(
   yasboot
   PUBLIC eul::utils newlib_stubs
-  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf sml)
+  PRIVATE yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf sml)
 
 target_compile_options(
   yasboot 

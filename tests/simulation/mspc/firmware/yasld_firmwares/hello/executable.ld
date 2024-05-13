@@ -29,7 +29,7 @@ SECTIONS
 {
   .text :
   {
-    . = ALIGN(8);
+    . = ALIGN(16);
     KEEP(*(.vectors))
     KEEP(*(.entry))
     KEEP(*(.reset)) 
@@ -47,24 +47,21 @@ SECTIONS
     *(.ARM.extab*)
     *(.ARM.exidx*)
     PROVIDE_HIDDEN(__preinit_array_start = .);
-    KEEP(*SORT(.preinit_array.*))
-    KEEP(*(.preinit_array))
+    *(.preinit_array*)
     PROVIDE_HIDDEN(__preinit_array_end = .);
     PROVIDE_HIDDEN(__init_array_start = .);
-    KEEP(*SORT(.init_array.*))
-    KEEP(*(.init_array))
+    *(.init_array*)
     PROVIDE_HIDDEN(__init_array_end = .);
     PROVIDE_HIDDEN(__fini_array_start = .);
-    KEEP(*SORT(.fini_array.*))
-    KEEP(*SORT(.fini_array))
+    *(.fini_array*)
     PROVIDE_HIDDEN(__fini_array_end = .);
     *(.binary_info.*)
-    . = ALIGN(8);
+    . = ALIGN(16);
   } > image
 
   .data :
   {
-    . = ALIGN(8);
+    . = ALIGN(16);
     __data_start__ = .;
     *(.ram_vector_table)
     PROVIDE_HIDDEN (__mutex_array_start = .);
@@ -76,17 +73,17 @@ SECTIONS
     *(.data*)
     *(.time_critical)
     *(.time_critical*)
-    . = ALIGN(8);
+    . = ALIGN(16);
     __data_end__ = .;
   } > image 
 
   .bss :
   {
-    . = ALIGN(8);
+    . = ALIGN(16);
     *(.bss)
     *(.bss*)
     *(COMMON)
-    . = ALIGN(8);
+    . = ALIGN(16);
   } > image
 
   .got :

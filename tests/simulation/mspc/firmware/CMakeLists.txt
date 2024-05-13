@@ -31,6 +31,7 @@ setup_yaspem(
   PACKAGE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/packages.json
 )
 
+
 find_package (picosdk REQUIRED)
 include (pico_sdk_init)
 
@@ -40,6 +41,23 @@ pico_sdk_init()
 
 project (mspc_firmware ASM C CXX)
 
+set(common_flags "-Werror -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces ")
+set(common_release_flags "") 
+set(common_debug_flags "-g")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics -fno-module-lazy  ${common_flags}")
+
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${common_release_flags}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${common_debug_flags}")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${common_flags}")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${common_release_flags}")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${common_debug_flags}")
+
+set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${common_flags}")
+set(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_ASM_FLAGS_RELEASE} ${common_release_flags}")
+set(CMAKE_ASM_FLAGS_DEBUG "${CMAKE_ASM_FLAGS_DEBUG} ${common_debug_flags}")
+  
 add_subdirectory (hello)
 
 

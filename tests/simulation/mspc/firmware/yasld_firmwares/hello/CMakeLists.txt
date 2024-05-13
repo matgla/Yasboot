@@ -25,11 +25,17 @@ target_sources (hello_from_relocatable_module
     main.cpp
 )
 
-target_link_libraries(hello_from_relocatable_module PRIVATE yasld_executable_flags gcc c)
+target_link_libraries(hello_from_relocatable_module 
+  PRIVATE 
+    pico_stdlib 
+    yasld_executable_flags 
+    gcc 
+    c
+)
 
-set_target_properties(hello_from_relocatable_module 
-  PROPERTIES PICO_TARGET_LINKER_SCRIPT 
-  ${CMAKE_CURRENT_SOURCE_DIR}/executable.ld
+target_link_options(hello_from_relocatable_module
+  PUBLIC
+   -T${CMAKE_CURRENT_SOURCE_DIR}/executable.ld
 )
 
 set_target_properties(hello_from_relocatable_module 

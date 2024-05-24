@@ -81,7 +81,7 @@ if(${configuration_is_ready})
   set(CMAKE_CPPFRONT_FLAGS "-fno-exceptions -fno-rtti")
  
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
-  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces ")
+  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces ")
   set(common_release_flags "") 
   set(common_debug_flags "-g")
 
@@ -153,7 +153,6 @@ if(${configuration_is_ready})
 
   enable_testing()
   list (APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
-  add_subdirectory(tests)
 
   if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin")
     set(renode_executable mono /Applications/Renode.app/Contents/MacOS/bin/Renode.exe)
@@ -165,6 +164,8 @@ if(${configuration_is_ready})
     message(FATAL_ERROR "Can't find renode executable")
   endif ()
 
+  add_subdirectory(tests)
+ 
   if (DEFINED BOARD)
     add_subdirectory(simulation/${BOARD})
   endif ()

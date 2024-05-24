@@ -1,0 +1,67 @@
+module;
+/**
+ * ram_manager.cpp2
+ *
+ * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
+ *
+ * This program is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation, either version
+ * 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General
+ * Public License along with this program. If not, see
+ * <https://www.gnu.org/licenses/>.
+ */
+
+export module yasboot.ram_manager;
+
+import yasboot.ram_layout;
+
+yasboot: namespace = {
+  get_metadata_address: () -> *void = {
+    return std::align(alignof(std::max_align_t), sizeof(ApplicationData), application_ram_start, application_ram_size); 
+  }
+}
+
+export yasboot: namespace = {
+
+RamManager: @copyable type = {
+  operator=: (out this) = {
+    meta = cpp2::unsafe_narrow<*ApplicationData>(get_metadata_address());
+    memory_left = application_ram_size - sizeof(ApplicationData) - yasboot::pointer_offset(get_metadata_address(), application_ram_start);
+    printf("Creating metadata in memory block (%p, size: %d), at: %p\n", application_ram_start, application_ram_size, cpp2::unsafe_narrow<*void>(meta));
+  }
+
+  allocate_offset_table: (inout this, size: std::size_t) -> *void = {
+    p: *void = reinterpret_cast<*u8>(meta) + sizeof(ApplicationData);
+    printf("Sizeof appdata: %d, %p\n", sizeof(ApplicationData), p);
+    aligned_p := std::align(alignof(std::max_align_t), size, p, memory_left);
+    printf("Offset table allocated at: %p\n", aligned_p);
+    meta*.lot_address = aligned_p;
+    meta*.lot_size = size + yasboot::pointer_offset(aligned_p, p);
+    memory_left -= meta*.lot_size;
+    return aligned_p;
+  }
+
+  allocate_data: (inout this, size: std::size_t) -> *void = {
+    p: *void = cpp2::unsafe_narrow<*u8>(meta*.lot_address) + meta*.lot_size;
+    aligned_p := std::align(alignof(std::max_align_t), size, p, memory_left);
+    printf("Allocated data at: %p\n", aligned_p);
+    meta*.data_address = aligned_p;
+    meta*.data_size = size + yasboot::pointer_offset(aligned_p, p);
+    memory_left -= meta*.lot_size;
+    return aligned_p;
+  }
+
+  meta: *ApplicationData;
+  memory_left: size_t = 0;
+}
+
+}
+

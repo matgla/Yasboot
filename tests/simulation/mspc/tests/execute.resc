@@ -1,0 +1,31 @@
+
+#
+# execute.resc
+#
+# Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+#
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program. If not, see <https://www.gnu.org/licenses/>.
+#
+
+$bin=@${renode_test_image}
+
+path add @${renode_rp2040_board_dir}
+include @initialize_rp2040.resc
+
+showAnalyzer sysbus.uart0
+
+sysbus LoadBinary $bin 0x10000000
+sysbus.cpu0 VectorTableOffset 0x10000200
+sysbus.cpu1 VectorTableOffset 0x10000200
+
+machine StartGdbServer 3333 

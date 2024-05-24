@@ -24,11 +24,16 @@ add_executable(yasboot)
 target_sources(yasboot 
   PRIVATE 
     main.cpp2
+    ram_manager.cpp2
+  PUBLIC 
+    FILE_SET CXX_MODULES FILES
+      ram_layout.cc
 )
 
 use_cppfront(
   TARGET yasboot
   MODULE_SOURCES 
+    ram_manager.cpp2
   # Internal compiler bug in file below, when not in main file 
   #    app.cpp2
 )
@@ -37,10 +42,11 @@ find_package(eul REQUIRED)
 find_package(littlefs REQUIRED)
 find_package(yasconf REQUIRED)
 find_package(sml REQUIRED)
+find_package(yasld REQUIRED)
 target_link_libraries(
   yasboot
   PUBLIC eul::utils newlib_stubs
-  PRIVATE yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf sml)
+  PRIVATE yasld yasboot_hal_interface yasboot_mbr yasboot::filesystem yasconf sml)
 
 target_compile_options(
   yasboot 

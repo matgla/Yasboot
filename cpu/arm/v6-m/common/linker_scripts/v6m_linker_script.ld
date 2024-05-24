@@ -25,10 +25,11 @@ ENTRY(_entry_point)
 MEMORY 
 {
   FLASH(rx) : ORIGIN = YASBOOT_FLASH_START_ADDRESS, LENGTH = YASBOOT_FLASH_SIZE
+  HEAP(rwx) : ORIGIN = YASBOOT_HEAP, LENGTH = YASBOOT_HEAP_SIZE
   SRAM(rwx)  : ORIGIN = YASBOOT_RAM_START_ADDRESS, LENGTH = YASBOOT_RAM_SIZE
 }
 
-__heap_size__ = 0x1000;
+__heap_size__ = YASBOOT_HEAP_SIZE;
 
 SECTIONS
 {
@@ -128,7 +129,7 @@ SECTIONS
     . = . + __heap_size__;
     __heap_end__ = .;
     . = ALIGN(4);
-  } > SRAM
+  } > HEAP 
  
   _stack_top = ORIGIN(SRAM) + LENGTH(SRAM);
 

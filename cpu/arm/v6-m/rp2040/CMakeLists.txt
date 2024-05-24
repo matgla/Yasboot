@@ -149,6 +149,12 @@ target_link_options(
   --specs=nosys.specs
   )
 
+set_target_properties(
+  rp2040 
+  PROPERTIES LINK_DEPENDS
+             ${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/yasboot.ld)
+
+
 target_compile_options(
   rp2040
   PUBLIC -ffunction-sections -fdata-sections

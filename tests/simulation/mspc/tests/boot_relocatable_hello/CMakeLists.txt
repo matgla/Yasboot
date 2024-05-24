@@ -25,7 +25,7 @@ add_dependencies(boot_relocatable_hello mspc_yasld_firmwares)
 
 add_custom_command(TARGET boot_relocatable_hello
   POST_BUILD 
-  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/../../firmware/hello/mspc_firmware_hello.bin ${CMAKE_CURRENT_BINARY_DIR}/disk/mspc_firmware_hello.bin
+  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/../../yasld_firmwares/hello/hello_from_relocatable_module.yaff ${CMAKE_CURRENT_BINARY_DIR}/disk/hello_from_relocatable_module.yaff
   VERBATIM
 )
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/disk ${CMAKE_CURRENT_BINARY_DIR}/disk)

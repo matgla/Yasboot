@@ -1,7 +1,7 @@
 // 
 // vector_table.S 
 // 
-// Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+// Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
 // 
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,14 +23,15 @@
 
 #define PPB_BASE 0xe0000000
 #define M0PLUS_VTOR_OFFSET 0x0000ed08
+#define VECTOR_TABLE_SIZE 48
 
 .section .vector_table, "ax"
 .align 2 
 
 .global __vector_table
 __vector_table:
-  .word _stack_top 
-  .word _reset_handler
+  .word 0x00000000 
+  .word system_init 
   .word irq_nmi 
   .word irq_hard_fault
   .word irq_reserved 
@@ -127,25 +128,20 @@ declare_irq_handler_breakpoint irq29
 declare_irq_handler_breakpoint irq30
 declare_irq_handler_breakpoint irq31
 
-.global _entry_point
-.type _entry_point,%function
+.global system_init 
+.type system_init,%function
 .thumb_func 
-_entry_point:
-  // TODO: implement
-  bkpt #0
-
-
-.global _reset_handler
-.type _reset_handler,%function
-.thumb_func 
-_reset_handler:
-  ldr r1, =__vector_table 
+system_init:
+copy_vector_table:
+  push {r0, r1, r2, lr} 
+  ldr r1, =__vector_table
+  mov 
+  
   ldr r0, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
   str r1, [r0]
-  ldr r1, =system_init 
+  ldr r1, =runtime_init
   blx r1
-  ldr r1, =main 
-  blx main
-  bkpt #0
+  pop {r0, r1, r2, pc}
+  
 
 

@@ -37,6 +37,7 @@ add_definitions(
   -DPICO_DISABLE_SHARED_IRQ_HANDLERS
   -DPICO_NO_BINARY_INFO
 )
+add_library(pico_divider INTERFACE)
 add_library(pico_bit_ops INTERFACE)
 add_library(pico_mem_ops INTERFACE)
 add_library(pico_mem_ops_headers INTERFACE)
@@ -56,10 +57,6 @@ include (pico_sdk_init)
 list (APPEND PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../board)
 set (PICO_BOARD mspc)
 
-pico_sdk_init()
-
-project (yasld_firmwares ASM C CXX)
-
 set(common_flags "-Werror -Wall -Wextra -Wconversion -Wno-unused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces -fno-function-sections -fno-data-sections")
 set(common_release_flags "") 
 set(common_debug_flags "-g")
@@ -70,13 +67,16 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${common_release_flags}"
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${common_debug_flags}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${common_flags}")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${common_release_flags}")
+set(CMAKE_C_FLAGS_RLEASE "${CMAKE_C_FLAGS_RELEASE} ${common_release_flags}")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${common_debug_flags}")
 
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${common_flags}")
 set(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_ASM_FLAGS_RELEASE} ${common_release_flags}")
 set(CMAKE_ASM_FLAGS_DEBUG "${CMAKE_ASM_FLAGS_DEBUG} ${common_debug_flags}")
  
+pico_sdk_init()
+
+project (yasld_firmwares ASM C CXX)
 
 set (YASLD_USE_CUSTOM_LINKER_SCRIPT ON)
 find_package (yasld REQUIRED)

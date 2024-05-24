@@ -21,13 +21,17 @@
 add_executable (hello_from_relocatable_module)
 
 target_sources (hello_from_relocatable_module 
+  PUBLIC 
+    vectors.hpp
   PRIVATE
     main.cpp
+    vectors.cpp
 )
 
 target_link_libraries(hello_from_relocatable_module 
   PRIVATE 
-    pico_stdlib 
+    pico_stdlib
+    pico_runtime
     yasld_executable_flags 
     gcc 
     c

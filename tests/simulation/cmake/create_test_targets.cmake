@@ -41,7 +41,7 @@ macro (create_test_targets)
       yasboot ${TEST_NAME} ${PROJECT_SOURCE_DIR}/scripts/create_disk.py 
   )
 
-  add_custom_target(run_${TEST_NAME} 
+  add_custom_target(run_test_${TEST_NAME} 
     COMMAND renode-test --debug-on-error ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.robot 
     VERBATIM 
     DEPENDS create_disk_for_${TEST_NAME} 
@@ -54,9 +54,16 @@ set (renode_rp2040_board_dir ${renode_rp2040_SOURCE_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${TEST_NAME}.robot ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME}.robot @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../common.robot ${CMAKE_CURRENT_BINARY_DIR}/common.robot @ONLY)
-
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../execute.resc ${CMAKE_CURRENT_BINARY_DIR}/execute.resc)
 add_test(
   NAME ${TEST_NAME}_test 
   COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} -- run_${TEST_NAME})
+
+add_custom_target(${TEST_NAME}_run
+  COMMAND ${renode_executable} --console --disable-xwt ${CMAKE_CURRENT_BINARY_DIR}/execute.resc
+  DEPENDS create_disk_for_${TEST_NAME} yasboot
+  VERBATIM
+  USES_TERMINAL
+)
 
 endmacro ()

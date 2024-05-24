@@ -25,6 +25,7 @@ add_executable(mspc_firmware_hello
 target_link_libraries(mspc_firmware_hello 
   PRIVATE 
     pico_stdlib
+    pico_runtime
 )
 
 target_compile_options(mspc_firmware_hello PUBLIC -O0)

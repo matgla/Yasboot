@@ -21,6 +21,8 @@
 #include <boost/sml.hpp>
 
 #include <yasconf/config.hpp>
+#include <yasld/loader.hpp>
+#include <yasld/environment.hpp>
 
 import hal.uart;
 import hal.system.io;
@@ -31,8 +33,25 @@ import yasboot.mbr;
 import hal.flash;
 import yasboot.filesystem.littlefs;
 import yasboot.filesystem.filesystem_mount_points;
+import yasboot.ram_manager;
+
+extern "C" {
+  extern char YASBOOT_RAM_APP;
+  extern char YASBOOT_RAM_APP_SIZE;
+
+  const char* app_stack_pointer = &YASBOOT_RAM_APP + reinterpret_cast<std::size_t>(&YASBOOT_RAM_APP_SIZE);
+}
 
 yasboot: namespace = {
+
+end: uint32_t = 0;
+stack_end: uint32_t = 0x20000000; 
+
+unhandled_user_irq: () = {
+  printf("Unhandled user irq ca lled\n");
+  while true 
+  {}
+}
 
 AppData: @copyable type = {
   print_hello: () = {
@@ -138,15 +157,60 @@ AppData: @copyable type = {
         firmware_address = ::hal::system::Disk::get_memory_mapped_address((p.lba_start as std::size_t) * 512);
         printf("Firmware is at address: %x\n", firmware_address*);
         has_valid_firmware_to_boot_ = true; 
-      }
 
-      execute_ = :() = {
-        firmware:= firmware_address$*; 
-        offset:= ::hal::cpu::load_vector_table(firmware);
-        ::hal::cpu::jump(firmware + offset);
-      };
+        cookie_ : std::string_view = (reinterpret_cast<* char>(firmware_address*), 4);
+        printf("data[0]: %c(%d), data[1]: %c(%d)\n", cookie_[0], cookie_[0], cookie_[1], cookie_[1]); 
+        if (cookie_ == "YAFF") {
+          printf("YAFF file detected\n");
+          execute_ = :() = {
+            printf("Executing YAFF module from: %x\n", firmware_address$*);
+
+            loader : yasld::Loader = (
+              :(size: std::size_t, type: yasld::AllocationType) -> *void = {
+                ram: RamManager = ();
+                p: *void;
+                if (type == yasld::AllocationType::OffsetTable)
+                {
+                  p = ram.allocate_offset_table(size);
+                }
+                else if (type == yasld::AllocationType::Data)
+                {
+                  p = ram.allocate_data(size); 
+                }
+                else 
+                {
+                  printf("Unsupported allocation type: %d\n", cpp2::unsafe_narrow<int>(type));
+                  p = reinterpret_cast<*void>(0);
+                }
+                _ = ram;
+                printf("Type[%d] Allocated memory at: %p, with size: %d B\n", cpp2::unsafe_narrow<int>(type), p, size);
+                return p;
+              },
+              :(_: *void) = {} );
+            env: const yasld::StaticEnvironment = (
+              yasld::SymbolEntry("end", end&), // This is most probably end of binary info, but dunno
+              yasld::SymbolEntry("__StackLimit", stack_end&), // this is incorrect
+              yasld::SymbolEntry("app_stack_pointer", app_stack_pointer&)
+            );
+            loader.set_environment(env);
+            firmware := firmware_address$*;
+            executable := loader.load_executable(reinterpret_cast<* void>(firmware));
+            rc: int = executable**.execute();
+            printf("Unexpected return to bootloader with exit code: %d\n", rc);
+            while true
+            {
+            }
+          };
+          
+          return;
+        }
+        execute_ = :() = {
+          firmware:= firmware_address$*; 
+          offset:= ::hal::cpu::load_vector_table(firmware);
+          ::hal::cpu::jump(firmware + offset);
+        };
+      }
     }
-    
   }
 
   has_valid_firmware_to_boot: (this) -> bool = {
@@ -154,6 +218,7 @@ AppData: @copyable type = {
   }
 
   execute: (this) = {
+    printf("Execute applied firmware\n");
     execute_(); 
   }
  

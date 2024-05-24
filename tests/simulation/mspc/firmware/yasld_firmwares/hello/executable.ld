@@ -23,16 +23,16 @@ MEMORY
   image(rwx) : ORIGIN = 0x00000000, LENGTH = 0xffffffff
 }
 
-ENTRY(main)
+ENTRY(_entry_point)
 
 SECTIONS
 {
   .text :
   {
     . = ALIGN(16);
-    KEEP(*(.vectors))
+    KEEP(*(.vector_table))
     KEEP(*(.entry))
-    KEEP(*(.reset)) 
+    *(.reset) 
     *(.text)
     *(.text*)
     *(.rel.text)

@@ -7,7 +7,7 @@
       "length": "0xC0000",
       "bootable": false,
       "format": "raw",
-      "content": "./mspc_firmware_hello.bin"
+      "content": "./hello_from_relocatable_module.yaff"
     },
     "0": {
       "start": "0x10000",

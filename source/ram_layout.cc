@@ -1,5 +1,6 @@
+module;
 /**
- * main.cpp
+ * ram_layout.cc
  *
  * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
  *
@@ -18,15 +19,36 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
+#include <cmath>
+#include <cstdint>
 
-#include <pico/stdlib.h>
+export module yasboot.ram_layout;
 
-int main() {
-  stdio_init_all();
-
-  while (true) {
-    printf("This is first example that just prints!\n");
-    sleep_ms(1000);
-  }
+extern "C"
+{
+  extern char YASBOOT_RAM_APP;
+  extern char YASBOOT_RAM_APP_SIZE;
 }
+
+export namespace yasboot
+{
+
+struct ApplicationData
+{
+  void *lot_address;
+  uint32_t lot_size;
+  void *data_address;
+  uint32_t data_size;
+  void *modules_root;
+};
+
+void *application_ram_start = &YASBOOT_RAM_APP;
+std::size_t application_ram_size =
+  reinterpret_cast<std::size_t>(&YASBOOT_RAM_APP_SIZE);
+
+std::size_t pointer_offset(const void *a, const void *b)
+{
+  return std::abs(static_cast<const char *>(a) - static_cast<const char *>(b));
+}
+
+} // namespace yasboot

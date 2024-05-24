@@ -1,5 +1,5 @@
 /**
- * main.cpp
+ * vectors.hpp
  *
  * Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
  *
@@ -18,15 +18,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
+#pragma once
 
-#include <pico/stdlib.h>
-
-int main() {
-  stdio_init_all();
-
-  while (true) {
-    printf("This is first example that just prints!\n");
-    sleep_ms(1000);
-  }
-}
+void initialize_default_vector_table();

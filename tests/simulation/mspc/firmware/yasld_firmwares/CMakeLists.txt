@@ -57,7 +57,7 @@ include (pico_sdk_init)
 list (APPEND PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../board)
 set (PICO_BOARD mspc)
 
-set(common_flags "-Werror -Wall -Wextra -Wconversion -Wno-unused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces -fno-function-sections -fno-data-sections")
+set(common_flags "-Werror -Wall -Wextra -Wconversion -Wno-unused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces -fno-function-sections -fno-data-sections -fno-common")
 set(common_release_flags "") 
 set(common_debug_flags "-g")
 

@@ -22,10 +22,9 @@ add_executable (hello_from_relocatable_module)
 
 target_sources (hello_from_relocatable_module 
   PUBLIC 
-    vectors.hpp
   PRIVATE
     main.cpp
-    vectors.cpp
+    vector_table.S
 )
 
 target_link_libraries(hello_from_relocatable_module 

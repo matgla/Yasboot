@@ -51,7 +51,8 @@ RamManager: @copyable type = {
 
   allocate_data: (inout this, size: std::size_t) -> *void = {
     p: *void = cpp2::unsafe_narrow<*u8>(meta*.lot_address) + meta*.lot_size;
-    aligned_p := std::align(alignof(std::max_align_t), size, p, memory_left);
+    aligned_p := std::align(128, size, p, memory_left);
+    // VTOR must be aligned to 0x80
     printf("Allocated data at: %p\n", aligned_p);
     meta*.data_address = aligned_p;
     meta*.data_size = size + yasboot::pointer_offset(aligned_p, p);

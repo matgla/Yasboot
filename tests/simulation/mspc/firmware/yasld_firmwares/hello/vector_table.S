@@ -25,123 +25,91 @@
 #define M0PLUS_VTOR_OFFSET 0x0000ed08
 #define VECTOR_TABLE_SIZE 48
 
-.section .vector_table, "ax"
+.section .vector_table, "ax" 
 .align 2 
-
 .global __vector_table
 __vector_table:
   .word 0x00000000 
-  .word system_init 
-  .word irq_nmi 
-  .word irq_hard_fault
-  .word irq_reserved 
-  .word irq_reserved 
-  .word irq_reserved 
-  .word irq_reserved 
-  .word irq_reserved 
-  .word irq_reserved 
-  .word irq_reserved 
-  .word irq_svcall 
-  .word irq_reserved 
-  .word irq_reserved 
-  .word irq_pendsv
-  .word irq_systick
-  .word irq0
-  .word irq1
-  .word irq2 
-  .word irq3
-  .word irq4
-  .word irq5
-  .word irq6
-  .word irq7
-  .word irq8
-  .word irq9
-  .word irq10
-  .word irq11
-  .word irq12 
-  .word irq13
-  .word irq14
-  .word irq15
-  .word irq16
-  .word irq17
-  .word irq18
-  .word irq19
-  .word irq20
-  .word irq21
-  .word irq22 
-  .word irq23
-  .word irq24
-  .word irq25
-  .word irq26
-  .word irq27
-  .word irq28
-  .word irq29
-  .word irq30
-  .word irq31
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq  
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq  
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
+  .word __unhandled_user_irq 
 
 
-/* Weak symbol since it will be overriden if needed */
-.macro declare_irq_handler_breakpoint name 
-.weak \name
-.type \name,%function
+.text
+
+.weak __unhandled_user_irq 
+.type __unhandled_user_irq,%function
 .thumb_func 
-\name:
+__unhandled_user_irq:
   bkpt #0 
-.endm
 
-declare_irq_handler_breakpoint irq_reserved
-declare_irq_handler_breakpoint irq_nmi 
-declare_irq_handler_breakpoint irq_hard_fault
-declare_irq_handler_breakpoint irq_svcall 
-declare_irq_handler_breakpoint irq_pendsv 
-declare_irq_handler_breakpoint irq_systick
-declare_irq_handler_breakpoint irq0
-declare_irq_handler_breakpoint irq1
-declare_irq_handler_breakpoint irq2
-declare_irq_handler_breakpoint irq3
-declare_irq_handler_breakpoint irq4
-declare_irq_handler_breakpoint irq5
-declare_irq_handler_breakpoint irq6
-declare_irq_handler_breakpoint irq7
-declare_irq_handler_breakpoint irq8
-declare_irq_handler_breakpoint irq9
-declare_irq_handler_breakpoint irq10
-declare_irq_handler_breakpoint irq11
-declare_irq_handler_breakpoint irq12
-declare_irq_handler_breakpoint irq13
-declare_irq_handler_breakpoint irq14
-declare_irq_handler_breakpoint irq15
-declare_irq_handler_breakpoint irq16
-declare_irq_handler_breakpoint irq17
-declare_irq_handler_breakpoint irq18
-declare_irq_handler_breakpoint irq19
-declare_irq_handler_breakpoint irq20
-declare_irq_handler_breakpoint irq21
-declare_irq_handler_breakpoint irq22
-declare_irq_handler_breakpoint irq23
-declare_irq_handler_breakpoint irq24
-declare_irq_handler_breakpoint irq25
-declare_irq_handler_breakpoint irq26
-declare_irq_handler_breakpoint irq27
-declare_irq_handler_breakpoint irq28
-declare_irq_handler_breakpoint irq29
-declare_irq_handler_breakpoint irq30
-declare_irq_handler_breakpoint irq31
-
-.global system_init 
-.type system_init,%function
+.global initialize_on_entry 
+.type initialize_on_entry,%function
 .thumb_func 
-system_init:
-copy_vector_table:
-  push {r0, r1, r2, lr} 
-  ldr r1, =__vector_table
-  mov 
-  
-  ldr r0, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
-  str r1, [r0]
-  ldr r1, =runtime_init
-  blx r1
-  pop {r0, r1, r2, pc}
+initialize_on_entry:
+  mov r2, lr 
+  adr r0, app_stack_pointer_symbol
+  ldr r0, [r0]
+  mov r1, r9
+  ldr r0, [r1, r0]
+  ldr r0, [r0]   
+  msr msp, r0
+  adr r0, __vector_table_symbol
+  ldr r0, [r0]
+  ldr r0, [r1, r0]
+  ldr r1, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
+  str r0, [r1]
+  mov pc, r2  
+
+.align 4
+app_stack_pointer_symbol:
+  .word __app_stack_pointer(GOT)
+__vector_table_symbol:
+  .word __vector_table(GOT)
   
 
 

@@ -7,14 +7,14 @@
 extern "C"
 {
   extern uint32_t app_stack_pointer;
-  extern char __attribute__((section(".data"))) * __StackTop;
+  //  char *__StackTop = reinterpret_cast<char *>(app_stack_pointer);
   void runtime_init();
+  void initialize_on_entry();
 }
 
 int main()
 {
-  initialize_default_vector_table();
-  asm volatile("msr msp, %0" : : "r"(app_stack_pointer) :);
+  initialize_on_entry();
   runtime_init();
   stdio_init_all();
   while (true)

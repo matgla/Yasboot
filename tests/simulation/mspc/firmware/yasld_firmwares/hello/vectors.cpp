@@ -31,35 +31,36 @@ extern "C"
   extern uint32_t app_stack_pointer;
 }
 
-using InterruptHandler = void (*)();
+using InterruptHandler = void (*const)();
 
 struct __attribute__((aligned(4))) VectorTable
 {
-  uint32_t stack_pointer;
-  InterruptHandler handler[47];
+  const uint32_t stack_pointer;
+  const InterruptHandler handler[47];
 };
+
+const VectorTable vectors = {
+  .stack_pointer = app_stack_pointer,
+  .handler = {
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
+    &__unhandled_user_irq, &__unhandled_user_irq,
+  }};
 
 void initialize_default_vector_table()
 {
-  static const VectorTable vectors = {
-    .stack_pointer = app_stack_pointer,
-    .handler = {
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq, &__unhandled_user_irq,
-      &__unhandled_user_irq, &__unhandled_user_irq,
-    }};
   scb_hw->vtor = reinterpret_cast<uintptr_t>(&vectors);
 }

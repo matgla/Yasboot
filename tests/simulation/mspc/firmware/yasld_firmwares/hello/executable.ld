@@ -30,7 +30,6 @@ SECTIONS
   .text :
   {
     . = ALIGN(16);
-    KEEP(*(.vector_table))
     KEEP(*(.entry))
     *(.reset) 
     *(.text)
@@ -61,6 +60,8 @@ SECTIONS
 
   .data :
   {
+    . = ALIGN(128);
+    KEEP(*(.vector_table))
     . = ALIGN(16);
     __data_start__ = .;
     *(.ram_vector_table)

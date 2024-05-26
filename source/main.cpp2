@@ -187,10 +187,11 @@ AppData: @copyable type = {
                 return p;
               },
               :(_: *void) = {} );
+            printf("Application Stack Pointer Top: %p\n", app_stack_pointer);
             env: const yasld::StaticEnvironment = (
               yasld::SymbolEntry("end", end&), // This is most probably end of binary info, but dunno
               yasld::SymbolEntry("__StackLimit", stack_end&), // this is incorrect
-              yasld::SymbolEntry("app_stack_pointer", app_stack_pointer&)
+              yasld::SymbolEntry("__app_stack_pointer", app_stack_pointer&)
             );
             loader.set_environment(env);
             firmware := firmware_address$*;

@@ -60,11 +60,12 @@ SECTIONS
 
   .data :
   {
-    . = ALIGN(128);
+    . = ALIGN(16);
     KEEP(*(.vector_table))
+    . = ALIGN(128);
+    KEEP(*(.ram_vector_table))
     . = ALIGN(16);
     __data_start__ = .;
-    *(.ram_vector_table)
     PROVIDE_HIDDEN (__mutex_array_start = .);
     KEEP(*(SORT(.mutex_array.*)))
     KEEP(*(.mutex_array))

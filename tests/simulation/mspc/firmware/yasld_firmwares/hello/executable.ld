@@ -23,7 +23,7 @@ MEMORY
   image(rwx) : ORIGIN = 0x00000000, LENGTH = 0xffffffff
 }
 
-ENTRY(_entry_point)
+ENTRY(main)
 
 SECTIONS
 {
@@ -39,21 +39,24 @@ SECTIONS
     *(.glue_7)
     *(.glue_7t)
     *(.eh_frame)
+
+    . = ALIGN(4); 
+    PROVIDE_HIDDEN (__mutex_array_start = .);
+    KEEP(*(SORT(.mutex_array.*)))
+    KEEP(*(.mutex_array))
+    PROVIDE_HIDDEN (__mutex_array_end = .);
+    . = ALIGN(4);
+    PROVIDE_HIDDEN(__preinit_array_start = .);
+    KEEP(*(SORT(.preinit_array.*)))
+    KEEP(*(.preinit_array))
+    PROVIDE_HIDDEN(__preinit_array_end = .);
+  
     KEEP(*(.init))
     KEEP(*(.fini))
     *(.rodata)
     *(.rodata*)
     *(.ARM.extab*)
     *(.ARM.exidx*)
-    PROVIDE_HIDDEN(__preinit_array_start = .);
-    *(.preinit_array*)
-    PROVIDE_HIDDEN(__preinit_array_end = .);
-    PROVIDE_HIDDEN(__init_array_start = .);
-    *(.init_array*)
-    PROVIDE_HIDDEN(__init_array_end = .);
-    PROVIDE_HIDDEN(__fini_array_start = .);
-    *(.fini_array*)
-    PROVIDE_HIDDEN(__fini_array_end = .);
     *(.binary_info.*)
     . = ALIGN(16);
   } > image
@@ -61,15 +64,19 @@ SECTIONS
   .data :
   {
     . = ALIGN(16);
-    KEEP(*(.vector_table))
-    . = ALIGN(128);
     KEEP(*(.ram_vector_table))
-    . = ALIGN(16);
+    . = ALIGN(4);
+    PROVIDE_HIDDEN(__init_array_start = .);
+    KEEP(*(SORT(.init_array.*)))
+    KEEP(*(.init_array))
+    PROVIDE_HIDDEN(__init_array_end = .);
+    . = ALIGN(4);
+    PROVIDE_HIDDEN(__fini_array_start = .);
+    *(SORT(.fini_array.*))
+    *(.fini_array)
+    PROVIDE_HIDDEN(__fini_array_end = .);
+ 
     __data_start__ = .;
-    PROVIDE_HIDDEN (__mutex_array_start = .);
-    KEEP(*(SORT(.mutex_array.*)))
-    KEEP(*(.mutex_array))
-    PROVIDE_HIDDEN (__mutex_array_end = .);
 
     *(.data)
     *(.data*)

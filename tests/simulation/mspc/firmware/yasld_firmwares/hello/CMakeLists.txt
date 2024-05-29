@@ -31,9 +31,7 @@ target_link_libraries(hello_from_relocatable_module
   PRIVATE 
     pico_stdlib
     pico_runtime
-    yasld_executable_flags 
-    gcc 
-    c
+    yasld_standalone_executable_flags 
 )
 
 target_link_options(hello_from_relocatable_module

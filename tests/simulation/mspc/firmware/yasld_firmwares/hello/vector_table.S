@@ -6,11 +6,7 @@
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation, either version
-// 3 of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be
-// useful, but WITHOUT ANY WARRANTY; without even the implied
-// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// 3 of the License, or (at your option) any later version. // // This program is distributed in the hope that it will be // useful, but WITHOUT ANY WARRANTY; without even the implied // warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 // PURPOSE. See the GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General
@@ -25,7 +21,7 @@
 #define M0PLUS_VTOR_OFFSET 0x0000ed08
 #define VECTOR_TABLE_SIZE 48
 
-.section .vector_table, "ax" 
+.section .ram_vector_table, "ax" 
 .align 2 
 .global __vector_table
 __vector_table:
@@ -86,6 +82,24 @@ __vector_table:
 .thumb_func 
 __unhandled_user_irq:
   bkpt #0 
+
+.global hardware_init_hook
+.type hardware_init_hook,%function 
+.thumb_func 
+hardware_init_hook:
+  mov pc, lr
+
+.global __register_frame_info
+.type __register_frame_info,%function
+.thumb_func 
+__register_frame_info:
+  mov pc, lr
+
+.global __libc_fini
+.type __libc_fini,%function 
+.thumb_func 
+__libc_fini:
+  mov pc, lr
 
 .global initialize_on_entry 
 .type initialize_on_entry,%function

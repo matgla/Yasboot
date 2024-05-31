@@ -149,8 +149,6 @@ if(${configuration_is_ready})
   add_subdirectory(hal)
   add_subdirectory(source)
 
-  # add_subdirectory(modules)
-
   enable_testing()
   list (APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 

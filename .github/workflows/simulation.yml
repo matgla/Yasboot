@@ -1,4 +1,4 @@
-name: Yasboot - ClangTidy 
+name: Yasboot - System Tests
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
     branches: [main]
 
 jobs:
-  execute_clang_tidy:
+  execute_system_tests:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/matgla/yasboot:1.4
+      image: ghcr.io/matgla/yasboot:1.6
       credentials: 
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -26,11 +26,10 @@ jobs:
         shell: bash 
         working-directory: build
         run: |
-          cmake .. -DUSE_CONFIG=host -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLANG_TIDY=ON -GNinja
-      - name: Execute clang-tidy
+          cmake .. -DUSE_CONFIG=mspc -DCMAKE_BUILD_TYPE=Debug -GNinja -DYASPEM_NO_COMPATIBILITY_CHECK=ON
+      - name: Execute tests 
         shell: bash
-        working-directory: build
-        run: |
-          ninja run_clang_tidy
-
+        working-directory: build 
+        run: 
+          ninja test
 

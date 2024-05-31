@@ -18,5 +18,4 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-#add_subdirectory(st)
 add_subdirectory(simulation)

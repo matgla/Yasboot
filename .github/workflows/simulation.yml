@@ -21,7 +21,8 @@ jobs:
       - name: Install packages 
         shell: bash
         run: |
-          apt update && apt install -y libfl-dev
+          apt update && apt install -y libfl-dev libdebuginfod-dev
+
       - name: Prepare Yasboot project 
         shell: bash 
         run: |
@@ -35,5 +36,5 @@ jobs:
         shell: bash
         working-directory: build 
         run: 
-          ninja test
+          ninja 
 

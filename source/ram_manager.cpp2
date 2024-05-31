@@ -27,6 +27,8 @@ yasboot: namespace = {
   get_metadata_address: () -> *void = {
     return std::align(alignof(std::max_align_t), sizeof(ApplicationData), application_ram_start, application_ram_size); 
   }
+
+  current_memory_pointer: *void = reinterpret_cast<*void>(0);
 }
 
 export yasboot: namespace = {
@@ -34,30 +36,39 @@ export yasboot: namespace = {
 RamManager: @copyable type = {
   operator=: (out this) = {
     meta = cpp2::unsafe_narrow<*ApplicationData>(get_metadata_address());
+    if (current_memory_pointer == nullptr) {
+      current_memory_pointer = reinterpret_cast<*u8>(meta) + sizeof(ApplicationData);
+    }
     memory_left = application_ram_size - sizeof(ApplicationData) - yasboot::pointer_offset(get_metadata_address(), application_ram_start);
     printf("Creating metadata in memory block (%p, size: %d), at: %p\n", application_ram_start, application_ram_size, cpp2::unsafe_narrow<*void>(meta));
   }
 
-  allocate_offset_table: (inout this, size: std::size_t) -> *void = {
-    p: *void = reinterpret_cast<*u8>(meta) + sizeof(ApplicationData);
-    printf("Sizeof appdata: %d, %p\n", sizeof(ApplicationData), p);
-    aligned_p := std::align(alignof(std::max_align_t), size, p, memory_left);
-    printf("Offset table allocated at: %p\n", aligned_p);
-    meta*.lot_address = aligned_p;
-    meta*.lot_size = size + yasboot::pointer_offset(aligned_p, p);
-    memory_left -= meta*.lot_size;
+  allocate_aligned: (inout this, size: std::size_t, alignment: std::size_t) -> *void = {
+    aligned_p := std::align(alignment, size, current_memory_pointer, memory_left);
+    memory_left -= (yasboot::pointer_offset(aligned_p, current_memory_pointer) + size);
+    current_memory_pointer = cpp2::unsafe_narrow<*u8>(aligned_p) + size;
     return aligned_p;
   }
 
+  allocate_offset_table: (inout this, size: std::size_t) -> *void = {
+    meta*.lot_address = allocate_aligned(size, alignof(std::max_align_t));
+    printf("Offset table allocated at: %p\n", meta*.lot_address);
+    meta*.lot_size = size;
+    return meta*.lot_address;
+  }
+  
   allocate_data: (inout this, size: std::size_t) -> *void = {
-    p: *void = cpp2::unsafe_narrow<*u8>(meta*.lot_address) + meta*.lot_size;
-    aligned_p := std::align(128, size, p, memory_left);
-    // VTOR must be aligned to 0x80
-    printf("Allocated data at: %p\n", aligned_p);
-    meta*.data_address = aligned_p;
-    meta*.data_size = size + yasboot::pointer_offset(aligned_p, p);
-    memory_left -= meta*.lot_size;
-    return aligned_p;
+    meta*.data_address = allocate_aligned(size, 128);
+    printf("Data allocated at: %p\n", meta*.data_address);
+    meta*.data_size = size;
+    return meta*.data_address;
+  }
+
+  allocate_init: (inout this, size: std::size_t) -> *void = {
+    meta*.init_address = allocate_aligned(size, 128);
+    printf("Init allocated at: %p\n", meta*.init_address);
+    meta*.init_size = size;
+    return meta*.init_address;
   }
 
   meta: *ApplicationData;

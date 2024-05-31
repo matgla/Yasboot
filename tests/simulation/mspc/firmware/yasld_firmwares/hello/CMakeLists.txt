@@ -37,6 +37,7 @@ target_link_libraries(hello_from_relocatable_module
 target_link_options(hello_from_relocatable_module
   PUBLIC
    -T${CMAKE_CURRENT_SOURCE_DIR}/executable.ld
+   -Wl,--entry=_entry
 )
 
 set_target_properties(hello_from_relocatable_module 

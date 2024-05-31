@@ -37,6 +37,8 @@ struct ApplicationData
 {
   void *lot_address;
   uint32_t lot_size;
+  void *init_address;
+  uint32_t init_size;
   void *data_address;
   uint32_t data_size;
   void *modules_root;

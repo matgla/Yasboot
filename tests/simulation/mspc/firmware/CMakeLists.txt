@@ -41,6 +41,8 @@ pico_sdk_init()
 
 project (mspc_firmware ASM C CXX)
 
+message(STATUS "MSPC Firmware Build Type: ${CMAKE_BUILD_TYPE}")
+
 set(common_flags "-Werror -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wmissing-braces ")
 set(common_release_flags "") 
 set(common_debug_flags "-g")

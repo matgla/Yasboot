@@ -176,7 +176,10 @@ AppData: @copyable type = {
                 else if (type == yasld::AllocationType::Data)
                 {
                   p = ram.allocate_data(size); 
-                  printf("Allocated data at: %p\n", p);
+                }
+                else if (type == yasld::AllocationType::Init)
+                {
+                  p = ram.allocate_init(size);
                 }
                 else 
                 {

@@ -22,10 +22,12 @@
 
 #include <pico/stdlib.h>
 
-int main() {
+int main()
+{
   stdio_init_all();
 
-  while (true) {
+  while (true)
+  {
     printf("This is first example that just prints!\n");
     sleep_ms(1000);
   }

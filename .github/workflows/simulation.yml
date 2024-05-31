@@ -18,6 +18,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Install packages 
+        shell: bash
+        run: |
+          apt update && apt install -y libfl-dev
       - name: Prepare Yasboot project 
         shell: bash 
         run: |

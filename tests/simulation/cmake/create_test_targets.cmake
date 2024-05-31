@@ -38,7 +38,7 @@ macro (create_test_targets)
       ${scripts_python_executable} ${PROJECT_SOURCE_DIR}/scripts/write_yasboot.py 
       --drive ${target_disk_path} --yasboot ${PROJECT_BINARY_DIR}/yasboot.bin --bootcode ${PROJECT_BINARY_DIR}/boot.bin
     DEPENDS 
-      yasboot ${TEST_NAME} ${PROJECT_SOURCE_DIR}/scripts/create_disk.py 
+      yasboot ${TEST_NAME} ${PROJECT_SOURCE_DIR}/scripts/create_disk.py mbr
   )
 
   add_custom_target(${TEST_NAME}_run_test 

@@ -24,7 +24,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmak
 RUN apt-get install -y clang-15 clang-tidy-15
 RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-15 150 --slave /usr/bin/clang++ clang++ /usr/bin/clang++-15 --slave /usr/bin/clang-tidy clang-tidy-15 /usr/bin/clang-tidy-15 --slave /usr/bin/run-clang-tidy run-clang-tidy-15 /usr/bin/run-clang-tidy-15 
 
-RUN cd /opt && wget https://github.com/matgla/YasldToolchain/releases/download/regular_gcc_14.0.dirty/yasld-gcc-14.tar.xz \
+RUN cd /opt &&  wget https://github.com/matgla/YasldToolchain/releases/download/regular_gcc_14.0.dirty/yasld-gcc-14.tar.xz \
   && tar -xvf yasld-gcc-14.tar.xz \
   && update-alternatives --install /usr/bin/arm-none-eabi-gcc arm-none-eabi-gcc /opt/yasld-gcc-14/bin/arm-none-eabi-gcc 140 \
   && update-alternatives --install /usr/bin/arm-none-eabi-g++ arm-none-eabi-g++ /opt/yasld-gcc-14/bin/arm-none-eabi-g++ 140 \
@@ -57,12 +57,18 @@ ENV PATH="${PATH}:/opt/renode_portable"
 
 RUN apt-get install -y mono-complete policykit-1 libgtk2.0-0 screen uml-utilities libc6-dev gcc python3 python3-pip
 
-RUN cd /opt && wget https://github.com/matgla/YasldToolchain/releases/download/release_0.2/yasld-toolchain-0.2.tar.xz \
-  && tar -xvf yasld-toolchain-0.2.tar.xz 
+RUN cd /opt && wget https://github.com/matgla/YasldToolchain/releases/download/release_0.3/yasld-toolchain-0.3.tar.xz  \
+  && tar -xvf yasld-toolchain-0.3.tar.xz 
 
-RUN cd /opt rm -rf yasld-toolchain-0.2.tar.xz
+RUN cd /opt rm -rf yasld-toolchain-0.3.tar.xz
 RUN cd /opt/renode_portable/tests && sed -i -e 's/pyyaml==6.0/pyyaml==6.*/g' requirements.txt
 RUN python3 -m pip install -r /opt/renode_portable/tests/requirements.txt --break-system-packages
+
+RUN apt install -y libfl-dev libdebuginfod-dev
+
+ENV YASLD_TOOLCHAIN_PATH="/opt/yasld-toolchain"
+
+RUN python3 -m pip install --break-system-packages pymbr openocd humanfriendly littlefs-python
 
 RUN apt-get clean
 

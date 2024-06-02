@@ -162,8 +162,10 @@ if(${configuration_is_ready})
     message(FATAL_ERROR "Can't find renode executable")
   endif ()
 
-  add_subdirectory(tests)
- 
+  if (NOT YASBOOT_DISABLE_TESTS)
+    add_subdirectory(tests)
+  endif ()
+
   if (DEFINED BOARD)
     add_subdirectory(simulation/${BOARD})
   endif ()

@@ -43,7 +43,9 @@ macro (yasboot_import_project)
         CMAKE_ARGS 
             -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
             -DUSE_CONFIG=${YASBOOT_CONFIG}
+            -DYASBOOT_DISABLE_TESTS=ON
             #-DCMAKE_TOOLCHAIN_FILE=${I_TOOLCHAINS_PATH}/arm-none-eabi-with-pic.cmake
+        
         SOURCE_DIR ${ROOT_DIR}
         BINARY_DIR ${ROOT_BINARY_DIR}/yasboot
         INSTALL_COMMAND "" 

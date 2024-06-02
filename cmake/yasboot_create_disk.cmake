@@ -53,8 +53,8 @@ macro (yasboot_create_disk)
         COMMAND
             ${scripts_python_executable} ${ROOT_DIR}/scripts/write_yasboot.py
             --drive ${YASBOOT_OUTPUT} 
-            --yasboot ${FILE_BINARY_DIR}/../yasboot.bin 
-            --bootcode ${FILE_BINARY_DIR}/../boot.bin
+            --yasboot ${FILE_BINARY_DIR}/yasboot/yasboot.bin 
+            --bootcode ${FILE_BINARY_DIR}/yasboot/boot.bin
         DEPENDS 
             yasboot 
             ${ROOT_DIR}/scripts/create_disk.py 

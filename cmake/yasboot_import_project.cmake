@@ -19,7 +19,7 @@
 #
 
 set (ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
-set (ROOT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/..)
+set (ROOT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 macro (yasboot_import_project)
     message (STATUS "Importing Yasboot project") 

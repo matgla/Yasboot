@@ -47,14 +47,15 @@ macro (yasboot_create_disk)
 
     add_custom_target(${YASBOOT_TARGET} 
         COMMAND
-            ${scripts_python_executable} ${ROOT_DIR}/scripts/create_disk.py
-            --output ${YASBOOT_OUTPUT} 
-            --layout ${YASBOOT_LAYOUT}
-        COMMAND
-            ${scripts_python_executable} ${ROOT_DIR}/scripts/write_yasboot.py
-            --drive ${YASBOOT_OUTPUT} 
-            --yasboot ${FILE_BINARY_DIR}/yasboot/yasboot.bin 
-            --bootcode ${FILE_BINARY_DIR}/yasboot/boot.bin
+            echo "dd" 
+        #    ${scripts_python_executable} ${ROOT_DIR}/scripts/create_disk.py
+        #    --output ${YASBOOT_OUTPUT} 
+        #    --layout ${YASBOOT_LAYOUT}
+            #COMMAND
+        #         ${scripts_python_executable} ${ROOT_DIR}/scripts/write_yasboot.py
+        #    --drive ${YASBOOT_OUTPUT} 
+        #    --yasboot ${FILE_BINARY_DIR}/yasboot/yasboot.bin 
+        #    --bootcode ${FILE_BINARY_DIR}/yasboot/boot.bin
         DEPENDS 
             yasboot 
             ${ROOT_DIR}/scripts/create_disk.py 

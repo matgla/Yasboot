@@ -45,9 +45,10 @@ setup_yaspem(
   ${CMAKE_CURRENT_BINARY_DIR}/packages PACKAGE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/preconfigure_packages.json)
 
-include(cmake/cppfront.cmake)
 
 find_package(CMakeUtils REQUIRED)
+
+
 include(virtualenv)
 create_virtualenv(kconfig ${CMAKE_CURRENT_SOURCE_DIR}/kconfig_scripts/requirements.txt
                   ${CMAKE_CURRENT_BINARY_DIR}/venvs)
@@ -77,12 +78,16 @@ if(${configuration_is_ready})
 
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
+
+
   # Global flags that breaks ABI are specified globally  
   set(CMAKE_CPPFRONT_FLAGS "-fno-exceptions -fno-rtti")
  
+  include(cppfront)
+  
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
-  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces ")
   set(common_release_flags "") 
+  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces ")
   set(common_debug_flags "-g")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics -fno-module-lazy  ${common_flags}")

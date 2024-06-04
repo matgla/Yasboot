@@ -50,7 +50,7 @@ target_link_libraries(
 
 target_compile_options(
   yasboot 
-  PRIVATE -Wno-shadow
+  PRIVATE -Wno-shadow -Wno-unused-variable
 )
 
 include(generate_binary)

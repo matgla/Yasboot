@@ -68,7 +68,10 @@
           },
           "compile_definitions": {
             "PUBLIC": [
-              "-DLFS_READONLY=1"
+              "-DLFS_READONLY=1",
+              "-DLFS_NO_DEBUG=1",
+              "-DLFS_NO_WARN=1",
+              "-DLFS_NO_ERROR=1"
             ]
           }
         }
@@ -88,7 +91,7 @@
     {
       "link": "https://github.com/matgla/Yasld.git",
       "type": "git",
-      "version": "0.0.4",
+      "version": "main",
       "target": "yasld",
       "options": {
         "cmake_variables": {

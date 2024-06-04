@@ -24,7 +24,8 @@ target_link_libraries(second_stage_bootloader PRIVATE hardware_regs)
 
 target_link_options(
   second_stage_bootloader PRIVATE --specs=nosys.specs -nostartfiles
-  LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/second_stage.ld)
+  LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/second_stage.ld
+  -Wl,--no-gc-sections)
 
 set_target_properties(
   second_stage_bootloader
@@ -71,7 +72,8 @@ target_link_libraries(mbr PRIVATE hardware_regs)
 
 target_link_options(
   mbr PRIVATE --specs=nosys.specs -nostartfiles
-  LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr.ld)
+  LINKER:--script=${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr.ld
+  -Wl,--no-gc-sections)
 
 set_target_properties(
   mbr PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/linker_scripts/mbr.ld)
@@ -136,8 +138,10 @@ target_sources(
 
 target_link_libraries(
   rp2040
-  PUBLIC arm_v6m_common yasboot_hal_interface common
-  PRIVATE board_setup hardware_regs hardware_structs)
+  PUBLIC arm_v6m_common yasboot_hal_interface common 
+  PRIVATE board_setup hardware_regs hardware_structs 
+  pico_double
+)
 
 target_link_options(
   rp2040
@@ -157,7 +161,7 @@ set_target_properties(
 
 target_compile_options(
   rp2040
-  PUBLIC -ffunction-sections -fdata-sections
+  PUBLIC -ffunction-sections -fdata-sections -Wno-pedantic
          $<$<COMPILE_LANGUAGE:CXX>:-fno-use-cxa-atexit>
   PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Werror
           -Wno-pedantic

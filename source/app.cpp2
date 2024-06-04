@@ -37,8 +37,9 @@ yasboot: namespace = {
 
 export AppData: @copyable type = {
   print_hello: () = {
-    printf("\n\n");
-    printf("============== YASBOOT ===============\n");
+    // if interactive 
+    //printf("\n\n");
+    //printf("============== YASBOOT ===============\n");
   }
 
   initialize: () = {
@@ -46,13 +47,12 @@ export AppData: @copyable type = {
   }
 
   mount_disks: () = {
-    printf("Mounting disks\n");
   }
  
   prepare_boot_parition: (inout this) = {
     p:= mbr_.get_bootable_partition(); 
     if (p) {
-      printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
+      //printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
       params:= yasboot::filesystem::DiskParameters(
         4,
         4, 

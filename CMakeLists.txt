@@ -19,6 +19,8 @@ cmake_minimum_required(VERSION 3.28)
 
 find_program(yaspem yaspem.py)
 
+set (YASPEM_NO_COMPATIBILITY_CHECK ON)
+
 if (NOT yaspem OR $ENV{YASPEM_FETCH_FROM_GIT}})
   include(FetchContent)
 
@@ -86,8 +88,8 @@ if(${configuration_is_ready})
   include(cppfront)
   
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
-  set(common_release_flags "") 
-  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces ")
+  set(common_release_flags "-O2") 
+  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces -ffunction-sections -fdata-sections")
   set(common_debug_flags "-g")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics -fno-module-lazy  ${common_flags}")
@@ -102,10 +104,8 @@ if(${configuration_is_ready})
   set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${common_flags}")
   set(CMAKE_ASM_FLAGS_RELEASE "${CMAKE_ASM_FLAGS_RELEASE} ${common_release_flags}")
   set(CMAKE_ASM_FLAGS_DEBUG "${CMAKE_ASM_FLAGS_DEBUG} ${common_debug_flags}")
-  
 
-
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}") 
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections") 
   
   set(CMAKE_CXX_SCAN_FOR_MODULES ON) 
 

@@ -40,7 +40,7 @@ RamManager: @copyable type = {
       current_memory_pointer = reinterpret_cast<*u8>(meta) + sizeof(ApplicationData);
     }
     memory_left = application_ram_size - sizeof(ApplicationData) - yasboot::pointer_offset(get_metadata_address(), application_ram_start);
-    printf("Creating metadata in memory block (%p, size: %d), at: %p\n", application_ram_start, application_ram_size, cpp2::unsafe_narrow<*void>(meta));
+    //printf("Creating metadata in memory block (%p, size: %d), at: %p\n", application_ram_start, application_ram_size, cpp2::unsafe_narrow<*void>(meta));
   }
 
   allocate_aligned: (inout this, size: std::size_t, alignment: std::size_t) -> *void = {
@@ -52,21 +52,21 @@ RamManager: @copyable type = {
 
   allocate_offset_table: (inout this, size: std::size_t) -> *void = {
     meta*.lot_address = allocate_aligned(size, alignof(std::max_align_t));
-    printf("Offset table allocated at: %p\n", meta*.lot_address);
+    //printf("Offset table allocated at: %p\n", meta*.lot_address);
     meta*.lot_size = size;
     return meta*.lot_address;
   }
   
   allocate_data: (inout this, size: std::size_t) -> *void = {
     meta*.data_address = allocate_aligned(size, 128);
-    printf("Data allocated at: %p\n", meta*.data_address);
+    //printf("Data allocated at: %p\n", meta*.data_address);
     meta*.data_size = size;
     return meta*.data_address;
   }
 
   allocate_init: (inout this, size: std::size_t) -> *void = {
     meta*.init_address = allocate_aligned(size, 128);
-    printf("Init allocated at: %p\n", meta*.init_address);
+    //printf("Init allocated at: %p\n", meta*.init_address);
     meta*.init_size = size;
     return meta*.init_address;
   }

@@ -37,6 +37,32 @@ macro (generate_config source_directory output_directory)
         ${kconfig_python_executable} ${kconfig_generator} --input ${output_directory}/config/.config --output ${output_directory}/config --kconfig ${source_directory}/Kconfig
       WORKING_DIRECTORY ${output_directory}
     )
+  else ()
+    execute_process(COMMAND
+      /usr/bin/tty
+      OUTPUT_VARIABLE TTY_NAME
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    
+    execute_process(
+      COMMAND
+        ${CMAKE_COMMAND} -E env srctree=${source_directory} 
+          bash -c "${kconfig_python_executable} -m menuconfig ${source_directory}/Kconfig"
+       
+      WORKING_DIRECTORY ${output_directory}/config
+      OUTPUT_FILE ${TTY_NAME})
+    
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E env srctree=${source_directory}
+        ${kconfig_python_executable} ${kconfig_generator} 
+        --input ${output_directory}/config/.config 
+        --output ${output_directory}/config 
+        --kconfig ${source_directory}/Kconfig
+      
+      WORKING_DIRECTORY ${output_directory}
+      ) 
+
+
+
   endif ()
 
   add_custom_target(menuconfig
@@ -46,10 +72,11 @@ macro (generate_config source_directory output_directory)
       ${source_directory}/Kconfig 
 
     WORKING_DIRECTORY ${output_directory}/config
+    USES_TERMINAL
+    VERBATIM
   )
 
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${output_directory}/.config)
-
 
   add_custom_command(TARGET menuconfig
     POST_BUILD
@@ -58,6 +85,7 @@ macro (generate_config source_directory output_directory)
       ${kconfig_python_executable} ${kconfig_generator} --input ${output_directory}/config/.config --output ${output_directory}/config --kconfig ${source_directory}/Kconfig
     COMMAND cmake ${source_directory}
     WORKING_DIRECTORY ${output_directory}
+    VERBATIM
   )
 
   if (EXISTS ${output_directory}/config/.config)

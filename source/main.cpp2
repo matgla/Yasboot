@@ -48,15 +48,15 @@ end: uint32_t = 0;
 stack_end: uint32_t = 0x20000000; 
 
 unhandled_user_irq: () = {
-  printf("Unhandled user irq ca lled\n");
+  //printf("Unhandled user irq ca lled\n");
   while true 
   {}
 }
 
 AppData: @copyable type = {
   print_hello: () = {
-    printf("\n\n");
-    printf("============== YASBOOT ===============\n");
+    //printf("\n\n");
+    //printf("============== YASBOOT ===============\n");
   }
 
   initialize: () = {
@@ -64,13 +64,13 @@ AppData: @copyable type = {
   }
 
   mount_disks: () = {
-    printf("Mounting disks\n");
+    //printf("Mounting disks\n");
   }
  
   prepare_boot_parition: (inout this) = {
     p:= mbr_.get_bootable_partition(); 
     if (p) {
-      printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
+      //printf("Found bootable partition at: %lx, size: %ld\n", p*.lba_start, p*.number_of_sectors);
       params:= yasboot::filesystem::DiskParameters(
         4,
         4, 
@@ -90,17 +90,17 @@ AppData: @copyable type = {
       ); 
       s:= fs*.mount();
       if (s) {
-        printf("Mounted successfuly\n");
+        //printf("Mounted successfuly\n");
         if (yasboot::fs::FileSystemMountPoints::get().register_mount_point("/", move fs) >= 0) {
           boot_partition_mounted_ = true;
         }
       }
       else {
-        printf("Mounting failure\n");
+        //printf("Mounting failure\n");
       }
     }
     else {
-      printf("%s\n", p.error().data());
+      //printf("%s\n", p.error().data());
     }
   }
  
@@ -116,10 +116,10 @@ AppData: @copyable type = {
   }
 
   find_target_executable: (inout this) = {
-    printf("Searching executable in config\n");
+    //printf("Searching executable in config\n");
     config: yasconf::Config<32> = ("/boot.conf");
     if (!config.is_open()) {
-      printf("Can't open boot.conf\n"); 
+      //printf("Can't open boot.conf\n"); 
       return;
     }
     
@@ -129,41 +129,41 @@ AppData: @copyable type = {
    
     if (bootType*.empty())
     {
-      printf("Empty 'BootType' in boot.conf\n");
+      // printf("Empty 'BootType' in boot.conf\n");
       return; 
     }
 
     if (bootPartition*.empty())
     {
-      printf("Empty 'BootPartition' in boot.conf\n");
+      // printf("Empty 'BootPartition' in boot.conf\n");
       return; 
     }
 
     if (imageType*.empty())
     {
-      printf("Empty 'ImageType' in boot.conf\n");
+      // printf("Empty 'ImageType' in boot.conf\n");
       return; 
     }
     
     partition:= atoi(bootPartition*.data());
-    printf("Execute image type '%s' from partition %d with type: '%s'\n",
-      imageType*.data(), partition, bootType*.data());
+    // printf("Execute image type '%s' from partition %d with type: '%s'\n",
+      //imageType*.data(), partition, bootType*.data());
 
     if (bootType*.contains("raw")) {
       firmware_address: std::optional<std::size_t> = (std::nullopt);
       if (imageType*.contains("raw")) {
-        printf("Calculation of firmware address\n");
+        // printf("Calculation of firmware address\n");
         p:= mbr_.get_partition(partition);
         firmware_address = ::hal::system::Disk::get_memory_mapped_address((p.lba_start as std::size_t) * 512);
-        printf("Firmware is at address: %x\n", firmware_address*);
+        //printf("Firmware is at address: %x\n", firmware_address*);
         has_valid_firmware_to_boot_ = true; 
 
         cookie_ : std::string_view = (reinterpret_cast<* char>(firmware_address*), 4);
-        printf("data[0]: %c(%d), data[1]: %c(%d)\n", cookie_[0], cookie_[0], cookie_[1], cookie_[1]); 
+        // printf("data[0]: %c(%d), data[1]: %c(%d)\n", cookie_[0], cookie_[0], cookie_[1], cookie_[1]); 
         if (cookie_ == "YAFF") {
-          printf("YAFF file detected\n");
+          // printf("YAFF file detected\n");
           execute_ = :() = {
-            printf("Executing YAFF module from: %x\n", firmware_address$*);
+            // printf("Executing YAFF module from: %x\n", firmware_address$*);
 
             loader : yasld::Loader = (
               :(size: std::size_t, type: yasld::AllocationType) -> *void = {
@@ -183,15 +183,15 @@ AppData: @copyable type = {
                 }
                 else 
                 {
-                  printf("Unsupported allocation type: %d\n", cpp2::unsafe_narrow<int>(type));
+                  // printf("Unsupported allocation type: %d\n", cpp2::unsafe_narrow<int>(type));
                   p = reinterpret_cast<*void>(0);
                 }
                 _ = ram;
-                printf("Type[%d] Allocated memory at: %p, with size: %d B\n", cpp2::unsafe_narrow<int>(type), p, size);
+                // printf("Type[%d] Allocated memory at: %p, with size: %d B\n", cpp2::unsafe_narrow<int>(type), p, size);
                 return p;
               },
               :(_: *void) = {} );
-            printf("Application Stack Pointer Top: %p\n", app_stack_pointer);
+            // printf("Application Stack Pointer Top: %p\n", app_stack_pointer);
             env: const yasld::StaticEnvironment = (
               yasld::SymbolEntry("end", end&), // This is most probably end of binary info, but dunno
               yasld::SymbolEntry("__StackLimit", stack_end&), // this is incorrect
@@ -200,8 +200,8 @@ AppData: @copyable type = {
             loader.set_environment(env);
             firmware := firmware_address$*;
             executable := loader.load_executable(reinterpret_cast<* void>(firmware));
-            rc: int = executable**.execute();
-            printf("Unexpected return to bootloader with exit code: %d\n", rc);
+            _: int = executable**.execute();
+            // printf("Unexpected return to bootloader with exit code: %d\n", rc);
             while true
             {
             }
@@ -223,7 +223,7 @@ AppData: @copyable type = {
   }
 
   execute: (this) = {
-    printf("Execute applied firmware\n");
+    // printf("Execute applied firmware\n");
     execute_(); 
   }
  
@@ -251,14 +251,14 @@ namespace yasboot {
       //  +      FROM      +    EVENT     +      GUARD                  +                 ACTION                     +  DESTINATION  +
           *"initialize"_s                                               / [this]{ data_.initialize(); }              = "mount_disks"_s  
           ,"mount_disks"_s + on_entry<_>                                / [this]{ data_.mount_disks(); }                              
-          ,"mount_disks"_s                 [has_valid_mbr]              / [this]{ printf("Disks mounted\n"); }       = "find_boot"_s
+          ,"mount_disks"_s                 [has_valid_mbr]              / [this]{ /*printf("Disks mounted\n");*/ }       = "find_boot"_s
           ,"find_boot"_s                                                / [this]{ data_.prepare_boot_parition(); }   = "read_config"_s
           ,"read_config"_s                 [has_valid_boot_partition]   / [this]{ data_.find_target_executable(); }  = "prepare_execution"_s
-          ,"read_config"_s                 [!has_valid_boot_partition]  / [this]{ printf("Unable to find boot parition\n"); } = "cli_mode"_s
-          ,"prepare_execution"_s           [has_valid_firmware]         / [this]{ printf("Executing!\n"); }          = "execute_with_timer"_s
-          ,"prepare_execution"_s           [!has_valid_firmware]        / [this]{ printf("Any firmware to be executed found!\n"); } = "cli_mode"_s
-          ,"execute_with_timer"_s                                       / [this]{ printf("Count: 5\n"); }            = "wait_for_startup"_s
-          ,"cli_mode"_s                                                 / [this]{ printf("Recovery Shell:\n >\n"); } = "wait_for_startup"_s 
+          ,"read_config"_s                 [!has_valid_boot_partition]  / [this]{ /*printf("Unable to find boot parition\n");*/ } = "cli_mode"_s
+          ,"prepare_execution"_s           [has_valid_firmware]         / [this]{ /*printf("Executing!\n");*/ }          = "execute_with_timer"_s
+          ,"prepare_execution"_s           [!has_valid_firmware]        / [this]{ /*printf("Any firmware to be executed found!\n");*/ } = "cli_mode"_s
+          ,"execute_with_timer"_s                                       / [this]{ /*printf("Count: 5\n");*/ }            = "wait_for_startup"_s
+          ,"cli_mode"_s                                                 / [this]{ /*printf("Recovery Shell:\n >\n");*/ } = "wait_for_startup"_s 
           ,"wait_for_startup"_s                                         / [this]{ data_.execute(); }                 = X
         );
       }

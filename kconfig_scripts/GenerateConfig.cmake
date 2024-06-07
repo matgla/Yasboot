@@ -24,7 +24,12 @@ macro (generate_config source_directory output_directory)
   find_file(kconfig_generator generate.py ${source_directory}/kconfig_scripts)
 
   if (USE_CONFIG)
-    set (filepath ${source_directory}/configs/${USE_CONFIG}/.config)
+    if(USE_CONFIG MATCHES ".*\.config")
+      set(filepath ${USE_CONFIG})
+    else ()
+      set (filepath ${source_directory}/configs/${USE_CONFIG}/.config)
+    endif ()
+    
     if (NOT EXISTS ${filepath})
       message(FATAL_ERROR "Selected configuration ${USE_CONFIG} not exists in ${source_directory}/configs")
     endif()

@@ -63,7 +63,8 @@
               "-Wno-sign-conversion",
               "-Wno-conversion",
               "-Wno-cast-qual",
-              "-Wno-shadow"
+              "-Wno-shadow",
+              "-Wno-analyzer-jump-through-null"
             ]
           },
           "compile_definitions": {

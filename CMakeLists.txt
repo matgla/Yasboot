@@ -83,13 +83,13 @@ if(${configuration_is_ready})
 
 
   # Global flags that breaks ABI are specified globally  
-  set(CMAKE_CPPFRONT_FLAGS "-fno-exceptions -fno-rtti")
+  set(CMAKE_CPPFRONT_FLAGS "-fno-exceptions -fno-rtti -no-c -no-n -no-s")
  
   include(cppfront)
   
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
   set(common_release_flags "-O2") 
-  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces -ffunction-sections -fdata-sections")
+  set(common_flags "-fanalyzer -Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces -ffunction-sections -fdata-sections")
   set(common_debug_flags "-g")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics -fno-module-lazy  ${common_flags}")

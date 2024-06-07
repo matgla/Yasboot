@@ -1,7 +1,8 @@
+#!/usr/bin/env zsh
 #
-# KConfig
+# Kconfig
 #
-# Copyright (C) 2023 Mateusz Stadnik <matgla@live.com>
+# Copyright (C) 2024 Mateusz Stadnik <matgla@live.com>
 #
 # This program is free software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,11 +19,29 @@
 # <https://www.gnu.org/licenses/>.
 #
 
-mainmenu "Yasboot configuration"
+menu "yasld"
+  config YASLD_ENABLED
+    bool "Enable dynamic linker support"
 
-source "./board/Kconfig"
-source "./cpu/Kconfig"
+  config YASLD_LOGGER_ENABLED
+    bool "Enable logger"
 
-menu "Components"
-  source "./features_configs/**/Kconfig"
-endmenu 
+  choice 
+    prompt "Log level"
+    depends on YASLD_ENABLED && YASLD_LOGGER_ENABLED
+
+    config YASLD_LOGGER_ERROR 
+      bool "Error"
+
+    config YASLD_LOGGER_WARNING
+      bool "Warning"
+
+    config YASLD_LOGGER_INFO 
+      bool "Info"
+
+    config YASLD_LOGGER_DEBUG 
+      bool "Debug"
+    
+  endchoice 
+endmenu
+

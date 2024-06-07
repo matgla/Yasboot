@@ -106,7 +106,7 @@ def main():
         for node in kconf.unique_defined_syms:
             if node.user_value:
                 to_parse.append({"name": node.name, "value": node.user_value})
-                output.write("set(" + node.name + " " + str(node.user_value) + " CACHE INTERNAL \"\")\n")
+                output.write("set(" + node.name + " " + str(node.user_value) + ")\n")
                 continue
             if node.str_value:
                 to_parse.append({"name": node.name, "value": node.str_value})

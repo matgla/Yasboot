@@ -35,19 +35,16 @@ make
 git clone https://github.com/matgla/Yasboot.git
 cd Yasboot 
 mkdir build 
-cmake ..
-make menuconfig (select configuration of your board)
-make 
+cmake .. -GNinja
 ```
 
-For tests you can also use predefined configs:
+You can also use predefined configs:
 
 ```shell
 git clone https://github.com/matgla/Yasboot.git
 cd Yasboot 
 mkdir build 
-cmake .. -DUSE_CONFIG=host
-make st
+cmake .. -DUSE_CONFIG=host -GNinja
 ```
 
 All predefined configurations are placed inside '<project_root>/configs'. 
@@ -55,6 +52,10 @@ Configuration name is just a directory name, like: host, mspc, etc...
 
 
 You can also use sanitizers or clang-tidy, check .github/workflow for details.
+
+> [!NOTE]
+> Only Ninja supports C++ modules correctly as (06.2024). 
+> If this changed, please create pull request or let me know!
 
 # Supported devices 
 ## Boards

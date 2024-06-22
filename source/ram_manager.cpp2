@@ -58,7 +58,7 @@ RamManager: @copyable type = {
   }
   
   allocate_data: (inout this, size: std::size_t) -> *void = {
-    meta*.data_address = allocate_aligned(size, 128);
+    meta*.data_address = allocate_aligned(size, 256);
     //printf("Data allocated at: %p\n", meta*.data_address);
     meta*.data_size = size;
     return meta*.data_address;

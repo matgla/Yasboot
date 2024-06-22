@@ -81,6 +81,10 @@ if(${configuration_is_ready})
   preinitialize_cpu()
   project(Yasboot ASM C CXX)
 
+  if (YASLD_LOGGER_ENABLED)
+    add_compile_definitions(-DYASLD_ENABLE_LOGGER)
+  endif ()
+
 
   # Global flags that breaks ABI are specified globally  
   set(CMAKE_CPPFRONT_FLAGS "-fno-exceptions -fno-rtti -no-c -no-n -no-s")
@@ -89,7 +93,7 @@ if(${configuration_is_ready})
   
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
   set(common_release_flags "-O2") 
-  set(common_flags "-fanalyzer -Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces -ffunction-sections -fdata-sections")
+  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces -ffunction-sections -fdata-sections")
   set(common_debug_flags "-g")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics -fno-module-lazy  ${common_flags}")

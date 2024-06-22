@@ -20,6 +20,7 @@
 $bin=@${renode_test_image}
 
 path add @${renode_rp2040_board_dir}
+$machine_name="yasboot_rp2040"
 include @initialize_rp2040.resc
 
 showAnalyzer sysbus.uart0

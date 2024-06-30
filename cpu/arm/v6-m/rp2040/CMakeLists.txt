@@ -166,6 +166,7 @@ target_compile_options(
          $<$<COMPILE_LANGUAGE:CXX>:-fno-use-cxa-atexit>
   PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Werror
           -Wno-pedantic
+          -Wno-analyzer-infinite-loop
           -Wall
           -Wextra
           -Wconversion

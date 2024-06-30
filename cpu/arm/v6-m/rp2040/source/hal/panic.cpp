@@ -28,12 +28,9 @@ namespace hal
 void panic(std::string_view message)
 {
   write(STDERR_FILENO, message.data(), message.size());
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wno-analyzer-infinite-loop"
   while (true)
   {
   }
-  #pragma GCC diagnostic pop 
 }
 
 } // namespace hal

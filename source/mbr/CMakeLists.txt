@@ -26,6 +26,7 @@ use_cppfront(
   TARGET yasboot_mbr
   FLAGS -fno-rtti -fno-exceptions
   MODULE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/mbr.cpp2
+  BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(yasboot_mbr

@@ -31,6 +31,7 @@ target_sources(yasboot_filesystem
 use_cppfront(
   TARGET yasboot_filesystem
   MODULE_SOURCES littlefs.cpp2
+  BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 find_package(littlefs REQUIRED)

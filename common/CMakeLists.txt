@@ -39,6 +39,8 @@ use_cppfront(
   MODULE_SOURCES 
     source/disk_parameters.cpp2
     source/filesystem.cpp2
+  BASE_DIRS
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_include_directories(common 

@@ -34,6 +34,8 @@ use_cppfront(
   TARGET yasboot
   MODULE_SOURCES 
     ram_manager.cpp2
+  BASE_DIRS  
+    ${CMAKE_CURRENT_BINARY_DIR}
   # Internal compiler bug in file below, when not in main file 
   #    app.cpp2
 )

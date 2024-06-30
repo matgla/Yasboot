@@ -93,7 +93,7 @@ if(${configuration_is_ready})
   
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
   set(common_release_flags "-O2") 
-  set(common_flags "-Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces -ffunction-sections -fdata-sections")
+  set(common_flags "-fanalyzer -Werror -pedantic -Wall -Wextra -Wconversion -Wunused -Wshadow -Wpointer-arith -Wcast-qual -Wdouble-promotion -Wno-missing-braces -ffunction-sections -fdata-sections")
   set(common_debug_flags "-g")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fmodules-ts -fno-threadsafe-statics -fno-module-lazy  ${common_flags}")

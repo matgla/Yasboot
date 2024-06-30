@@ -124,6 +124,7 @@ target_sources(rp2040
 use_cppfront(
   TARGET rp2040 
   MODULE_SOURCES source/hal/flash.cpp2
+  BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_sources(

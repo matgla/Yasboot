@@ -45,7 +45,7 @@ target_sources(
     source/hal/flow.cpp
 )
 
-target_compile_options(arm_v6m_common PRIVATE -fmodules-ts -std=c++23)
+target_compile_options(arm_v6m_common PRIVATE -fmodules-ts -std=c++23 -Wno-analyzer-infinite-loop)
 target_link_libraries(arm_v6m_common 
   PRIVATE yasboot_hal_interface common
   PUBLIC rp2040)
